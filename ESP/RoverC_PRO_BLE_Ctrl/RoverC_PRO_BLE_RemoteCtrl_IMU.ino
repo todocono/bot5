@@ -26,6 +26,7 @@ float gyroX = 0.0F;
 float gyroY = 0.0F;
 float gyroZ = 0.0F;
 
+int ir_tx_pin = 9;
 
 class MyServerCallbacks: public BLEServerCallbacks {
     void onConnect(BLEServer* pServer) {
@@ -134,10 +135,18 @@ class MyCallbacks: public BLECharacteristicCallbacks {
     }
     else if (param1.at(0) == 'b'){
       // ( uint16_t freq, uint16_t duration);
-        M5.Beep.tone(atoi(param2.c_str()),atoi(param3.c_str()));
-//      while (true){
-//        M5.Beep.update();
-//      }
+        M5.Beep.setBeep(atoi(param2.c_str()),atoi(param3.c_str()));
+        M5.Beep.beep();
+        delay(atoi(param3.c_str()));
+        M5.Beep.end();
+    }
+    else if (param1.at(0) == 'i'){
+      if (param2.at(0) == '1'){
+        digitalWrite(ir_tx_pin, 1);
+      }
+      else{
+        digitalWrite(ir_tx_pin, 0);
+      }
     }
     else{
         Move_stop(100);
@@ -193,6 +202,8 @@ void setup(){
   // Initialize the M5StickC object
   M5.begin();
   M5.IMU.Init();
+
+  pinMode(ir_tx_pin, OUTPUT);
 
   uint64_t chipid = ESP.getEfuseMac();
   String blename = "M5-" + String((uint32_t)(chipid >> 32), HEX);
