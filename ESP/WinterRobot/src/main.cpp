@@ -3,10 +3,20 @@
 #include <Arduino.h>
 #include "BleComm.h"
 
+BleComm ble;
+
 void setup() {
-    BleComm* ble = new BleComm();
-    ble->start();
+    Serial.begin(115200);
+    ble.start();
+    Serial.println("Starting BLE Service...");
 }
 
 void loop() {
+    if (ble.isConnected()) {
+        // Serial.println("connected");
+        // delay(10);
+    } else if (!ble.isConnected()) {
+        // Serial.println("disconnected");
+    }
+    delay(500);
 }

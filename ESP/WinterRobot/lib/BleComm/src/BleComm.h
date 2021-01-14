@@ -9,7 +9,7 @@
 #include <BLEService.h>
 #include <BLEUtils.h>
 
-#include "esp32-hal-log.h"
+#include "RoverC.h"
 
 // ERRONO
 #define ERROR_NO_MESSAGE 1
@@ -27,9 +27,9 @@
 #define DEV_INFO_SERVICE_UUID "ad505ba2-54d1-11eb-ae93-0242ac130002"  // UART service UUID
 
 // CMD Service
-#define CMD_SERVICE_UUID "f6a44d18-6e45-4630-b85e-da3817f10edd"     // UART service UUID
-#define CMD_SERVICE_TX_UUID "f6a44d18-6e45-4631-b85e-da3817f10edd"  // UART service UUID
-#define CMD_SERVICE_RX_UUID "f6a44d18-6e45-4632-b85e-da3817f10edd"  // UART service UUID
+#define CMD_SERVICE_UUID "f6a44d18-6e45-4630-b85e-da3817f10edd"            // UART service UUID
+#define CMD_CHARACTERISTIC_TX_UUID "f6a44d18-6e45-4631-b85e-da3817f10edd"  // UART service UUID
+#define CMD_CHARACTERISTIC_RX_UUID "f6a44d18-6e45-4632-b85e-da3817f10edd"  // UART service UUID
 
 /**
  * @brief Message struct 
@@ -66,33 +66,36 @@ class BleComm {
     static bool oldDeviceConnected;
     static unsigned int messageCount;
 
-    // Server Callbacks
-    class ServerCallbacks : public BLEServerCallbacks {
-        void onConnect(BLEServer* pServer) {
-        }
-        void onDisconnect() {
-        }
-    };
-
-    // Identity Service Callbacks
-    class GetIdServiceCallbacks : public BLECharacteristicCallbacks {
-        void onWrite(BLECharacteristic* pCharacteristic) {
-            // TODO: handle incoming messages
-        }
-    };
-
-    // CMD Service Callbacks
-    class RxCharacteristicCallbacks : public BLECharacteristicCallbacks {
-        void onWrite(BLECharacteristic* pCharacteristic) {
-            // TODO: handle incoming messages
-        }
-    };
-
    public:
+    BleComm();
+    ~BleComm();
     int start();
+    bool isConnected();
     Msg* genMsg(int dev, int characteristic, char** params);
     int sendMsg(Msg* msg);
     int recvMsg();
 };
 
-#endif
+// Server Callbacks
+class ServerCallbacks : public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+    }
+    void onDisconnect() {
+    }
+};
+
+// Identity Service Callbacks
+class GetIdServiceCallbacks : public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic* pCharacteristic) {
+        // TODO: handle incoming messages
+        uint8_t* data = pCharacteristic->getData();
+
+    }
+};
+
+// CMD Service Callbacks
+class RxCharacteristicCallbacks : public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic* pCharacteristic); 
+};
+
+#endif  // BLE_COMM_H
