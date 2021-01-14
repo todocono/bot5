@@ -46,7 +46,7 @@ typedef struct {
 typedef struct {
     uint8_t movement;
     uint8_t speed;
-    uint8_t time;
+    uint32_t time;
 } CONTENT_CHASSIS;
 
 typedef struct {
@@ -76,7 +76,8 @@ enum DEV_ID {
 enum M5_STICK_DEV_ID {
     M5_DEV_BUZZER = 0,
     M5_DEV_SCREEN,
-    M5_DEV_IR
+    M5_DEV_IR,
+    M5_DEV_ULTRASONIC
 };
 
 /**
