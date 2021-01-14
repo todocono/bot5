@@ -34,18 +34,18 @@ int BleComm::start()
 
     // Initialize the BLE Characteristics
 
-    // Tx
-    pTxCharacteristic = pCmdService->createCharacteristic(
+    // Response Characteristic 
+    pRespCharacteristic = pCmdService->createCharacteristic(
         CMD_CHARACTERISTIC_TX_UUID,
         BLECharacteristic::PROPERTY_NOTIFY);
 
-    pTxCharacteristic->addDescriptor(new BLE2902());
+    pRespCharacteristic->addDescriptor(new BLE2902());
 
     // Rx
-    pRxCharacteristic = pCmdService->createCharacteristic(
+    pCMDCharacteristic = pCmdService->createCharacteristic(
         CMD_CHARACTERISTIC_RX_UUID,
         BLECharacteristic::PROPERTY_WRITE);
-    pRxCharacteristic->setCallbacks(new RxCharacteristicCallbacks());
+    pCMDCharacteristic->setCallbacks(new RxCharacteristicCallbacks());
 
     // Start advertising
     pCmdService->start();

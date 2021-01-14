@@ -110,8 +110,8 @@ class BleComm {
     BLEService* pCmdService;
 
     // Characteristics
-    BLECharacteristic* pTxCharacteristic;
-    BLECharacteristic* pRxCharacteristic;
+    BLECharacteristic* pRespCharacteristic;
+    BLECharacteristic* pCMDCharacteristic;
 
     // MISC
     static bool deviceConnected;

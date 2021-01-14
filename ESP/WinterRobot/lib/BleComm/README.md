@@ -10,7 +10,7 @@ The message format is as follows:
 
 All the commands should be sent to CMD Characteristic. The system will first determine which peripheral the message is controlling, then interpret the specific command from the command id. If the command is for a child peripheral device (e.g. the buzzer of the robot), the command for the child device will be included in the content. All the bytes that's not specified will be set to null (0);
 
-## Peripherals
+## Peripherals: To Robot
 
 ### M5 StickC Plus
 
@@ -24,7 +24,7 @@ The peripherals of M5 StickC Plus have their own ids. If the command is for a sp
 
 The content will be different depending on the child peripheral.
 
-#### Screen
+#### LCD
 
 To be implemented
 
@@ -35,6 +35,8 @@ Content format:
 |state|
 |:---:|
 |bool|
+
+If the state is true, the servo opens the claw, otherwise it closes the clas.
 
 #### WiFi
 
@@ -47,6 +49,8 @@ Content format:
 |freq|duration|
 |:--:|:------:|
 |uint16_t|uint32_t|
+
+freq determines the frequency of the buzzer, duration determines the duration of te note.
 
 #### LED
 
@@ -87,3 +91,7 @@ The movement id for the robot is listed below:
 |Turn right|6|
 
 **I2C to be implemented**
+
+## Peripherals: From Robot
+
+To be implemented
