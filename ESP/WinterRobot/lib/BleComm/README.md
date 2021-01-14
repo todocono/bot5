@@ -74,9 +74,9 @@ Peripheral id: 1
 
 The chassis handles all the movement of the robot. The content for command message for the chassis will follow the structure below:
 
-|movement id| speed | time |
-|:---------:|:-----:|:----:|
-|uint8_t | uint8_t | uint32_t|
+|movement id| speed | time | servo channel | servo state |
+|:---------:|:-----:|:----:| :----: | :----: |
+|uint8_t | uint8_t | uint32_t| uint8_t | bool |
 
 The movement id for the robot is listed below:
 
@@ -89,6 +89,9 @@ The movement id for the robot is listed below:
 |Stop|4|
 |Turn left|5|
 |Turn right|6|
+|Move Servo|7|
+
+servo channel/state is only required when controlling the servo.
 
 **I2C to be implemented**
 

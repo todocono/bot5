@@ -34,7 +34,7 @@ int BleComm::start()
 
     // Initialize the BLE Characteristics
 
-    // Response Characteristic 
+    // Response Characteristic
     pRespCharacteristic = pCmdService->createCharacteristic(
         CMD_CHARACTERISTIC_TX_UUID,
         BLECharacteristic::PROPERTY_NOTIFY);
@@ -118,15 +118,16 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic)
     {
     case CHASSIS:
     {
-        Serial.println("Chassis");
+        // Serial.println("Chassis"); TEST
         CONTENT_CHASSIS *content = (CONTENT_CHASSIS *)msg->content;
         unsigned int speed = content->speed;
         unsigned int time = content->time;
+        bool servoState = content->servoState;
         switch (content->movement)
         { // Move Case
         case CMD_MOVE_FORWARD:
         {
-            Serial.println("Forward");
+            // Serial.println("Forward"); TEST
             Move_forward(speed);
             delay(time);
             break;
@@ -167,22 +168,24 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic)
             delay(time);
             break;
         }
+
+        case CMD_SERVO:
+        {
+            unsigned int channel = content->servoChannel;
+            if (content->servoState)
+            {
+                Servo_angle(channel, 90);
+            }
+            else
+            {
+                Servo_angle(channel, 0);
+            }
+            break;
+        }
         }
         break;
     }
-    case SERVO:
-    {
-        CONTENT_SERVO *content = (CONTENT_SERVO *)msg->content;
-        if (content->state)
-        {
-            Servo_angle(1, 90);
-        }
-        else
-        {
-            Servo_angle(1, 0);
-        }
-        break;
-    }
+
     case M5_STICK:
     {
         CONTENT_M5_STICK *content = (CONTENT_M5_STICK *)msg->content;

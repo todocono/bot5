@@ -47,11 +47,9 @@ typedef struct {
     uint8_t movement;
     uint8_t speed;
     uint32_t time;
+    uint8_t servoChannel;
+    bool servoState;
 } CONTENT_CHASSIS;
-
-typedef struct {
-    bool state; // Servo state. 0 for close, 1 for open.
-} CONTENT_SERVO;
 
 typedef struct {
     uint8_t dev;
@@ -91,9 +89,9 @@ enum CMD_MOVE_ID {
     CMD_MOVE_RIGHT,
     CMD_MOVE_STOP,
     CMD_MOVE_TURN_LEFT,
-    CMD_MOVE_TURN_RIGHT
+    CMD_MOVE_TURN_RIGHT,
+    CMD_SERVO
 };
-
 
 /**
  * @brief BLE Communication class
