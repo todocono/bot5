@@ -37,11 +37,62 @@
  */
 typedef struct {
     uint8_t dev;  // device id
-    uint8_t cmd;  // mes sage index
-    uint8_t id;
+    uint8_t cmd;  // command index
+    uint8_t id;   // message id
     uint8_t content[16];  // message
     uint8_t chksm;        // checksum
-} Msg;
+} Message;
+
+typedef struct {
+    uint8_t movement;
+    uint8_t speed;
+    uint8_t time;
+} CONTENT_CHASSIS;
+
+typedef struct {
+    bool state; // Servo state. 0 for close, 1 for open.
+} CONTENT_SERVO;
+
+typedef struct {
+    uint8_t dev;
+    uint8_t content[15];
+} CONTENT_M5_STICK;
+
+typedef struct {
+    uint16_t freq;
+    uint32_t duration;
+} CONTENT_BUZZER;
+
+/**
+ * @brief Device ID
+ */
+
+enum DEV_ID {
+    M5_STICK = 0,
+    CHASSIS,
+    SERVO
+};
+
+enum M5_STICK_DEV_ID {
+    M5_DEV_BUZZER = 0,
+    M5_DEV_SCREEN,
+    M5_DEV_IR
+};
+
+/**
+ * @brief Command ID
+ */
+
+enum CMD_MOVE_ID {
+    CMD_MOVE_FORWARD = 0,
+    CMD_MOVE_BACK,
+    CMD_MOVE_LEFT,
+    CMD_MOVE_RIGHT,
+    CMD_MOVE_STOP,
+    CMD_MOVE_TURN_LEFT,
+    CMD_MOVE_TURN_RIGHT
+};
+
 
 /**
  * @brief BLE Communication class
@@ -71,8 +122,8 @@ class BleComm {
     ~BleComm();
     int start();
     bool isConnected();
-    Msg* genMsg(int dev, int characteristic, char** params);
-    int sendMsg(Msg* msg);
+    Message* genMsg(int dev, int characteristic, char** params);
+    int sendMsg(Message* msg);
     int recvMsg();
 };
 
@@ -89,11 +140,14 @@ class GetIdServiceCallbacks : public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic* pCharacteristic) {
         // TODO: handle incoming messages
         uint8_t* data = pCharacteristic->getData();
-
     }
 };
 
 // CMD Service Callbacks
+class CMDCharacteristicCallbacks : public BLECharacteristicCallbacks {
+    void onWrite(BLECharacteristic* pCharacteristic);
+};
+
 class RxCharacteristicCallbacks : public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic* pCharacteristic); 
 };
