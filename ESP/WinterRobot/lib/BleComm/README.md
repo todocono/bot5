@@ -5,23 +5,23 @@ The material in this documentation is derived from "[root-robot-ble-protocol](ht
 ## Table of Contents
 1. [Packet Components](#packet-components)
 2. [Packet Definitions](#packet-definitions)
-    - [Peripheral 0] - [General](#peripheral-0---general)
-    - [Peripheral 1] - [Motors](#peripheral-1---motors)
-    - [Peripheral 2] - [Servos](#peripheral-2---servos)
-    - [Peripheral 3] - [I2C](#peripheral-3---i2c)
-    - [Peripheral 4] - [Red LED](#peripheral-4---red-led)
-    - [Peripheral 5] - [Buttons](#peripheral-5---buttons)
-    - [Peripheral 6] - [LCD](#peripheral-6---lcd)
-    - [Peripheral 7] - [IMU](#peripheral-7---imu)
-    - [Peripheral 8] - [Temperature](#peripheral-8---temperature)
-    - [Peripheral 9] - [Buzzer](#peripheral-9---buzzer)
-    - [Peripheral 10] - [Infrared Transmitter](#peripheral-10---infrared-transmitter)
-    - [Peripheral 11] - [Microphone](#peripheral-11---microphone)
-    - [Peripheral 12] - [Power Management IC](#peripheral-12---power-management-ic)
-    - [Peripheral 13] - [Grove Port](#peripheral-13---grove-port)
-    - [Peripheral 14] - [WiFi](#peripheral-14---wifi)
-    - [Peripheral 15] - [Camera](#peripheral-15---camera)
-    - [Peripheral 16] - [ESP32](#peripheral-16---grove-port)
+    - [Peripheral 0 - General](#peripheral-0---general)
+    - [Peripheral 1 - Motors](#peripheral-1---motors)
+    - [Peripheral 2 - Servos](#peripheral-2---servos)
+    - [Peripheral 3 - I2C](#peripheral-3---i2c)
+    - [Peripheral 4 - Red LED](#peripheral-4---red-led)
+    - [Peripheral 5 - Buttons](#peripheral-5---buttons)
+    - [Peripheral 6 - LCD](#peripheral-6---lcd)
+    - [Peripheral 7 - IMU](#peripheral-7---imu)
+    - [Peripheral 8 - Temperature](#peripheral-8---temperature)
+    - [Peripheral 9 - Buzzer](#peripheral-9---buzzer)
+    - [Peripheral 10 - Infrared Transmitter](#peripheral-10---infrared-transmitter)
+    - [Peripheral 11 - Microphone](#peripheral-11---microphone)
+    - [Peripheral 12 - Power Management IC](#peripheral-12---power-management-ic)
+    - [Peripheral 13 - Grove Port](#peripheral-13---grove-port)
+    - [Peripheral 14 - WiFi](#peripheral-14---wifi)
+    - [Peripheral 15 - Camera](#peripheral-15---camera)
+    - [Peripheral 16 - ESP32](#peripheral-16---grove-port)
 
 
 ## Packet Components
@@ -62,11 +62,41 @@ Each packet sent or received by the robot is defined below. **To Robot** describ
 
 #### To Robot
 -------------------------------------------------------------------------------
-To be implemented
+
+#### Command 0 - Set Name
+
+Set a new BLE Device Name.
+
+Payload format:
+
+| name |
+|:-------:|
+| string |
+
+- **name**
+    - a UTF-8 encoded string containing the new BLE device name for the robot
+    - name string should be null terminated if less than 16 bytes
+
+#### Command 1 - Get Name
+
+Request a response packet containing BLE device name.
+
 
 #### From Robot
 -------------------------------------------------------------------------------
-To be implemented
+
+#### Command 1 - Get Name
+
+Reponse to Get Name packet. 
+
+Payload format:
+
+| name |
+|:-------:|
+| string |
+
+- **name**
+    - a UTF-8 encoded, null terminating string containing current BLE device name
 
 ### Peripheral 1 - Motors
 
@@ -75,7 +105,7 @@ To be implemented
 
 #### Command 0 - Set Movement and Speed of Motors
 
-Set movement and speed of motors.
+Set the movement and speed of motors.
 
 Payload format:
 
@@ -99,7 +129,7 @@ Payload format:
 
 #### Command 1 - Get Movement and Speed of Motors
 
-Request a response packet with movement id and speed of motors.
+Request a response packet containing movement id and speed of motors.
 
 #### From Robot
 -------------------------------------------------------------------------------
@@ -113,6 +143,12 @@ Payload format:
 | movement id | speed |
 |:-------:|:-----:|
 | uint8_t | uint8_t |
+
+- **movement id**
+    - id corresponding to movement
+
+- **speed**
+    - range -127~127
 
 ### Peripheral 2 - Servos
 
@@ -130,7 +166,7 @@ Payload format:
 | uint8_t | uint8_t |
 
 - **servo channel**
-    - value should be 1 or 2
+    - '1' = Servo 1, '2' = Servo 2
 
 - **angle**
     - angle in units of degree
@@ -138,7 +174,7 @@ Payload format:
 
 #### Command 1 - Get Angle of Servo
 
-Request response packet with the angle of the servo.
+Request response packet containing the angle of the servo.
 
 #### Command 2 - Set Pulse Width of Servo
 
@@ -151,7 +187,7 @@ Payload format:
 | uint8_t | uint16_t |
 
 - **servo channel**
-    - value should be 1 or 2
+    - '1' = Servo 1, '2' = Servo 2
 
 - **angle**
     - angle in units of degree
@@ -159,7 +195,7 @@ Payload format:
 
 #### Command 3 - Get Pulse Width of Servo
 
-Request response packet with the pulse width of the servo.
+Request response packet containing the pulse width of the servo.
 
 #### From Robot
 -------------------------------------------------------------------------------
@@ -174,6 +210,13 @@ Payload format:
 |:-------:|:-----:|
 | uint8_t | uint8_t |
 
+- **servo channel**
+    - '1' = Servo 1, '2' = Servo 2
+
+- **angle**
+    - angle in units of degree
+    - range 0~180
+
 #### Command 3 - Get Pulse Width of Servo
 
 Response to Get Pulse Width of Servo packet.
@@ -183,6 +226,13 @@ Payload format:
 | servo channel | width |
 |:-------:|:-----:|
 | uint8_t | uint16_t |
+
+- **servo channel**
+    - '1' = Servo 1, '2' = Servo 2
+
+- **angle**
+    - angle in units of degree
+    - range 500~2500
 
 ### Peripheral 3 - I2C
 
@@ -200,13 +250,14 @@ Payload format:
 | uint8_t | uint16_t |
 
 - **address**
-    - 0xXX
+    - format is 0xXX
 
 - **data**
+    - data to be written to the ports
 
 #### Command 1 - Get Data for I2C
 
-Request packet with data for I2C.
+Request packet containing data for I2C.
 
 #### From Robot
 -------------------------------------------------------------------------------
@@ -220,6 +271,12 @@ Payload format:
 | address | data |
 |:-------:|:-----:|
 | uint8_t | uint16_t |
+
+- **address**
+    - format is 0xXX
+
+- **data**
+    - data written to the ports
 
 ### Peripheral 4 - Red LED
 
@@ -236,28 +293,122 @@ Payload format:
 |:-------:|
 | uint8_t |
 
+- **brightness**
+    - range 0~255
+
 #### Command 1 - Get Brightness of LED
 
-Request brightness of the red LED in M5StickC Plus.
+Request packet containing brightness of the red LED in M5StickC Plus.
 
 #### From Robot
 -------------------------------------------------------------------------------
+
+#### Command 1 - Get Brightness of LED Response
+
+Response to Get Brightness of LED packet.
+
+Payload format:
+
+| brightness |
+|:-------:|
+| uint8_t |
+
+- **brightness**
+    - range 0~255
 
 ### Peripheral 5 - Buttons
 
 #### To Robot
 -------------------------------------------------------------------------------
 
-#### Command 0 - Get Status of Button A
+#### Command 0 - Get State of Button A
 
-#### Command 1 - Get Status of Button B
+Request packet containing state of button A.
+
+Payload format:
+
+| state |
+|:-------:|
+| uint8_t |
+
+- **state**
+    - '0' = not pressed, '1' = pressed
+
+#### Command 1 - Get State of Button B
+
+Request packet containing state of button B.
+
+Payload format:
+
+| state |
+|:-------:|
+| uint8_t |
+
+- **state**
+    - '0' = not pressed, '1' = pressed
 
 #### From Robot
 -------------------------------------------------------------------------------
 
+#### Command 0 - Get Status of Button A Response
+
+Response to Get Status of Button A packet.
+
+Payload format:
+
+| state |
+|:-------:|
+| uint8_t |
+
+- **state**
+    - '0' = not pressed, '1' = pressed
+
+#### Command 1 - Get Status of Button B Response
+
+Response to Get Status of Button B packet.
+
+Payload format:
+
+| state |
+|:-------:|
+| uint8_t |
+
+- **state**
+    - '0' = not pressed, '1' = pressed
+
 ### Peripheral 6 - LCD
 
 #### To Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - QR Code
+
+Generate QR Code for a URL to display on LCD.
+
+| url | x | y | width | version |
+|:---:|:---:|:---:|:---:|:------:|
+| string | uint16_t | uint16_t | uint8_t | uint8_t |
+
+- **url**
+    - a UTF-8 encoded string containing the URL
+
+- **x**
+    - display QR Code at specified x coordinate
+    - default value is 50
+
+- **y**
+    - display QR Code at specified y coordinate
+    - default value is 10
+
+- **width**
+    - specify width of QR Code
+    - default value is 220
+
+- **version**
+    - specify QR Code version
+    - default value is 6
+
+#### From Robot
 -------------------------------------------------------------------------------
 
 To be implemented
@@ -267,36 +418,93 @@ To be implemented
 #### To Robot
 -------------------------------------------------------------------------------
 
-#### Command 0 - Poll
+#### Command 0 - Poll Gyroscope 
 
-Poll data from gyroscope and accelerometer.
+Poll gyroscope for x, y, z data.
 
-To be implemented
+#### Command 1 - Poll Accelerometer
 
-#### Command 1 - Configuration
+Poll accelerometer for x, y, z data.
 
-Configure IMU.
+#### Command 2 - Poll AHRS
 
-To be implemented
+Poll attitude and heading reference system for pitch, roll, yaw data. 
 
-#### From Robot
--------------------------------------------------------------------------------
+#### Command 3 - Poll Temperature
 
-### Peripheral 8 - Temperature
+Poll temperature sensor for temperature.
 
-#### To Robot
--------------------------------------------------------------------------------
+#### Command 4 - Configuration
 
-#### Command 0 - Poll
-
-Poll data from temperature sensor.
-
-To be implemented
+Configure the IMU. To be implemented
 
 #### From Robot
 -------------------------------------------------------------------------------
 
-### Peripheral 9 - Buzzer
+#### Command 0 - Poll Gyroscope Response
+
+Response to Poll Gyroscope packet. 
+
+| gyroX | gyroY | gyroZ |
+|:-----:|:-----:|:-----:|
+| float | float | float |
+
+- **gyroX**
+    - x-axis value for gyroscope
+
+- **gyroY**
+    - y-axis value for gyroscope
+
+- **gyroZ**
+    - z-axis value for gyroscope
+
+#### Command 1 - Poll Accelerometer Response
+
+Response to Poll Accelerometer packet. 
+
+| accX | accY | accZ |
+|:-----:|:-----:|:-----:|
+| float | float | float |
+
+- **accX**
+    - x-axis value for accelerometer
+
+- **accY**
+    - y-axis value for accelerometer
+
+- **accZ**
+    - z-axis value for accelerometer
+
+#### Command 2 - Poll AHRS Response
+
+Response to Poll AHRS packet. 
+
+| pitch | roll | yaw |
+|:-----:|:-----:|:-----:|
+| float | float | float |
+
+- **pitch**
+    - pitch value for AHRS
+
+- **roll**
+    - roll value for AHRS
+
+- **yaw**
+    - yaw value for AHRS
+
+#### Command 3 - Poll Temperature Response
+
+Response to Poll Temperature packet. 
+
+| temp |
+|:-----:|
+| float | 
+
+- **temp**
+    - temperature in units of celsius
+
+
+### Peripheral 8 - Buzzer
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -338,7 +546,7 @@ Mute the buzzer in M5StickC Plus.
 #### From Robot
 -------------------------------------------------------------------------------
 
-### Peripheral 10 - Infrared Transmitter
+### Peripheral 9 - Infrared Transmitter
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -352,7 +560,7 @@ Mute the buzzer in M5StickC Plus.
 #### From Robot
 -------------------------------------------------------------------------------
 
-### Peripheral 11 - Microphone
+### Peripheral 10 - Microphone
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -362,7 +570,7 @@ Mute the buzzer in M5StickC Plus.
 #### From Robot
 -------------------------------------------------------------------------------
 
-### Peripheral 12 - Power Management IC
+### Peripheral 11 - Power Management IC
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -374,7 +582,7 @@ To be implemented
 
 To be implemented
 
-### Peripheral 13 - Grove Port
+### Peripheral 12 - Grove Port
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -386,7 +594,7 @@ To be implemented
 
 To be implemented.
 
-### Peripheral 14 - WiFi
+### Peripheral 13 - WiFi
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -398,7 +606,7 @@ To be implemented
 
 To be implemente
 
-### Peripheral 15 - Camera
+### Peripheral 14 - Camera
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -410,7 +618,7 @@ To be implemented
 
 To be implemented
 
-### Peripheral 16 - ESP32
+### Peripheral 15 - ESP32
 
 #### To Robot
 -------------------------------------------------------------------------------
