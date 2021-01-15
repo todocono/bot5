@@ -1,36 +1,36 @@
 # BLE Communication Protocol Documentation 
 
-## Packet Format
+The material in this documentation is derived from "root-robot-ble-protocol" by RootRobotics. "root-robot-ble-protocol" is licensed under CC BY 4.0.
+
+## Packet Components
 
 The BLE packets for communication are 20 bytes long and the format is as follows:
 
 **Peripheral ID** (1 byte)
 
-The peripherals of the robot (M5 StickC Plus + RoverC Pro) each have their own ID. Each peripheral is a subsystem of the robot (e.g. the buzzer of the robot) that only accepts packets that pertain to itself. 
+The peripherals of the robot (M5StickC-Plus + RoverC-Pro) each have their own ID. Each peripheral is a subsystem of the robot (e.g. the buzzer of the robot) that only accepts packets that pertain to itself. 
 
 **Command ID** (1 byte)
 
-Each peripheral implements a series of commands. The command number tells each peripheral how to interpret the contents of the payload. 
+Each peripheral implements a series of commands. The command number tells each peripheral how to interpret the contents of the payload. Some commands request the robot to send a response packet.
 
 **Packet ID** (1 byte)
 
-Each packet has an identifying number. This number begins at zero and increments each time a packet is sent to the robot. When the number reaches a value of 255, it is resetted to 0. 
+Each packet has an identifying number. This number begins at zero and increments each time a packet is sent to the robot. When the number reaches a value of 255, it is resetted to 0. In cases where the packet is a response to a previous request, the packet ID will match the ID from the request. 
 
 **Payload** (16 bytes)
 
-The content of the packet payload is data that can be up to 16 bytes. All bytes not specified will be set to null (0).
+The content of the packet payload can be up to 16 bytes. All bytes not specified will be set to null (0). Values are always big endian and are packed in a left justified manner on an 8-bit boundary.
 
 **Checksum** (1 byte)
 
-The last byte of each packet is a checksum calculated from the previous 19 bytes. This is used to check data integrity. 
+The last byte of each packet is a checksum calculated from the previous 19 bytes. This is used to check data integrity. A checksum value of zero is always accepted by the robot if a data integrity check is not needed. 
 
 **Packet Format**
 
 |peripheral id|command id| packet id | payload | CRC |
 |:----:|:----:|:-----:|:----:|:-----:| 
 |uint8_t | uint8_t | uint8_t | uint8_t[16] | uint8_t |
-
-All the commands should be sent to CMD Characteristic. The system will first determine which peripheral the message is controlling, then interpret the specific command from the command id. If the command is for a child peripheral device (e.g. the buzzer of the robot), the command for the child device will be included in the content. 
 
 ## Packet Definitions
 
@@ -48,7 +48,7 @@ To be implemented
 
 ##### Command 0 - Set Direction and Speed of Motors
 
-Set the movement of the robot. 
+Set movement and speed of motors.
 
 Payload format:
 
