@@ -47,8 +47,8 @@ int BleComm::start() {
     // Start advertising
     pCmdService->start();
     BLEAdvertising *pAdvertising = pServer->getAdvertising();
-    pAdvertising->addServiceUUID(IDENTITY_SERVICE_UUID);
-    pAdvertising->addServiceUUID(DEV_INFO_SERVICE_UUID);
+    // pAdvertising->addServiceUUID(IDENTITY_SERVICE_UUID);
+    // pAdvertising->addServiceUUID(DEV_INFO_SERVICE_UUID);
     pAdvertising->addServiceUUID(CMD_SERVICE_UUID);
     pAdvertising->setScanResponse(true);
     BLEDevice::startAdvertising();
@@ -71,8 +71,8 @@ bool BleComm::isConnected() {
  * @param params 
  * @return Msg * 
  */
-Message *BleComm::genMsg(int dev, int characteristic, char **params) {
-    Message *msg = new Message;
+MESSAGE *BleComm::genMsg(int dev, int characteristic, char **params) {
+    MESSAGE *msg = new MESSAGE;
     return msg;
 }
 
@@ -82,7 +82,7 @@ Message *BleComm::genMsg(int dev, int characteristic, char **params) {
  * @param msg 
  * @return int 
  */
-int BleComm::sendMsg(Message *msg) {
+int BleComm::sendMsg(MESSAGE *msg) {
     // TODO
     return 0;
 }
@@ -104,90 +104,113 @@ int BleComm::recvMsg() {
  * Handle incoming message.
  */
 void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
-    Message *msg = (Message *)pCharacteristic->getData();
+    MESSAGE *msg = (MESSAGE *)pCharacteristic->getData();
     // TODO: error check
-    switch (msg->dev) {
-        case MOTOR: {
-            // Serial.println("Chassis"); TEST
-            CONTENT_MOTOR *content = (CONTENT_MOTOR *)msg->content;
-            unsigned int speed = content->speed;
-            unsigned int time = content->time;
-            bool servoState = content->servoState;
-            switch (content->movement) {  // Move Case
-                case CMD_MOVE_FORWARD: {
-                    // Serial.println("Forward"); TEST
-                    Move_forward(speed);
-                    delay(time);
+    switch (msg->peripheral) {
+        case PERI_GENERAL: {
+            PAYLOAD_GENERAL *payload = (PAYLOAD_GENERAL *)msg->payload;
+            switch (msg->cmd) {
+                case CMD_GENERAL_SET_NAME: {
                     break;
                 }
-                case CMD_MOVE_BACK: {
-                    Move_back(speed);
-                    delay(time);
+                case CMD_GENERAL_GET_NAME: {
                     break;
                 }
-                case CMD_MOVE_LEFT: {
-                    Move_left(speed);
-                    delay(time);
-                    break;
-                }
-                case CMD_MOVE_RIGHT: {
-                    Move_right(speed);
-                    delay(time);
-                    break;
-                }
-                case CMD_MOVE_TURN_LEFT: {
-                    Move_turnleft(speed);
-                    delay(time);
-                    break;
-                }
-                case CMD_MOVE_TURN_RIGHT: {
-                    Move_turnright(speed);
-                    delay(time);
-                    break;
-                }
-                case CMD_MOVE_STOP: {
-                    Move_stop(speed);
-                    delay(time);
-                    break;
-                }
-
-                case CMD_SERVO: {
-                    unsigned int channel = content->servoChannel;
-                    if (content->servoState) {
-                        Servo_angle(channel, 90);
-                    } else {
-                        Servo_angle(channel, 0);
+                default:
+                    Serial.println("How did you get here?");
+            }
+        }
+        case PERI_MOTOR: {
+            PAYLOAD_MOTOR *payload = (PAYLOAD_MOTOR *)msg->payload;
+            switch (msg->cmd) {
+                case CMD_MOTOR_SET_MOVEMENT_SPEED: {
+                    switch (payload->movement_id) {
+                        case MOTOR_MOVEMENT_FORWARD:
+                            Move_forward(payload->speed);
+                            break;
+                        case MOTOR_MOVEMENT_BACK:
+                            Move_back(payload->speed);
+                            break;
+                        case MOTOR_MOVEMENT_LEFT:
+                            Move_left(payload->speed);
+                            break;
+                        case MOTOR_MOVEMENT_RIGHT:
+                            Move_right(payload->speed);
+                            break;
+                        case MOTOR_MOVEMENT_TURN_LEFT:
+                            Move_turnleft(payload->speed);
+                            break;
+                        case MOTOR_MOVEMENT_TURN_RIGHT:
+                            Move_turnright(payload->speed);
+                            break;
+                        case MOTOR_MOVEMENT_STOP:
+                            Move_stop(payload->speed);
+                        default:
+                            break;
                     }
                     break;
                 }
+                case CMD_MOTOR_GET_MOVEMENT_SPEED: {
+                    //TODO
+                    break;
+                }
+                default:
+                    break;
             }
             break;
         }
-
-        case BUZZER: {
-            CONTENT_BUZZER *buzzer = (CONTENT_BUZZER *) msg->content;
-            M5.Beep.tone(buzzer->freq, buzzer->duration);
+        case PERI_SERVO: {
+            
+        }
+        case PERI_BUZZER: {
+            PAYLOAD_BUZZER *buzzer = (PAYLOAD_BUZZER *)msg->payload;
+            switch (msg->cmd) {
+                case CMD_BUZZER_SET_FREQ_DURATION: {
+                    // TODO
+                    break;
+                }
+                case CMD_BUZZER_SET_VOLUME: {
+                    // TODO
+                    break;
+                }
+                case CMD_BUZZER_GET_FREQ_DURATION: {
+                    // TODO
+                    break;
+                }
+                case CMD_BUZZER_GET_VOLUME: {
+                    // TODO
+                    break;
+                }
+                default:
+                    Serial.println("How did you get here?");
+            }
             break;
         }
-
-        case LED: {
-            CONTENT_LED *content = (CONTENT_LED *) msg->content;
-            if (msg->cmd == CMD_LED_READ) {
-                // TODO: handle send message;
-            } else if (msg->cmd == CMD_LED_WRITE) {
-                if (content->value) {
-                    digitalWrite(LED_PIN, LOW);
-                    Serial.println("LED on");
-                } else {
-                    digitalWrite(LED_PIN, HIGH);
-                    Serial.println("LED off");
+        case PERI_LED: {
+            PAYLOAD_LED *payload = (PAYLOAD_LED *)msg->payload;
+            switch (msg->cmd) {
+                case CMD_LED_SET_BRIGHTNESS: {
+                    ledcWrite(10, payload->value);
+                    Serial.print("Setting Brightness: ");
+                    Serial.print(payload->value);
+                    break;
                 }
-            } else {
-                Serial.println("How did you get here?");
+                case CMD_LED_GET_BRIGHTNESS: {
+                    // TODO: handle send message;
+                    Serial.println("TODO: handle response message");
+                    break;
+                }
+                default:
+                    Serial.println("How did you get here?");
             }
         }
         default: {
-            Move_stop(0);
+            Serial.println(msg->peripheral);
+            Serial.println(msg->cmd);
+            Serial.println(msg->count);
+            for (int i = 0; i < 16; ++i)
+                Serial.println(msg->payload[i]);
+            Serial.println(msg->chksm);
         }
     }
 }
@@ -196,7 +219,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
  * @brief Handling RX message
  * @author Momoe Nomoto
  */
-
 void RxCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
     std::string value = pCharacteristic->getValue();
     //data = pCharacteristic->getData();

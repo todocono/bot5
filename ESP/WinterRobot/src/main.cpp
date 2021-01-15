@@ -11,7 +11,10 @@ void setup()
     Serial.begin(115200);
     M5.begin();
 
+    // caution: the pin is pulled up, set HIGH to turn off the LED
     pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, HIGH); 
+
     RoverC_Init();
     ble.start();
 
