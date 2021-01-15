@@ -1,6 +1,28 @@
 # BLE Communication Protocol Documentation 
 
-The material in this documentation is derived from "[root-robot-ble-protocol](https://github.com/RootRobotics/root-robot-ble-protocol)" by RootRobotics. "root-robot-ble-protocol" is licensed under CC BY 4.0.
+The material in this documentation is derived from "[root-robot-ble-protocol](https://github.com/RootRobotics/root-robot-ble-protocol)" by RootRobotics. "[root-robot-ble-protocol](https://github.com/RootRobotics/root-robot-ble-protocol)" is licensed under CC BY 4.0.
+
+## Table of Contents
+1. [Packet Components](#packet-components)
+2. [Packet Definitions](#packet-definitions)
+    - [Peripheral 0] - [General](#peripheral-0---general)
+    - [Peripheral 1] - [Motors](#peripheral-1---motors)
+    - [Peripheral 2] - [Servos](#peripheral-2---servos)
+    - [Peripheral 3] - [I2C](#peripheral-3---i2c)
+    - [Peripheral 4] - [Red LED](#peripheral-4---red-led)
+    - [Peripheral 5] - [Buttons](#peripheral-5---buttons)
+    - [Peripheral 6] - [LCD](#peripheral-6---lcd)
+    - [Peripheral 7] - [IMU](#peripheral-7---imu)
+    - [Peripheral 8] - [Temperature](#peripheral-8---temperature)
+    - [Peripheral 9] - [Buzzer](#peripheral-9---buzzer)
+    - [Peripheral 10] - [Infrared Transmitter](#peripheral-10---infrared-transmitter)
+    - [Peripheral 11] - [Microphone](#peripheral-11---microphone)
+    - [Peripheral 12] - [Power Management IC](#peripheral-12---power-management-ic)
+    - [Peripheral 13] - [Grove Port](#peripheral-13---grove-port)
+    - [Peripheral 14] - [WiFi](#peripheral-14---wifi)
+    - [Peripheral 15] - [Camera](#peripheral-15---camera)
+    - [Peripheral 16] - [ESP32](#peripheral-16---grove-port)
+
 
 ## Packet Components
 
@@ -34,7 +56,7 @@ The last byte of each packet is a checksum calculated from the previous 19 bytes
 
 ## Packet Definitions
 
-Each packet sent or received by the robot is defined below. To Robot describes the packet from the P5 website to the robot. From Robot describes the packet from the robot to the P5 website.
+Each packet sent or received by the robot is defined below. **To Robot** describes the packet from the P5 website to the robot. **From Robot** describes the packet from the robot to the P5 website.
 
 ### Peripheral 0 - General
 
@@ -316,7 +338,7 @@ Mute the buzzer in M5StickC Plus.
 #### From Robot
 -------------------------------------------------------------------------------
 
-#### Peripheral 10 - Infrared Transmitter
+### Peripheral 10 - Infrared Transmitter
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -352,7 +374,7 @@ To be implemented
 
 To be implemented
 
-### Peripheral 13 - Grove Ports
+### Peripheral 13 - Grove Port
 
 #### To Robot
 -------------------------------------------------------------------------------
