@@ -57,7 +57,7 @@ Payload format:
 | uint8_t | uint8_t |
 
 - **movement id**
-    - | Command | ID |
+    | Command | ID |
     |:-------:|:--:|
     |Forward|0| 
     |Back|1|
