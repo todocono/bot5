@@ -13,15 +13,14 @@ The material in this documentation is derived from "[root-robot-ble-protocol](ht
     - [Peripheral 5 - Buttons](#peripheral-5---buttons)
     - [Peripheral 6 - LCD](#peripheral-6---lcd)
     - [Peripheral 7 - IMU](#peripheral-7---imu)
-    - [Peripheral 8 - Temperature](#peripheral-8---temperature)
-    - [Peripheral 9 - Buzzer](#peripheral-9---buzzer)
-    - [Peripheral 10 - Infrared Transmitter](#peripheral-10---infrared-transmitter)
-    - [Peripheral 11 - Microphone](#peripheral-11---microphone)
-    - [Peripheral 12 - Power Management IC](#peripheral-12---power-management-ic)
-    - [Peripheral 13 - Grove Port](#peripheral-13---grove-port)
-    - [Peripheral 14 - WiFi](#peripheral-14---wifi)
-    - [Peripheral 15 - Camera](#peripheral-15---camera)
-    - [Peripheral 16 - ESP32](#peripheral-16---grove-port)
+    - [Peripheral 8 - Buzzer](#peripheral-8---buzzer)
+    - [Peripheral 9 - Infrared Transmitter](#peripheral-9---infrared-transmitter)
+    - [Peripheral 10 - Microphone](#peripheral-10---microphone)
+    - [Peripheral 11 - Power Management IC](#peripheral-11---power-management-ic)
+    - [Peripheral 12 - Grove Port](#peripheral-12---grove-port)
+    - [Peripheral 13 - WiFi](#peripheral-13---wifi)
+    - [Peripheral 14 - Camera](#peripheral-14---camera)
+    - [Peripheral 15 - ESP32](#peripheral-15---grove-port)
 
 
 ## Packet Components
