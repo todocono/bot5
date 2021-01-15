@@ -2,12 +2,10 @@
 
 #include "BleComm.h"
 
-BleComm::BleComm()
-{
+BleComm::BleComm() {
 }
 
-BleComm::~BleComm()
-{
+BleComm::~BleComm() {
 }
 
 /**
@@ -15,8 +13,7 @@ BleComm::~BleComm()
  * 
  * @return int 
  */
-int BleComm::start()
-{
+int BleComm::start() {
     // Create the BLE Device
     uint64_t chipid = ESP.getEfuseMac();
     String blename = "BOT5-" + String((uint32_t)(chipid >> 32), HEX);
@@ -64,8 +61,7 @@ int BleComm::start()
  * @return true connected
  * @return false not connected
  */
-bool BleComm::isConnected()
-{
+bool BleComm::isConnected() {
     return pServer->getConnectedCount() > 0;
 }
 
@@ -75,8 +71,7 @@ bool BleComm::isConnected()
  * @param params 
  * @return Msg * 
  */
-Message *BleComm::genMsg(int dev, int characteristic, char **params)
-{
+Message *BleComm::genMsg(int dev, int characteristic, char **params) {
     Message *msg = new Message;
     return msg;
 }
@@ -87,8 +82,7 @@ Message *BleComm::genMsg(int dev, int characteristic, char **params)
  * @param msg 
  * @return int 
  */
-int BleComm::sendMsg(Message *msg)
-{
+int BleComm::sendMsg(Message *msg) {
     // TODO
     return 0;
 }
@@ -98,8 +92,7 @@ int BleComm::sendMsg(Message *msg)
  * 
  * @return int 
  */
-int BleComm::recvMsg()
-{
+int BleComm::recvMsg() {
     // TODO
     return 0;
 }
@@ -110,100 +103,92 @@ int BleComm::recvMsg()
  * 
  * Handle incoming message.
  */
-void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic)
-{
+void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
     Message *msg = (Message *)pCharacteristic->getData();
     // TODO: error check
-    switch (msg->dev)
-    {
-    case CHASSIS:
-    {
-        // Serial.println("Chassis"); TEST
-        CONTENT_CHASSIS *content = (CONTENT_CHASSIS *)msg->content;
-        unsigned int speed = content->speed;
-        unsigned int time = content->time;
-        bool servoState = content->servoState;
-        switch (content->movement)
-        { // Move Case
-        case CMD_MOVE_FORWARD:
-        {
-            // Serial.println("Forward"); TEST
-            Move_forward(speed);
-            delay(time);
-            break;
-        }
-        case CMD_MOVE_BACK:
-        {
-            Move_back(speed);
-            delay(time);
-            break;
-        }
-        case CMD_MOVE_LEFT:
-        {
-            Move_left(speed);
-            delay(time);
-            break;
-        }
-        case CMD_MOVE_RIGHT:
-        {
-            Move_right(speed);
-            delay(time);
-            break;
-        }
-        case CMD_MOVE_TURN_LEFT:
-        {
-            Move_turnleft(speed);
-            delay(time);
-            break;
-        }
-        case CMD_MOVE_TURN_RIGHT:
-        {
-            Move_turnright(speed);
-            delay(time);
-            break;
-        }
-        case CMD_MOVE_STOP:
-        {
-            Move_stop(speed);
-            delay(time);
-            break;
-        }
+    switch (msg->dev) {
+        case MOTOR: {
+            // Serial.println("Chassis"); TEST
+            CONTENT_MOTOR *content = (CONTENT_MOTOR *)msg->content;
+            unsigned int speed = content->speed;
+            unsigned int time = content->time;
+            bool servoState = content->servoState;
+            switch (content->movement) {  // Move Case
+                case CMD_MOVE_FORWARD: {
+                    // Serial.println("Forward"); TEST
+                    Move_forward(speed);
+                    delay(time);
+                    break;
+                }
+                case CMD_MOVE_BACK: {
+                    Move_back(speed);
+                    delay(time);
+                    break;
+                }
+                case CMD_MOVE_LEFT: {
+                    Move_left(speed);
+                    delay(time);
+                    break;
+                }
+                case CMD_MOVE_RIGHT: {
+                    Move_right(speed);
+                    delay(time);
+                    break;
+                }
+                case CMD_MOVE_TURN_LEFT: {
+                    Move_turnleft(speed);
+                    delay(time);
+                    break;
+                }
+                case CMD_MOVE_TURN_RIGHT: {
+                    Move_turnright(speed);
+                    delay(time);
+                    break;
+                }
+                case CMD_MOVE_STOP: {
+                    Move_stop(speed);
+                    delay(time);
+                    break;
+                }
 
-        case CMD_SERVO:
-        {
-            unsigned int channel = content->servoChannel;
-            if (content->servoState)
-            {
-                Servo_angle(channel, 90);
-            }
-            else
-            {
-                Servo_angle(channel, 0);
+                case CMD_SERVO: {
+                    unsigned int channel = content->servoChannel;
+                    if (content->servoState) {
+                        Servo_angle(channel, 90);
+                    } else {
+                        Servo_angle(channel, 0);
+                    }
+                    break;
+                }
             }
             break;
         }
-        }
-        break;
-    }
 
-    case M5_STICK:
-    {
-        CONTENT_M5_STICK *content = (CONTENT_M5_STICK *)msg->content;
-        switch (content->dev)
-        {
-        case M5_DEV_BUZZER:
-        {
-            CONTENT_BUZZER *buzzer = (CONTENT_BUZZER *)content->content;
+        case BUZZER: {
+            CONTENT_BUZZER *buzzer = (CONTENT_BUZZER *) msg->content;
             M5.Beep.tone(buzzer->freq, buzzer->duration);
             break;
         }
+
+        case LED: {
+            CONTENT_LED *content = (CONTENT_LED *) msg->content;
+            if (msg->cmd == CMD_LED_READ) {
+                // TODO: handle send message;
+            } else if (msg->cmd == CMD_LED_WRITE) {
+                if (content->value) {
+                    digitalWrite(LED_PIN, LOW);
+                    Serial.println("LED on");
+                } else {
+                    digitalWrite(LED_PIN, HIGH);
+                    Serial.println("LED off");
+                }
+            } else {
+                Serial.println("How did you get here?");
+            }
         }
-        break;
-    }
-    default:
-    {
-        Move_stop(0);
-    }
+        default: {
+            Move_stop(0);
+        }
     }
 }
 
@@ -212,8 +197,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic)
  * @author Momoe Nomoto
  */
 
-void RxCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic)
-{
+void RxCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
     std::string value = pCharacteristic->getValue();
     //data = pCharacteristic->getData();
 
@@ -224,116 +208,74 @@ void RxCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic)
     value = value.substr(value.find(' ') + 1);
     std::string param2;
     std::string param3;
-    if (value.length() > 3)
-    {
+    if (value.length() > 3) {
         param2 = value.substr(0, value.find(' '));
         param3 = value.substr(value.find(' ') + 1);
-    }
-    else
-    {
+    } else {
         param2 = value;
     }
 
-    if (param1.at(0) == 'w')
-    {
-        if (param3.empty())
-        {
+    if (param1.at(0) == 'w') {
+        if (param3.empty()) {
             Move_forward(atoi(param2.c_str()));
-        }
-        else
-        {
+        } else {
             Move_forward(atoi(param2.c_str()));
             delay(atoi(param3.c_str()));
             Move_stop(0);
         }
-    }
-    else if (param1.at(0) == 's')
-    {
+    } else if (param1.at(0) == 's') {
         Move_stop(0);
-    }
-    else if (param1.at(0) == 'x')
-    {
-        if (param3.empty())
-        {
+    } else if (param1.at(0) == 'x') {
+        if (param3.empty()) {
             Move_back(atoi(param2.c_str()));
-        }
-        else
-        {
+        } else {
             Move_back(atoi(param2.c_str()));
             delay(atoi(param3.c_str()));
             Move_stop(0);
         }
-    }
-    else if (param1.at(0) == 'a')
-    {
-        if (param3.empty())
-        {
+    } else if (param1.at(0) == 'a') {
+        if (param3.empty()) {
             Move_left(atoi(param2.c_str()));
-        }
-        else
-        {
+        } else {
             Move_left(atoi(param2.c_str()));
             delay(atoi(param3.c_str()));
             Move_stop(0);
         }
-    }
-    else if (param1.at(0) == 'd')
-    {
-        if (param3.empty())
-        {
+    } else if (param1.at(0) == 'd') {
+        if (param3.empty()) {
             Move_right(atoi(param2.c_str()));
-        }
-        else
-        {
+        } else {
             Move_right(atoi(param2.c_str()));
             delay(atoi(param3.c_str()));
             Move_stop(0);
         }
-    }
-    else if (param1.at(0) == 'q')
-    {
-        if (param3.empty())
-        {
+    } else if (param1.at(0) == 'q') {
+        if (param3.empty()) {
             Move_turnleft(atoi(param2.c_str()));
-        }
-        else
-        {
+        } else {
             Move_turnleft(atoi(param2.c_str()));
             delay(atoi(param3.c_str()));
             Move_stop(0);
         }
-    }
-    else if (param1.at(0) == 'e')
-    {
-        if (param3.empty())
-        {
+    } else if (param1.at(0) == 'e') {
+        if (param3.empty()) {
             Move_turnright(atoi(param2.c_str()));
-        }
-        else
-        {
+        } else {
             Move_turnright(atoi(param2.c_str()));
             delay(atoi(param3.c_str()));
             Move_stop(0);
         }
-    }
-    else if (param1.at(0) == 'z')
-    {
+    } else if (param1.at(0) == 'z') {
         Servo_angle(1, 90);
-    }
-    else if (param1.at(0) == 'c')
-    {
+    } else if (param1.at(0) == 'c') {
         Servo_angle(1, 0);
-    }
-    else if (param1.at(0) == 'b')
-    {
+    } else if (param1.at(0) == 'b') {
         // ( uint16_t freq, uint16_t duration);
         M5.Beep.tone(atoi(param2.c_str()), atoi(param3.c_str()));
         //      while (true){
         //        M5.Beep.update();
         //      }
-    }
-    else
-    {
+    } else {
         Move_stop(100);
     }
 }

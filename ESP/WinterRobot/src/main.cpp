@@ -11,6 +11,7 @@ void setup()
     Serial.begin(115200);
     M5.begin();
 
+    pinMode(LED_PIN, OUTPUT);
     RoverC_Init();
     ble.start();
 
