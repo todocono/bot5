@@ -1,102 +1,246 @@
-# BLE Communication
+# BLE Communication Protocol Documentation 
 
-## Message format
+## Packet Format
 
-The message format is as follows:
+The BLE packets for communication are 20 bytes long and the format is as follows:
 
-|peripheral id|command id| content | CRC |
-|:----:|:----:|:-----:|:-----:| 
-|uint8_t | uint8_t | uint8_t[16] | uint8_t |
+**Peripheral ID** (1 byte)
 
-All the commands should be sent to CMD Characteristic. The system will first determine which peripheral the message is controlling, then interpret the specific command from the command id. If the command is for a child peripheral device (e.g. the buzzer of the robot), the command for the child device will be included in the content. All the bytes that's not specified will be set to null (0);
+The peripherals of the robot (M5 StickC Plus + RoverC Pro) each have their own ID. Each peripheral is a subsystem of the robot (e.g. the buzzer of the robot) that only accepts packets that pertain to itself. 
 
-## Peripherals: To Robot
+**Command ID** (1 byte)
 
-This part describes the message from the P5 website to the robot.
+Each peripheral implements a series of commands. The command number tells each peripheral how to interpret the contents of the payload. 
 
-### M5 StickC Plus
+**Packet ID** (1 byte)
 
-Peripheral id: 0.
+Each packet has an identifying number. This number begins at zero and increments each time a packet is sent to the robot. When the number reaches a value of 255, it is resetted to 0. 
 
-The peripherals of M5 StickC Plus have their own ids. If the command is for a specific module of M5 StickC Plus, the content of the message will be of CONTENT_M5_STICK struct following this format:
+**Payload** (16 bytes)
 
-| child-peripheral id| content |
-|:------------------:|:-------:|
-|uint8_t| uint8_t[15] |
+The content of the packet payload is data that can be up to 16 bytes. All bytes not specified will be set to null (0).
 
-The content will be different depending on the child peripheral.
+**Checksum** (1 byte)
 
-#### LCD
+The last byte of each packet is a checksum calculated from the previous 19 bytes. This is used to check data integrity. 
 
-To be implemented
+**Packet Format**
 
-#### Servo
+|peripheral id|command id| packet id | payload | CRC |
+|:----:|:----:|:-----:|:----:|:-----:| 
+|uint8_t | uint8_t | uint8_t | uint8_t[16] | uint8_t |
 
-Content format:
+All the commands should be sent to CMD Characteristic. The system will first determine which peripheral the message is controlling, then interpret the specific command from the command id. If the command is for a child peripheral device (e.g. the buzzer of the robot), the command for the child device will be included in the content. 
 
-|state|
-|:---:|
-|bool|
+## Packet Definitions
 
-If the state is true, the servo opens the claw, otherwise it closes the clas.
+Each packet sent or received by the robot is defined below. 
 
-#### WiFi
+### Peripherals: To Robot
 
-To be implemented
+This section describes the packet from the P5 website to the robot.
 
-#### Buzzer
-
-Content format:
-
-|freq|duration|
-|:--:|:------:|
-|uint16_t|uint32_t|
-
-freq determines the frequency of the buzzer, duration determines the duration of te note.
-
-#### LED
+#### Peripheral 0 - General
 
 To be implemented
 
-#### Ultrasonic Sensor
+#### Peripheral 1 - Motors
+
+##### Command 0 - Set Direction and Speed of Motors
+
+Set the movement of the robot. 
+
+Payload format:
+
+| movement id | speed |
+|:-------:|:-----:|
+| uint8_t | uint8_t |
+
+- **movement id**
+    - | Command | ID |
+    |:-------:|:--:|
+    |Forward|0| 
+    |Back|1|
+    |Left|2|
+    |Right|3|
+    |Stop|4|
+    |Turn left|5|
+    |Turn right|6|
+
+- **speed** 
+    - range -127~127
+
+#### Peripheral 2 - Servos
+
+##### Command 0 - Set Angle of Servo
+
+Set the angle of the servos on the chassis.
+
+Payload format:
+
+| servo channel | angle |
+|:-------:|:-----:|
+| uint8_t | uint8_t |
+
+- **servo channel**
+    - value should be 1 or 2
+
+- **angle**
+    - angle in units of degree
+    - range 0~180
+
+##### Command 1 - Set Pulse Width of Servo
+
+Set the pulse width of the servo on the chassis.
+
+Payload format:
+
+| servo channel | width |
+|:-------:|:-----:|
+| uint8_t | uint16_t |
+
+- **servo channel**
+    - value should be 1 or 2
+
+- **angle**
+    - angle in units of degree
+    - range 500~2500
+
+#### Peripheral 3 - I2C
+
+##### Command 0 - Set Data for I2C
+
+Allow writing to the two ports on the chassis.
+
+Payload format:
+
+| address | data |
+|:-------:|:-----:|
+| uint8_t | uint16_t |
+
+- **address**
+    - 0xXX
+
+- **data**
+
+#### Peripheral 4 - Red LED
+
+##### Command 0 - Set Brightness of LED
+
+Set brightness of the red LED in M5 StickC Plus.
+
+Payload format:
+
+| brightness |
+|:-------:|
+| uint8_t |
+
+##### Command 1 - Get Brightness of LED
+
+Request brightness of the red LED in M5StickC Plus.
+
+#### Peripheral 5 - Buttons
+
+##### Command 0 - Get Status of Button A
+
+##### Command 1 - Get Status of Button B
+
+#### Peripheral 6 - LCD
 
 To be implemented
 
-#### IR
+#### Peripheral 7 - IMU
+
+##### Command 0 - Poll
+
+Poll data from gyroscope and accelerometer.
 
 To be implemented
 
-#### IMU
+##### Command 1 - Configuration
+
+Configure IMU.
 
 To be implemented
 
-### Chassis
+#### Peripheral 8 - Temperature
 
-Peripheral id: 1  
+##### Command 0 - Poll
 
-The chassis handles all the movement of the robot. The content for command message for the chassis will follow the structure below:
+Poll data from temperature sensor.
 
-|movement id| speed | time | servo channel | servo state |
-|:---------:|:-----:|:----:| :----: | :----: |
-|uint8_t | uint8_t | uint32_t| uint8_t | bool |
+To be implemented
 
-The movement id for the robot is listed below:
+#### Peripheral 9 - Buzzer
 
-| Command | ID |
-|:-------:|:--:|
-|Forward|0| 
-|Back|1|
-|Left|2|
-|Right|3|
-|Stop|4|
-|Turn left|5|
-|Turn right|6|
-|Move Servo|7|
-fold
-servo channel/state is only required when controlling the servo.
+##### Command 0 - Set Volume
 
-**I2C to be implemented**
+Set volume of buzzer in M5StickC Plus.
 
-## Peripherals: From Robot
+| volume |
+|:-------:|
+| uint8_t |
 
-This part describes the message from the robot to the P5 website.
+##### Command 1 - Get Volume
+
+Request volume of buzzer in M5StickC Plus
+
+##### Command 2 - Set Frequency and Duration of Tone
+
+Set frequency and duration of buzzer tone in M5StickC Plus.
+
+| freq | duration |
+|:-------:|:------:|
+| uint16_t | uint32_t |
+
+- **freq**
+    - frequency of note in units of hz
+
+- **duration**
+    - duration of note in unts of ms
+
+##### Command 3 - Read Frequency and Duration of Tone
+
+Request frequency and duration of buzzer tone in M5StickC Plus.
+
+##### Command 4 - Mute Buzzer
+
+Mute the buzzer in M5StickC Plus.
+
+#### Peripheral 10 - Infrared Transmitter
+
+##### Command 0 - Turn on IR TX
+
+##### Command 1 - Turn off IR TX
+
+##### Command 2 - Get Status of IR TX
+
+#### Peripheral 11 - Microphone
+
+##### Command 0 - Get Volume
+
+#### Peripheral 12 - Power Management IC
+
+To be implemented
+
+#### Peripheral 13 - Grove Ports
+
+To be implemented
+
+#### Peripheral 14 - WiFi
+
+To be implemented
+
+#### Peripheral 15 - Camera
+
+To be implemented
+
+#### Peripheral 16 - ESP32
+
+##### Command 0 - Get Data From Hall Effect Sensor
+
+##### Command 1 - Serial Print
+
+### Peripherals: From Robot
+
+This section describes the packet from the robot to the P5 website.
