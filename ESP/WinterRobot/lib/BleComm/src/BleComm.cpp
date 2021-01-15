@@ -20,6 +20,9 @@ int BleComm::start() {
 
     BLEDevice::init(blename.c_str());
 
+    // Initialize robot parameters.
+    // TODO
+
     // Create the BLE Server
     pServer = BLEDevice::createServer();
     pServer->setCallbacks(new ServerCallbacks());
@@ -108,22 +111,27 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
     // TODO: error check
     switch (msg->peripheral) {
         case PERI_GENERAL: {
-            PAYLOAD_GENERAL *payload = (PAYLOAD_GENERAL *)msg->payload;
             switch (msg->cmd) {
                 case CMD_GENERAL_SET_NAME: {
+                    PAYLOAD_CMD_GENERAL_SET_NAME *payload = (PAYLOAD_CMD_GENERAL_SET_NAME *)msg->payload;
+                    //TODO
                     break;
                 }
                 case CMD_GENERAL_GET_NAME: {
+                    //TODO
                     break;
                 }
                 default:
                     Serial.println("How did you get here?");
+                    break;
             }
+            break;
         }
         case PERI_MOTOR: {
-            PAYLOAD_MOTOR *payload = (PAYLOAD_MOTOR *)msg->payload;
             switch (msg->cmd) {
                 case CMD_MOTOR_SET_MOVEMENT_SPEED: {
+                    PAYLOAD_CMD_MOTOR_SET_MOVEMENT_SPEED *payload =
+                        (PAYLOAD_CMD_MOTOR_SET_MOVEMENT_SPEED *)msg->payload;
                     switch (payload->movement_id) {
                         case MOTOR_MOVEMENT_FORWARD:
                             Move_forward(payload->speed);
@@ -160,10 +168,86 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             break;
         }
         case PERI_SERVO: {
-            
+            switch (msg->cmd) {
+                case CMD_SERVO_GET_ANGLE:
+                    // TODO
+                    break;
+                case CMD_SERVO_GET_PULSE_WIDTH:
+                    // TODO
+                    break;
+                case CMD_SERVO_SET_ANGLE:
+                    // TODO
+                    break;
+                case CMD_SERVO_SET_PULSE_WIDTH:
+                    // TODO
+                    break;
+                default:
+                    break;
+            }
+            break;
+        }
+        case PERI_I2C: {
+            switch (msg->cmd) {
+                case CMD_I2C_GET_DATA:
+                    // TODO
+                    break;
+                case CMD_I2C_SET_DATA:
+                    // TODO
+                    break;
+                default:
+                    break;
+            }
+            break;
+        }
+        case PERI_LED: {
+            switch (msg->cmd) {
+                case CMD_LED_SET_BRIGHTNESS:
+                    // TODO
+                    break;
+                case CMD_LED_GET_BRIGHTNESS:
+                    // TODO
+                    break;
+                default:
+                    break;
+            }
+            break;
+        }
+        case PERI_BUTTON: {
+            switch (msg->cmd) {
+                case CMD_BUTTON_GET_STATE_A:
+                    // TODO
+                    break;
+                case CMD_BUTTON_GET_STATE_B:
+                    // TODO
+                    break;
+                default:
+                    break;
+            }
+            break;
+        }
+        case PERI_LCD: {
+            // TODO
+        }
+        case PERI_IMU: {
+            switch (msg->cmd) {
+                case CMD_IMU_POLL_GYRO:
+                    // TODO
+                    break;
+                case CMD_IMU_POLL_ACCE:
+                    // TODO
+                    break;
+                case CMD_IMU_POLL_AHRS:
+                    // TODO
+                    break;
+                case CMD_IMU_POLL_TEMP:
+                    // TODO
+                    break;
+                default:
+                    break;
+            }
+            break;
         }
         case PERI_BUZZER: {
-            PAYLOAD_BUZZER *buzzer = (PAYLOAD_BUZZER *)msg->payload;
             switch (msg->cmd) {
                 case CMD_BUZZER_SET_FREQ_DURATION: {
                     // TODO
@@ -186,23 +270,27 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             }
             break;
         }
-        case PERI_LED: {
-            PAYLOAD_LED *payload = (PAYLOAD_LED *)msg->payload;
+        case PERI_IR: {
             switch (msg->cmd) {
-                case CMD_LED_SET_BRIGHTNESS: {
-                    ledcWrite(10, payload->value);
-                    Serial.print("Setting Brightness: ");
-                    Serial.print(payload->value);
+                case CMD_IR_SET_STATE:
+                    // TODO
                     break;
-                }
-                case CMD_LED_GET_BRIGHTNESS: {
-                    // TODO: handle send message;
-                    Serial.println("TODO: handle response message");
+                case CMD_IR_GET_STATE:
+                    // TODO
                     break;
-                }
+
                 default:
-                    Serial.println("How did you get here?");
+                    break;
             }
+            break;
+        }
+        case PERI_MICROPHONE: {
+            // TODO
+            break;
+        }
+        case PERI_POWER: {
+            // TODO
+            break;
         }
         default: {
             Serial.println(msg->peripheral);
@@ -211,6 +299,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             for (int i = 0; i < 16; ++i)
                 Serial.println(msg->payload[i]);
             Serial.println(msg->chksm);
+            break;
         }
     }
 }
