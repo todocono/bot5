@@ -1,6 +1,6 @@
 # BLE Communication Protocol Documentation 
 
-The material in this documentation is derived from "root-robot-ble-protocol" by RootRobotics. "root-robot-ble-protocol" is licensed under CC BY 4.0.
+The material in this documentation is derived from "[root-robot-ble-protocol](https://github.com/RootRobotics/root-robot-ble-protocol)" by RootRobotics. "root-robot-ble-protocol" is licensed under CC BY 4.0.
 
 ## Packet Components
 
@@ -34,7 +34,7 @@ The last byte of each packet is a checksum calculated from the previous 19 bytes
 
 ## Packet Definitions
 
-Each packet sent or received by the robot is defined below. To robot describes the packet from the P5 websites to the robot. From robot describes the packet from the robot to the P5 website.
+Each packet sent or received by the robot is defined below. To Robot describes the packet from the P5 website to the robot. From Robot describes the packet from the robot to the P5 website.
 
 ### Peripheral 0 - General
 
