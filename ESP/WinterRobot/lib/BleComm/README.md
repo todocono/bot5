@@ -13,15 +13,15 @@ The material in this documentation is derived from "[root-robot-ble-protocol](ht
     - [Peripheral 5 - Buttons](#peripheral-5---buttons)
     - [Peripheral 6 - LCD](#peripheral-6---lcd)
     - [Peripheral 7 - IMU](#peripheral-7---imu)
-    - [Peripheral 8 - Temperature](#peripheral-8---temperature)
-    - [Peripheral 9 - Buzzer](#peripheral-9---buzzer)
-    - [Peripheral 10 - Infrared Transmitter](#peripheral-10---infrared-transmitter)
-    - [Peripheral 11 - Microphone](#peripheral-11---microphone)
-    - [Peripheral 12 - Power Management IC](#peripheral-12---power-management-ic)
+    - [Peripheral 8 - Buzzer](#peripheral-8---buzzer)
+    - [Peripheral 9 - Infrared Transmitter](#peripheral-9---infrared-transmitter)
+    - [Peripheral 10 - Microphone](#peripheral-10---microphone)
+    - [Peripheral 11 - Power Management IC](#peripheral-11---power-management-ic)
+    - [Peripheral 12 - RTC](#peripheral-12---rtc)
     - [Peripheral 13 - Grove Port](#peripheral-13---grove-port)
     - [Peripheral 14 - WiFi](#peripheral-14---wifi)
     - [Peripheral 15 - Camera](#peripheral-15---camera)
-    - [Peripheral 16 - ESP32](#peripheral-16---grove-port)
+    - [Peripheral 16 - ESP32](#peripheral-16---esp32)
 
 
 ## Packet Components
@@ -85,7 +85,7 @@ Request a response packet containing BLE device name.
 #### From Robot
 -------------------------------------------------------------------------------
 
-#### Command 1 - Get Name
+#### Command 1 - Get Name Response
 
 Reponse to Get Name packet. 
 
@@ -190,7 +190,7 @@ Payload format:
     - '1' = Servo 1, '2' = Servo 2
 
 - **angle**
-    - angle in units of degree
+    - angle in units of microsecond
     - range 500~2500
 
 #### Command 3 - Get Pulse Width of Servo
@@ -217,7 +217,7 @@ Payload format:
     - angle in units of degree
     - range 0~180
 
-#### Command 3 - Get Pulse Width of Servo
+#### Command 3 - Get Pulse Width of Servo Response
 
 Response to Get Pulse Width of Servo packet.
 
@@ -231,7 +231,7 @@ Payload format:
     - '1' = Servo 1, '2' = Servo 2
 
 - **angle**
-    - angle in units of degree
+    - angle in units of microsecond
     - range 500~2500
 
 ### Peripheral 3 - I2C
@@ -251,6 +251,7 @@ Payload format:
 
 - **address**
     - format is 0xXX
+    - will update addresses here later
 
 - **data**
     - data to be written to the ports
@@ -274,6 +275,8 @@ Payload format:
 
 - **address**
     - format is 0xXX
+    - will update addresses here later
+
 
 - **data**
     - data written to the ports
@@ -350,9 +353,9 @@ Payload format:
 #### From Robot
 -------------------------------------------------------------------------------
 
-#### Command 0 - Get Status of Button A Response
+#### Command 0 - Get State of Button A Response
 
-Response to Get Status of Button A packet.
+Response to Get State of Button A packet.
 
 Payload format:
 
@@ -363,9 +366,9 @@ Payload format:
 - **state**
     - '0' = not pressed, '1' = pressed
 
-#### Command 1 - Get Status of Button B Response
+#### Command 1 - Get State of Button B Response
 
-Response to Get Status of Button B packet.
+Response to Get State of Button B packet.
 
 Payload format:
 
@@ -511,15 +514,18 @@ Response to Poll Temperature packet.
 
 #### Command 0 - Set Volume
 
-Set volume of buzzer in M5StickC Plus.
+Set volume of buzzer in M5StickC-Plus.
 
 | volume |
 |:-------:|
 | uint8_t |
 
+- **volume**
+    - default volume is 8
+
 #### Command 1 - Get Volume
 
-Request volume of buzzer in M5StickC Plus
+Request packet containing volume of buzzer in M5StickC-Plus.
 
 #### Command 2 - Set Frequency and Duration of Tone
 
@@ -535,30 +541,75 @@ Set frequency and duration of buzzer tone in M5StickC Plus.
 - **duration**
     - duration of note in unts of ms
 
-#### Command 3 - Read Frequency and Duration of Tone
+#### Command 3 - Get Frequency and Duration of Tone
 
-Request frequency and duration of buzzer tone in M5StickC Plus.
+Request packet containing frequency and duration of buzzer tone in M5StickC Plus.
 
 #### Command 4 - Mute Buzzer
 
-Mute the buzzer in M5StickC Plus.
+Mute the buzzer in M5StickC-Plus.
 
 #### From Robot
 -------------------------------------------------------------------------------
+
+#### Command 1 - Get Volume Response
+
+Response to Get Volume packet.
+
+| volume |
+|:-------:|
+| uint8_t |
+
+- **volume**
+    - default volume is 8
+
+#### Command 3 - Get Frequency and Duration of Tone
+
+Response to Get Frequency and Duration of Tone packet.
+
+| freq | duration |
+|:-------:|:------:|
+| uint16_t | uint32_t |
+
+- **freq**
+    - frequency of note in units of hz
+
+- **duration**
+    - duration of note in unts of ms
 
 ### Peripheral 9 - Infrared Transmitter
 
 #### To Robot
 -------------------------------------------------------------------------------
 
-#### Command 0 - Turn on IR TX
+#### Command 0 - Set State of IR TX
 
-#### Command 1 - Turn off IR TX
+Set the state of the infrared transmitter.
 
-#### Command 2 - Get Status of IR TX
+| state | 
+|:-------:|
+| uint8_t |
+
+- **state**
+    - '0' = off, '1' = on
+
+#### Command 1 - Get State of IR TX
+
+Request a packet containing state of the infrared transmitter.
 
 #### From Robot
 -------------------------------------------------------------------------------
+
+#### Command 1 - Get State of IR TX Response
+
+Response to Get State of IR TX packet.
+
+| state | 
+|:-------:|
+| uint8_t |
+
+- **state**
+    - '0' = off, '1' = on
 
 ### Peripheral 10 - Microphone
 
@@ -567,8 +618,14 @@ Mute the buzzer in M5StickC Plus.
 
 #### Command 0 - Get Volume
 
+Request packet containing volume from the microphone.
+
 #### From Robot
 -------------------------------------------------------------------------------
+
+#### Command 0 - Get Volume Reponse
+
+Response to Get Volume packet. To be implemented.
 
 ### Peripheral 11 - Power Management IC
 
@@ -582,7 +639,35 @@ To be implemented
 
 To be implemented
 
-### Peripheral 12 - Grove Port
+### Peripheral 12 - RTC
+
+#### To Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Get Time
+
+Request packet containing time.
+
+#### Command 1 - Get Date
+
+Request packet containing date.
+
+#### From Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Get Time Response
+
+Response to Get Time packet.
+
+To be implemented
+
+#### Command 1 - Get Date Response
+
+Response to Get Date packet.
+
+To be implemented
+
+### Peripheral 13 - Grove Port
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -594,7 +679,7 @@ To be implemented
 
 To be implemented.
 
-### Peripheral 13 - WiFi
+### Peripheral 14 - WiFi
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -606,7 +691,7 @@ To be implemented
 
 To be implemente
 
-### Peripheral 14 - Camera
+### Peripheral 15 - Camera
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -618,7 +703,7 @@ To be implemented
 
 To be implemented
 
-### Peripheral 15 - ESP32
+### Peripheral 16 - ESP32
 
 #### To Robot
 -------------------------------------------------------------------------------
