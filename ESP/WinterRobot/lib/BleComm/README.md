@@ -12,6 +12,8 @@ All the commands should be sent to CMD Characteristic. The system will first det
 
 ## Peripherals: To Robot
 
+This part describes the message from the P5 website to the robot.
+
 ### M5 StickC Plus
 
 Peripheral id: 0.
@@ -90,11 +92,11 @@ The movement id for the robot is listed below:
 |Turn left|5|
 |Turn right|6|
 |Move Servo|7|
-
+fold
 servo channel/state is only required when controlling the servo.
 
 **I2C to be implemented**
 
 ## Peripherals: From Robot
 
-To be implemented
+This part describes the message from the robot to the P5 website.

@@ -45,7 +45,7 @@ int BleComm::start()
     pCMDCharacteristic = pCmdService->createCharacteristic(
         CMD_CHARACTERISTIC_RX_UUID,
         BLECharacteristic::PROPERTY_WRITE);
-    pCMDCharacteristic->setCallbacks(new RxCharacteristicCallbacks());
+    pCMDCharacteristic->setCallbacks(new CMDCharacteristicCallbacks());
 
     // Start advertising
     pCmdService->start();
