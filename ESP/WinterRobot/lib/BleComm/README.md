@@ -20,7 +20,7 @@ The material in this documentation is derived from "[root-robot-ble-protocol](ht
     - [Peripheral 12 - Grove Port](#peripheral-12---grove-port)
     - [Peripheral 13 - WiFi](#peripheral-13---wifi)
     - [Peripheral 14 - Camera](#peripheral-14---camera)
-    - [Peripheral 15 - ESP32](#peripheral-15---grove-port)
+    - [Peripheral 15 - ESP32](#peripheral-15---esp32)
 
 
 ## Packet Components
