@@ -31,6 +31,8 @@
 #define CMD_CHARACTERISTIC_TX_UUID "f6a44d18-6e45-4631-b85e-da3817f10edd" // UART service UUID
 #define CMD_CHARACTERISTIC_RX_UUID "f6a44d18-6e45-4632-b85e-da3817f10edd" // UART service UUID
 
+#define LED_PIN 10
+
 /**
  * @brief Message struct 
  * 
@@ -40,10 +42,16 @@ typedef struct
 {
     uint8_t dev;         // device id
     uint8_t cmd;         // command index
-    uint8_t id;          // message id
+    uint8_t count;          // message id
     uint8_t content[16]; // message
     uint8_t chksm;       // checksum
 } Message;
+
+typedef struct
+{
+    uint8_t value;
+} CONTENT_LED;
+
 
 typedef struct
 {
@@ -52,7 +60,7 @@ typedef struct
     uint32_t time;
     uint8_t servoChannel;
     bool servoState;
-} CONTENT_CHASSIS;
+} CONTENT_MOTOR;
 
 typedef struct
 {
@@ -65,6 +73,7 @@ typedef struct
     uint16_t freq;
     uint32_t duration;
 } CONTENT_BUZZER;
+
 #pragma pack()
 
 /**
@@ -73,23 +82,29 @@ typedef struct
 
 enum DEV_ID
 {
-    M5_STICK = 0,
-    CHASSIS,
-    SERVO
-};
-
-enum M5_STICK_DEV_ID
-{
-    M5_DEV_BUZZER = 0,
-    M5_DEV_SCREEN,
-    M5_DEV_IR,
-    M5_DEV_ULTRASONIC
+    GENERAL = 0,
+    MOTOR,
+    SERVO,
+    I2C,
+    LED,
+    BUTTON,
+    LCD,
+    IMU,
+    TEMPERATURE,
+    BUZZER,
+    IR,
+    MICROPHONE,
+    POWER,
+    GROVE,
+    WIFI,
+    CAMERA,
+    EXTERN
 };
 
 /**
  * @brief Command ID
  */
-enum CMD_MOVE_ID
+enum CMD_MOTOR
 {
     CMD_MOVE_FORWARD = 0,
     CMD_MOVE_BACK,
@@ -99,6 +114,12 @@ enum CMD_MOVE_ID
     CMD_MOVE_TURN_LEFT,
     CMD_MOVE_TURN_RIGHT,
     CMD_SERVO
+};
+
+enum CMD_LED
+{
+    CMD_LED_READ = 0,
+    CMD_LED_WRITE
 };
 
 /**
