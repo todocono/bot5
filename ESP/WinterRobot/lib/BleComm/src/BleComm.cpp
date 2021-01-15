@@ -2,6 +2,20 @@
 
 #include "BleComm.h"
 
+char name[16];
+uint8_t motorMovementId;
+int8_t motorSpeed;
+uint8_t servoAngle[2];
+uint16_t servoWidth[2];
+uint8_t ledBrightness;
+uint8_t buzzerVolume;
+uint16_t buzzerFreq;
+uint32_t buzzerDuration;
+bool irState;
+const int freq = 5000;
+const int ledChannel = 0;
+const int resolution = 8;
+
 BleComm::BleComm() {
 }
 
@@ -17,11 +31,15 @@ int BleComm::start() {
     // Create the BLE Device
     uint64_t chipid = ESP.getEfuseMac();
     String blename = "BOT5-" + String((uint32_t)(chipid >> 32), HEX);
-
     BLEDevice::init(blename.c_str());
 
-    // Initialize robot parameters.
-    // TODO
+    // Initialize peripherals
+    // TODO: Handle the initial values
+    sprintf(name, blename.c_str());
+    motorMovementId = MOTOR_MOVEMENT_STOP;
+    // Initialize PWM
+    ledcSetup(ledChannel, freq, resolution);
+    ledcAttachPin(LED_PIN, ledChannel);
 
     // Create the BLE Server
     pServer = BLEDevice::createServer();
@@ -114,11 +132,17 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             switch (msg->cmd) {
                 case CMD_GENERAL_SET_NAME: {
                     PAYLOAD_CMD_GENERAL_SET_NAME *payload = (PAYLOAD_CMD_GENERAL_SET_NAME *)msg->payload;
-                    //TODO
+                    //TODO: TEST NEEDED
+                    sprintf(name, payload->name);
+                    esp_err_t errRc = ::esp_ble_gap_set_device_name(payload->name);
+                    if (errRc != ESP_OK) {
+                        log_e("esp_ble_gap_set_device_name: rc=%d %s", errRc, GeneralUtils::errorToString(errRc));
+                        return;
+                    };
                     break;
                 }
                 case CMD_GENERAL_GET_NAME: {
-                    //TODO
+                    // TODO
                     break;
                 }
                 default:
@@ -154,6 +178,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         case MOTOR_MOVEMENT_STOP:
                             Move_stop(payload->speed);
                         default:
+                            Serial.printf("How did you get here?");
                             break;
                     }
                     break;
@@ -169,31 +194,46 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
         }
         case PERI_SERVO: {
             switch (msg->cmd) {
-                case CMD_SERVO_GET_ANGLE:
+                case CMD_SERVO_GET_ANGLE: {
+                    PAYLOAD_CMD_SERVO_GET_ANGLE *payload = (PAYLOAD_CMD_SERVO_GET_ANGLE *)msg->payload;
                     // TODO
                     break;
-                case CMD_SERVO_GET_PULSE_WIDTH:
+                }
+                case CMD_SERVO_GET_PULSE_WIDTH: {
+                    PAYLOAD_CMD_SERVO_GET_PULSE_WIDTH *payload = (PAYLOAD_CMD_SERVO_GET_PULSE_WIDTH *)msg->payload;
                     // TODO
                     break;
-                case CMD_SERVO_SET_ANGLE:
-                    // TODO
+                }
+                case CMD_SERVO_SET_ANGLE: {
+                    PAYLOAD_CMD_SERVO_SET_ANGLE *payload = (PAYLOAD_CMD_SERVO_SET_ANGLE *)msg->payload;
+                    Servo_angle(payload->channel, payload->angle);
+                    servoAngle[payload->channel] = payload->angle;
                     break;
-                case CMD_SERVO_SET_PULSE_WIDTH:
-                    // TODO
+                }
+                case CMD_SERVO_SET_PULSE_WIDTH: {
+                    PAYLOAD_CMD_SERVO_SET_PULSE_WIDTH *payload = (PAYLOAD_CMD_SERVO_SET_PULSE_WIDTH *)msg->payload;
+                    Servo_pulse(payload->channel, payload->width);
+                    servoWidth[payload->channel] = payload->width;
                     break;
+                }
                 default:
+                    Serial.println("How did you get here?");
                     break;
             }
             break;
         }
         case PERI_I2C: {
             switch (msg->cmd) {
-                case CMD_I2C_GET_DATA:
+                case CMD_I2C_GET_DATA: {
                     // TODO
                     break;
-                case CMD_I2C_SET_DATA:
+                }
+                case CMD_I2C_SET_DATA: {
                     // TODO
+                    PAYLOAD_CMD_I2C_SET_DATA *payload = (PAYLOAD_CMD_I2C_SET_DATA *)msg->payload;
+                    Send_iic(payload->address, payload->data);
                     break;
+                }
                 default:
                     break;
             }
@@ -201,9 +241,12 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
         }
         case PERI_LED: {
             switch (msg->cmd) {
-                case CMD_LED_SET_BRIGHTNESS:
-                    // TODO
+                case CMD_LED_SET_BRIGHTNESS: {
+                    PAYLOAD_CMD_LED_SET_BRIGHTNESS *payload = (PAYLOAD_CMD_LED_SET_BRIGHTNESS *)msg->payload;
+                    ledcWrite(LED_PIN, payload->brightness);
+                    ledBrightness = payload->brightness;
                     break;
+                }
                 case CMD_LED_GET_BRIGHTNESS:
                     // TODO
                     break;
@@ -251,10 +294,15 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             switch (msg->cmd) {
                 case CMD_BUZZER_SET_FREQ_DURATION: {
                     // TODO
+                    PAYLOAD_CMD_BUZZER_SET_FREQ_DURATION *payload = (PAYLOAD_CMD_BUZZER_SET_FREQ_DURATION *)msg->payload;
+                    M5.Beep.tone(payload->freq, payload->duration);
+                    M5.Beep.mute();
                     break;
                 }
                 case CMD_BUZZER_SET_VOLUME: {
-                    // TODO
+                    PAYLOAD_CMD_BUZZER_SET_VOLUME *payload = (PAYLOAD_CMD_BUZZER_SET_VOLUME *)msg->payload;
+                    M5.Beep.setVolume(payload->volume);
+                    buzzerVolume = payload->volume;
                     break;
                 }
                 case CMD_BUZZER_GET_FREQ_DURATION: {
@@ -272,13 +320,16 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
         }
         case PERI_IR: {
             switch (msg->cmd) {
-                case CMD_IR_SET_STATE:
+                case CMD_IR_SET_STATE: {
+                    PAYLOAD_CMD_IR_SET_STATE *payload = (PAYLOAD_CMD_IR_SET_STATE *)msg->payload;
+                    digitalWrite(IR_TX_PIN, payload->state);
+                    irState = payload->state;
+                    break;
+                }
+                case CMD_IR_GET_STATE: {
                     // TODO
                     break;
-                case CMD_IR_GET_STATE:
-                    // TODO
-                    break;
-
+                }
                 default:
                     break;
             }

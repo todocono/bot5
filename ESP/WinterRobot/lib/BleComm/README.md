@@ -111,7 +111,7 @@ Payload format:
 
 | movement id | speed |
 |:-------:|:-----:|
-| uint8_t | uint8_t |
+| uint8_t | int8_t |
 
 - **movement id**
     | Command | ID |
@@ -142,7 +142,7 @@ Payload format:
 
 | movement id | speed |
 |:-------:|:-----:|
-| uint8_t | uint8_t |
+| uint8_t | int8_t |
 
 - **movement id**
     - id corresponding to movement

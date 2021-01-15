@@ -8,8 +8,10 @@
 #include <BLEServer.h>
 #include <BLEService.h>
 #include <BLEUtils.h>
+#include <GeneralUtils.h>
 
 #include "RoverC.h"
+#include "esp32-hal-log.h"
 
 // Pre-defined UUIDs.
 // See the following for generating UUIDs:
@@ -26,13 +28,14 @@
 #define CMD_CHARACTERISTIC_TX_UUID "f6a44d18-6e45-4631-b85e-da3817f10edd"  // UART service UUID
 #define CMD_CHARACTERISTIC_RX_UUID "f6a44d18-6e45-4632-b85e-da3817f10edd"  // UART service UUID
 
+#define IR_TX_PIN 9
 #define LED_PIN 10
 
 /**
  * @brief Message struct 
  * 
  */
-#pragma pack(1) // use pack to guarantee that the struct are packed
+#pragma pack(1)  // use pack to guarantee that the struct are packed
 
 typedef struct
 {
@@ -62,6 +65,11 @@ typedef struct
     uint8_t channel;
     uint8_t angle;
 } PAYLOAD_CMD_SERVO_SET_ANGLE, PAYLOAD_RESP_SERVO_GET_ANGLE;
+
+typedef struct
+{
+    uint8_t channel;
+} PAYLOAD_CMD_SERVO_GET_ANGLE, PAYLOAD_CMD_SERVO_GET_PULSE_WIDTH;
 
 typedef struct
 {
@@ -284,6 +292,8 @@ enum RESP_IR {
 enum ERRONO {
 };
 
+
+
 /**
  * @brief BLE Communication class
  * 
@@ -310,6 +320,9 @@ class BleComm {
    public:
     BleComm();
     ~BleComm();
+
+    // Robot variables
+
     int start();
     bool isConnected();
     MESSAGE *genMsg(int dev, int characteristic, char **params);
