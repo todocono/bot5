@@ -17,10 +17,11 @@ The material in this documentation is derived from "[root-robot-ble-protocol](ht
     - [Peripheral 9 - Infrared Transmitter](#peripheral-9---infrared-transmitter)
     - [Peripheral 10 - Microphone](#peripheral-10---microphone)
     - [Peripheral 11 - Power Management IC](#peripheral-11---power-management-ic)
-    - [Peripheral 12 - Grove Port](#peripheral-12---grove-port)
-    - [Peripheral 13 - WiFi](#peripheral-13---wifi)
-    - [Peripheral 14 - Camera](#peripheral-14---camera)
-    - [Peripheral 15 - ESP32](#peripheral-15---esp32)
+    - [Peripheral 12 - RTC](#peripheral-12---rtc)
+    - [Peripheral 13 - Grove Port](#peripheral-13---grove-port)
+    - [Peripheral 14 - WiFi](#peripheral-14---wifi)
+    - [Peripheral 15 - Camera](#peripheral-15---camera)
+    - [Peripheral 16 - ESP32](#peripheral-16---esp32)
 
 
 ## Packet Components
@@ -189,7 +190,7 @@ Payload format:
     - '1' = Servo 1, '2' = Servo 2
 
 - **angle**
-    - angle in units of degree
+    - angle in units of microsecond
     - range 500~2500
 
 #### Command 3 - Get Pulse Width of Servo
@@ -230,7 +231,7 @@ Payload format:
     - '1' = Servo 1, '2' = Servo 2
 
 - **angle**
-    - angle in units of degree
+    - angle in units of microsecond
     - range 500~2500
 
 ### Peripheral 3 - I2C
@@ -250,6 +251,7 @@ Payload format:
 
 - **address**
     - format is 0xXX
+    - will update addresses here later
 
 - **data**
     - data to be written to the ports
@@ -273,6 +275,8 @@ Payload format:
 
 - **address**
     - format is 0xXX
+    - will update addresses here later
+
 
 - **data**
     - data written to the ports
@@ -349,9 +353,9 @@ Payload format:
 #### From Robot
 -------------------------------------------------------------------------------
 
-#### Command 0 - Get Status of Button A Response
+#### Command 0 - Get State of Button A Response
 
-Response to Get Status of Button A packet.
+Response to Get State of Button A packet.
 
 Payload format:
 
@@ -362,9 +366,9 @@ Payload format:
 - **state**
     - '0' = not pressed, '1' = pressed
 
-#### Command 1 - Get Status of Button B Response
+#### Command 1 - Get State of Button B Response
 
-Response to Get Status of Button B packet.
+Response to Get State of Button B packet.
 
 Payload format:
 
@@ -635,7 +639,35 @@ To be implemented
 
 To be implemented
 
-### Peripheral 12 - Grove Port
+### Peripheral 12 - RTC
+
+#### To Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Get Time
+
+Request packet containing time.
+
+#### Command 1 - Get Date
+
+Request packet containing date.
+
+#### From Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Get Time Response
+
+Response to Get Time packet.
+
+To be implemented
+
+#### Command 1 - Get Date Response
+
+Response to Get Date packet.
+
+To be implemented
+
+### Peripheral 13 - Grove Port
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -647,7 +679,7 @@ To be implemented
 
 To be implemented.
 
-### Peripheral 13 - WiFi
+### Peripheral 14 - WiFi
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -659,7 +691,7 @@ To be implemented
 
 To be implemente
 
-### Peripheral 14 - Camera
+### Peripheral 15 - Camera
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -671,7 +703,7 @@ To be implemented
 
 To be implemented
 
-### Peripheral 15 - ESP32
+### Peripheral 16 - ESP32
 
 #### To Robot
 -------------------------------------------------------------------------------
