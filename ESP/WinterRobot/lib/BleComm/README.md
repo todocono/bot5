@@ -34,19 +34,24 @@ The last byte of each packet is a checksum calculated from the previous 19 bytes
 
 ## Packet Definitions
 
-Each packet sent or received by the robot is defined below. 
+Each packet sent or received by the robot is defined below. To robot describes the packet from the P5 websites to the robot. From robot describes the packet from the robot to the P5 website.
 
-### Peripherals: To Robot
+### Peripheral 0 - General
 
-This section describes the packet from the P5 website to the robot.
-
-#### Peripheral 0 - General
-
+#### To Robot
+-------------------------------------------------------------------------------
 To be implemented
 
-#### Peripheral 1 - Motors
+#### From Robot
+-------------------------------------------------------------------------------
+To be implemented
 
-##### Command 0 - Set Direction and Speed of Motors
+### Peripheral 1 - Motors
+
+#### To Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Set Movement and Speed of Motors
 
 Set movement and speed of motors.
 
@@ -70,11 +75,31 @@ Payload format:
 - **speed** 
     - range -127~127
 
-#### Peripheral 2 - Servos
+#### Command 1 - Get Movement and Speed of Motors
 
-##### Command 0 - Set Angle of Servo
+Request a response packet with movement id and speed of motors.
 
-Set the angle of the servos on the chassis.
+#### From Robot
+-------------------------------------------------------------------------------
+
+#### Command 1 - Get Movement and Speed of Motors Response
+
+Response to Get Movement and Speed of Motors packet. 
+
+Payload format:
+
+| movement id | speed |
+|:-------:|:-----:|
+| uint8_t | uint8_t |
+
+### Peripheral 2 - Servos
+
+#### To Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Set Angle of Servo
+
+Set the angle of the servo.
 
 Payload format:
 
@@ -89,9 +114,13 @@ Payload format:
     - angle in units of degree
     - range 0~180
 
-##### Command 1 - Set Pulse Width of Servo
+#### Command 1 - Get Angle of Servo
 
-Set the pulse width of the servo on the chassis.
+Request response packet with the angle of the servo.
+
+#### Command 2 - Set Pulse Width of Servo
+
+Set the pulse width of the servo.
 
 Payload format:
 
@@ -106,9 +135,39 @@ Payload format:
     - angle in units of degree
     - range 500~2500
 
-#### Peripheral 3 - I2C
+#### Command 3 - Get Pulse Width of Servo
 
-##### Command 0 - Set Data for I2C
+Request response packet with the pulse width of the servo.
+
+#### From Robot
+-------------------------------------------------------------------------------
+
+#### Command 1 - Get Angle of Servo Response
+
+Response to Get Angle of Servo packet.
+
+Payload format:
+
+| servo channel | angle |
+|:-------:|:-----:|
+| uint8_t | uint8_t |
+
+#### Command 3 - Get Pulse Width of Servo
+
+Response to Get Pulse Width of Servo packet.
+
+Payload format:
+
+| servo channel | width |
+|:-------:|:-----:|
+| uint8_t | uint16_t |
+
+### Peripheral 3 - I2C
+
+#### To Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Set Data for I2C
 
 Allow writing to the two ports on the chassis.
 
@@ -123,9 +182,29 @@ Payload format:
 
 - **data**
 
-#### Peripheral 4 - Red LED
+#### Command 1 - Get Data for I2C
 
-##### Command 0 - Set Brightness of LED
+Request packet with data for I2C.
+
+#### From Robot
+-------------------------------------------------------------------------------
+
+#### Command 1 - Get Data for I2C Response 
+
+Reponse to Get Data for I2C packet.
+
+Payload format:
+
+| address | data |
+|:-------:|:-----:|
+| uint8_t | uint16_t |
+
+### Peripheral 4 - Red LED
+
+#### To Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Set Brightness of LED
 
 Set brightness of the red LED in M5 StickC Plus.
 
@@ -135,45 +214,72 @@ Payload format:
 |:-------:|
 | uint8_t |
 
-##### Command 1 - Get Brightness of LED
+#### Command 1 - Get Brightness of LED
 
 Request brightness of the red LED in M5StickC Plus.
 
-#### Peripheral 5 - Buttons
+#### From Robot
+-------------------------------------------------------------------------------
 
-##### Command 0 - Get Status of Button A
+### Peripheral 5 - Buttons
 
-##### Command 1 - Get Status of Button B
+#### To Robot
+-------------------------------------------------------------------------------
 
-#### Peripheral 6 - LCD
+#### Command 0 - Get Status of Button A
+
+#### Command 1 - Get Status of Button B
+
+#### From Robot
+-------------------------------------------------------------------------------
+
+### Peripheral 6 - LCD
+
+#### To Robot
+-------------------------------------------------------------------------------
 
 To be implemented
 
-#### Peripheral 7 - IMU
+### Peripheral 7 - IMU
 
-##### Command 0 - Poll
+#### To Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Poll
 
 Poll data from gyroscope and accelerometer.
 
 To be implemented
 
-##### Command 1 - Configuration
+#### Command 1 - Configuration
 
 Configure IMU.
 
 To be implemented
 
-#### Peripheral 8 - Temperature
+#### From Robot
+-------------------------------------------------------------------------------
 
-##### Command 0 - Poll
+### Peripheral 8 - Temperature
+
+#### To Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Poll
 
 Poll data from temperature sensor.
 
 To be implemented
 
-#### Peripheral 9 - Buzzer
+#### From Robot
+-------------------------------------------------------------------------------
 
-##### Command 0 - Set Volume
+### Peripheral 9 - Buzzer
+
+#### To Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Set Volume
 
 Set volume of buzzer in M5StickC Plus.
 
@@ -181,11 +287,11 @@ Set volume of buzzer in M5StickC Plus.
 |:-------:|
 | uint8_t |
 
-##### Command 1 - Get Volume
+#### Command 1 - Get Volume
 
 Request volume of buzzer in M5StickC Plus
 
-##### Command 2 - Set Frequency and Duration of Tone
+#### Command 2 - Set Frequency and Duration of Tone
 
 Set frequency and duration of buzzer tone in M5StickC Plus.
 
@@ -199,48 +305,99 @@ Set frequency and duration of buzzer tone in M5StickC Plus.
 - **duration**
     - duration of note in unts of ms
 
-##### Command 3 - Read Frequency and Duration of Tone
+#### Command 3 - Read Frequency and Duration of Tone
 
 Request frequency and duration of buzzer tone in M5StickC Plus.
 
-##### Command 4 - Mute Buzzer
+#### Command 4 - Mute Buzzer
 
 Mute the buzzer in M5StickC Plus.
 
+#### From Robot
+-------------------------------------------------------------------------------
+
 #### Peripheral 10 - Infrared Transmitter
 
-##### Command 0 - Turn on IR TX
+#### To Robot
+-------------------------------------------------------------------------------
 
-##### Command 1 - Turn off IR TX
+#### Command 0 - Turn on IR TX
 
-##### Command 2 - Get Status of IR TX
+#### Command 1 - Turn off IR TX
 
-#### Peripheral 11 - Microphone
+#### Command 2 - Get Status of IR TX
 
-##### Command 0 - Get Volume
+#### From Robot
+-------------------------------------------------------------------------------
 
-#### Peripheral 12 - Power Management IC
+### Peripheral 11 - Microphone
+
+#### To Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Get Volume
+
+#### From Robot
+-------------------------------------------------------------------------------
+
+### Peripheral 12 - Power Management IC
+
+#### To Robot
+-------------------------------------------------------------------------------
 
 To be implemented
 
-#### Peripheral 13 - Grove Ports
+#### From Robot
+-------------------------------------------------------------------------------
 
 To be implemented
 
-#### Peripheral 14 - WiFi
+### Peripheral 13 - Grove Ports
+
+#### To Robot
+-------------------------------------------------------------------------------
 
 To be implemented
 
-#### Peripheral 15 - Camera
+#### From Robot
+-------------------------------------------------------------------------------
+
+To be implemented.
+
+### Peripheral 14 - WiFi
+
+#### To Robot
+-------------------------------------------------------------------------------
 
 To be implemented
 
-#### Peripheral 16 - ESP32
+#### From Robot
+-------------------------------------------------------------------------------
 
-##### Command 0 - Get Data From Hall Effect Sensor
+To be implemente
 
-##### Command 1 - Serial Print
+### Peripheral 15 - Camera
 
-### Peripherals: From Robot
+#### To Robot
+-------------------------------------------------------------------------------
 
-This section describes the packet from the robot to the P5 website.
+To be implemented
+
+#### From Robot
+-------------------------------------------------------------------------------
+
+To be implemented
+
+### Peripheral 16 - ESP32
+
+#### To Robot
+-------------------------------------------------------------------------------
+
+#### Command 0 - Get Data From Hall Effect Sensor
+
+#### Command 1 - Serial Print
+
+#### From Robot
+-------------------------------------------------------------------------------
+
+To be implemented
