@@ -332,7 +332,7 @@ Payload format:
 
 | state |
 |:-------:|
-| uint8_t |
+| bool |
 
 - **state**
     - '0' = not pressed, '1' = pressed
@@ -345,7 +345,7 @@ Payload format:
 
 | state |
 |:-------:|
-| uint8_t |
+| bool |
 
 - **state**
     - '0' = not pressed, '1' = pressed
@@ -361,7 +361,7 @@ Payload format:
 
 | state |
 |:-------:|
-| uint8_t |
+| bool |
 
 - **state**
     - '0' = not pressed, '1' = pressed
@@ -374,7 +374,7 @@ Payload format:
 
 | state |
 |:-------:|
-| uint8_t |
+| bool |
 
 - **state**
     - '0' = not pressed, '1' = pressed
@@ -588,7 +588,7 @@ Set the state of the infrared transmitter.
 
 | state | 
 |:-------:|
-| uint8_t |
+| bool |
 
 - **state**
     - '0' = off, '1' = on
@@ -606,7 +606,7 @@ Response to Get State of IR TX packet.
 
 | state | 
 |:-------:|
-| uint8_t |
+| bool |
 
 - **state**
     - '0' = off, '1' = on
