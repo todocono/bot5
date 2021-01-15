@@ -85,7 +85,7 @@ Request a response packet containing BLE device name.
 #### From Robot
 -------------------------------------------------------------------------------
 
-#### Command 1 - Get Name
+#### Command 1 - Get Name Response
 
 Reponse to Get Name packet. 
 
@@ -217,7 +217,7 @@ Payload format:
     - angle in units of degree
     - range 0~180
 
-#### Command 3 - Get Pulse Width of Servo
+#### Command 3 - Get Pulse Width of Servo Response
 
 Response to Get Pulse Width of Servo packet.
 
@@ -511,15 +511,18 @@ Response to Poll Temperature packet.
 
 #### Command 0 - Set Volume
 
-Set volume of buzzer in M5StickC Plus.
+Set volume of buzzer in M5StickC-Plus.
 
 | volume |
 |:-------:|
 | uint8_t |
 
+- **volume**
+    - default volume is 8
+
 #### Command 1 - Get Volume
 
-Request volume of buzzer in M5StickC Plus
+Request packet containing volume of buzzer in M5StickC-Plus.
 
 #### Command 2 - Set Frequency and Duration of Tone
 
@@ -535,30 +538,75 @@ Set frequency and duration of buzzer tone in M5StickC Plus.
 - **duration**
     - duration of note in unts of ms
 
-#### Command 3 - Read Frequency and Duration of Tone
+#### Command 3 - Get Frequency and Duration of Tone
 
-Request frequency and duration of buzzer tone in M5StickC Plus.
+Request packet containing frequency and duration of buzzer tone in M5StickC Plus.
 
 #### Command 4 - Mute Buzzer
 
-Mute the buzzer in M5StickC Plus.
+Mute the buzzer in M5StickC-Plus.
 
 #### From Robot
 -------------------------------------------------------------------------------
+
+#### Command 1 - Get Volume Response
+
+Response to Get Volume packet.
+
+| volume |
+|:-------:|
+| uint8_t |
+
+- **volume**
+    - default volume is 8
+
+#### Command 3 - Get Frequency and Duration of Tone
+
+Response to Get Frequency and Duration of Tone packet.
+
+| freq | duration |
+|:-------:|:------:|
+| uint16_t | uint32_t |
+
+- **freq**
+    - frequency of note in units of hz
+
+- **duration**
+    - duration of note in unts of ms
 
 ### Peripheral 9 - Infrared Transmitter
 
 #### To Robot
 -------------------------------------------------------------------------------
 
-#### Command 0 - Turn on IR TX
+#### Command 0 - Set State of IR TX
 
-#### Command 1 - Turn off IR TX
+Set the state of the infrared transmitter.
 
-#### Command 2 - Get Status of IR TX
+| state | 
+|:-------:|
+| uint8_t |
+
+- **state**
+    - '0' = off, '1' = on
+
+#### Command 1 - Get State of IR TX
+
+Request a packet containing state of the infrared transmitter.
 
 #### From Robot
 -------------------------------------------------------------------------------
+
+#### Command 1 - Get State of IR TX Response
+
+Response to Get State of IR TX packet.
+
+| state | 
+|:-------:|
+| uint8_t |
+
+- **state**
+    - '0' = off, '1' = on
 
 ### Peripheral 10 - Microphone
 
@@ -567,8 +615,14 @@ Mute the buzzer in M5StickC Plus.
 
 #### Command 0 - Get Volume
 
+Request packet containing volume from the microphone.
+
 #### From Robot
 -------------------------------------------------------------------------------
+
+#### Command 0 - Get Volume Reponse
+
+Response to Get Volume packet. To be implemented.
 
 ### Peripheral 11 - Power Management IC
 
