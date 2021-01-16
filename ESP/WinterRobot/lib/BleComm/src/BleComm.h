@@ -39,7 +39,7 @@
 #define DEBUG_RAW_OUTPUT false
 #define DEBUG_GENERAL    false
 #define DEBUG_MOTOR      false
-#define DEBUG_SERVO      true
+#define DEBUG_SERVO      false 
 #define DEBUG_I2C        false
 #define DEBUG_LED        false
 #define DEBUG_BUTTON     false
@@ -118,7 +118,7 @@ typedef struct
 
 typedef struct
 {
-    bool state;
+    uint8_t state;
 } PAYLOAD_RESP_BUTTON_STATE;
 
 typedef struct
@@ -169,7 +169,7 @@ typedef struct
 
 typedef struct
 {
-    bool state;
+    uint_8 state;
 } PAYLOAD_CMD_IR_SET_STATE, PAYLOAD_RESP_IR_GET_STATE;
 
 #pragma pack()
@@ -191,6 +191,7 @@ enum PERI_ID {
     PERI_IR,
     PERI_MICROPHONE,
     PERI_POWER,
+    PERI_RTC,
     PERI_GROVE,
     PERI_WIFI,
     PERI_CAMERA,
@@ -207,7 +208,7 @@ enum CMD_GENERAL {
 };
 
 enum RESP_GENERAL {
-    RESP_GENERAL_GET_NAME = 0
+    RESP_GENERAL_GET_NAME = 1
 };
 
 enum CMD_MOTOR {
@@ -216,7 +217,7 @@ enum CMD_MOTOR {
 };
 
 enum RESP_MOTOR {
-    RESP_MOTOR_GET_MOVEMENT_SPEED = 0
+    RESP_MOTOR_GET_MOVEMENT_SPEED = 1
 };
 
 enum MOTOR_MOVEMENT_ID {
@@ -237,8 +238,8 @@ enum CMD_SERVO {
 };
 
 enum RESP_SERVO {
-    RESP_SERVO_GET_ANGLE = 0,
-    RESP_SERVO_GET_PULSE_WIDTH
+    RESP_SERVO_GET_ANGLE = 1,
+    RESP_SERVO_GET_PULSE_WIDTH = 3
 };
 
 enum CMD_I2C {
@@ -247,7 +248,7 @@ enum CMD_I2C {
 };
 
 enum RESP_I2C {
-    RESP_I2C_GET_DATA = 0
+    RESP_I2C_GET_DATA = 1
 };
 
 enum CMD_LED {
@@ -256,7 +257,7 @@ enum CMD_LED {
 };
 
 enum RESP_LED {
-    RESP_LED_GET_BRIGHTNESS = 0
+    RESP_LED_GET_BRIGHTNESS = 1
 };
 
 enum CMD_BUTTON {
@@ -297,8 +298,8 @@ enum CMD_BUZZER {
 };
 
 enum RESP_BUZZER {
-    RESP_BUZZER_GET_VOLUME = 0,
-    RESP_BUZZER_GET_FREQ_DURATION
+    RESP_BUZZER_GET_VOLUME = 1,
+    RESP_BUZZER_GET_FREQ_DURATION = 3
 };
 
 enum CMD_IR {
@@ -307,8 +308,11 @@ enum CMD_IR {
 };
 
 enum RESP_IR {
-    RESP_IR_GET_STATE = 0,
+    RESP_IR_GET_STATE = 1
 };
+
+// TODO: Define packages for microphone, power, RTC, 
+// Grove, WiFi, Camera and extern ESP32.
 
 // ERRONO
 enum ERRONO {
@@ -341,7 +345,6 @@ class ServerCallbacks : public BLEServerCallbacks {
 class GetIdServiceCallbacks : public BLECharacteristicCallbacks {
     void onWrite(BLECharacteristic *pCharacteristic) {
         // TODO: handle incoming messages
-        uint8_t *data = pCharacteristic->getData();
     }
 };
 

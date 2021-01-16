@@ -13,7 +13,7 @@ uint8_t ledBrightness;
 uint8_t buzzerVolume;
 uint16_t buzzerFreq;
 uint32_t buzzerDuration;
-bool irState;
+uint8_t irState;
 uint8_t respCount;
 
 // Runtime global handles
@@ -105,7 +105,7 @@ void ServerCallbacks::onConnect(BLEServer *pServer) {
     M5.Lcd.println("Client Connected! Initializing peripherals...");
 
     // Stop robot
-    Move_stop(0); 
+    Move_stop(0);
     motorMovementId = MOTOR_MOVEMENT_STOP;
 
     // Initialize PWM
@@ -226,7 +226,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     PAYLOAD_RESP_MOTOR_GET_MOVEMENT_SPEED payload;
                     msg.peripheral = PERI_MOTOR;
                     msg.cmd = RESP_MOTOR_GET_MOVEMENT_SPEED;
-                    msg.count = respCount++; 
+                    msg.count = respCount++;
                     payload.movement_id = motorMovementId;
                     payload.speed = motorSpeed;
                     memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_MOTOR_GET_MOVEMENT_SPEED));
@@ -314,7 +314,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             }
             break;
         }
-        case PERI_I2C: { // TODO: get data not implemented
+        case PERI_I2C: {  // TODO: get data not implemented
             switch (msg->cmd) {
                 case CMD_I2C_GET_DATA: {
                     // TODO
@@ -413,7 +413,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             }
             break;
         }
-        case PERI_LCD: { // TODO
+        case PERI_LCD: {  // TODO
         }
         case PERI_IMU: {
             switch (msg->cmd) {
@@ -422,7 +422,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     PAYLOAD_RESP_IMU_GYRO payload;
                     msg.peripheral = PERI_IMU;
                     msg.cmd = RESP_IMU_GET_GYRO;
-                    msg.count = respCount++; 
+                    msg.count = respCount++;
                     M5.Imu.getGyroData(&payload.gyroX, &payload.gyroY, &payload.gyroZ);
                     memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_IMU_GYRO));
                     if (DEBUG_IMU) {
@@ -524,6 +524,8 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         Serial.print("DURATION");
                         Serial.println(payload->duration);
                     }
+                    buzzerFreq = payload->freq;
+                    buzzerDuration = payload->duration;
                     M5.Beep.tone(payload->freq, payload->duration);
                     break;
                 }
@@ -544,6 +546,14 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     pRespCharacteristic->notify();
                     break;
                 }
+                case CMD_BUZZER_MUTE: {
+                    if (DEBUG_BUZZER) {
+                        Serial.println("MUTE");
+                    }
+                    buzzerVolume = 0;
+                    M5.Beep.mute();
+                    break;
+                }
                 default:
                     Serial.println("How did you get here?");
             }
@@ -558,7 +568,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         Serial.println(1 - payload->state);
                     }
                     digitalWrite(IR_TX_PIN, 1 - payload->state);
-                    irState = 1 - payload->state;
+                    irState = payload->state;
                     break;
                 }
                 case CMD_IR_GET_STATE: {
@@ -588,6 +598,21 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
         }
         case PERI_POWER: {
             // TODO
+            break;
+        }
+        case PERI_RTC: {  // TODO
+            break;
+        }
+        case PERI_GROVE: {  // TODO
+            break;
+        }
+        case PERI_WIFI: {  // TODO
+            break;
+        }
+        case PERI_CAMERA: {  // TODO
+            break;
+        }
+        case PERI_EXTERN: {  // TODO
             break;
         }
         default: {
