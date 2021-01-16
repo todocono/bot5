@@ -169,7 +169,7 @@ typedef struct
 
 typedef struct
 {
-    uint_8 state;
+    uint8_t state;
 } PAYLOAD_CMD_IR_SET_STATE, PAYLOAD_RESP_IR_GET_STATE;
 
 #pragma pack()
