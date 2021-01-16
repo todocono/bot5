@@ -28,8 +28,31 @@
 #define CMD_CHARACTERISTIC_TX_UUID "f6a44d18-6e45-4631-b85e-da3817f10edd"  // UART service UUID
 #define CMD_CHARACTERISTIC_RX_UUID "f6a44d18-6e45-4632-b85e-da3817f10edd"  // UART service UUID
 
+// Pin Definition
 #define IR_TX_PIN 9
 #define LED_PIN 10
+#define LED_FREQ 5000
+#define LED_RESOLUTION 8
+#define LED_CHANNEL 2
+
+// Debug Flag
+#define DEBUG_RAW_OUTPUT false
+#define DEBUG_GENERAL    false
+#define DEBUG_MOTOR      false
+#define DEBUG_SERVO      false
+#define DEBUG_I2C        false
+#define DEBUG_LED        true 
+#define DEBUG_BUTTON     false
+#define DEBUG_LCD        false
+#define DEBUG_IMU        false
+#define DEBUG_BUZZER     false
+#define DEBUG_IR         false
+#define DEBUG_MICROPHONE false
+#define DEBUG_POWER      false
+#define DEBUG_GROVE      false
+#define DEBUG_WIFI       false
+#define DEBUG_CAMERA     false
+#define DEBUG_EXTERN     false
 
 /**
  * @brief Message struct 
@@ -164,7 +187,6 @@ enum PERI_ID {
     PERI_BUTTON,
     PERI_LCD,
     PERI_IMU,
-    PERI_TEMPERATURE,
     PERI_BUZZER,
     PERI_IR,
     PERI_MICROPHONE,
@@ -292,8 +314,6 @@ enum RESP_IR {
 enum ERRONO {
 };
 
-
-
 /**
  * @brief BLE Communication class
  * 
@@ -357,3 +377,6 @@ class RxCharacteristicCallbacks : public BLECharacteristicCallbacks {
 };
 
 #endif  // BLE_COMM_H
+
+// MISC
+// void ledcAnalogWrite(uint8_t channel, uint32_t value, uint32_t valueMax=255);

@@ -12,8 +12,6 @@ void setup()
     M5.begin();
 
     // caution: the pin is pulled up, set HIGH to turn off the LED
-    pinMode(LED_PIN, OUTPUT);
-    ledcWrite(LED_PIN, 0);
     RoverC_Init();
     ble.start();
 
@@ -31,11 +29,9 @@ void loop()
     if (ble.isConnected())
     {
         // Serial.println("connected");
-        delay(10);
     }
     else if (!ble.isConnected())
     {
         // Serial.println("disconnected");
     }
-    delay(500);
 }

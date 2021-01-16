@@ -12,11 +12,16 @@ uint8_t buzzerVolume;
 uint16_t buzzerFreq;
 uint32_t buzzerDuration;
 bool irState;
-const int freq = 5000;
-const int ledChannel = 0;
-const int resolution = 8;
 
 BleComm::BleComm() {
+    // Initialize peripherals
+    // TODO: Handle the initial values
+    motorMovementId = MOTOR_MOVEMENT_STOP;
+
+    // Initialize PWM
+    // pinMode(LED_PIN, OUTPUT);
+    ledcSetup(LED_CHANNEL, LED_FREQ, LED_RESOLUTION);
+    ledcAttachPin(LED_PIN, LED_CHANNEL);
 }
 
 BleComm::~BleComm() {
@@ -32,14 +37,8 @@ int BleComm::start() {
     uint64_t chipid = ESP.getEfuseMac();
     String blename = "BOT5-" + String((uint32_t)(chipid >> 32), HEX);
     BLEDevice::init(blename.c_str());
-
-    // Initialize peripherals
-    // TODO: Handle the initial values
     sprintf(name, blename.c_str());
-    motorMovementId = MOTOR_MOVEMENT_STOP;
-    // Initialize PWM
-    ledcSetup(ledChannel, freq, resolution);
-    ledcAttachPin(LED_PIN, ledChannel);
+
 
     // Create the BLE Server
     pServer = BLEDevice::createServer();
@@ -127,13 +126,30 @@ int BleComm::recvMsg() {
 void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
     MESSAGE *msg = (MESSAGE *)pCharacteristic->getData();
     // TODO: error check
+
+    // For debugging
+    if (DEBUG_RAW_OUTPUT) {
+        Serial.println(msg->peripheral);
+        Serial.println(msg->cmd);
+        Serial.println(msg->count);
+        for (int i = 0; i < 16; ++i)
+            Serial.println(msg->payload[i]);
+        Serial.println(msg->chksm);
+    }
+
     switch (msg->peripheral) {
         case PERI_GENERAL: {
             switch (msg->cmd) {
                 case CMD_GENERAL_SET_NAME: {
+                    // TODO: Find correct way to change name
                     PAYLOAD_CMD_GENERAL_SET_NAME *payload = (PAYLOAD_CMD_GENERAL_SET_NAME *)msg->payload;
-                    //TODO: TEST NEEDED
+                    if (DEBUG_GENERAL) {
+                        Serial.println("GENERAL SET NAME");
+                        Serial.println(payload->name);
+                    }
                     sprintf(name, payload->name);
+
+                    // This does not work;
                     esp_err_t errRc = ::esp_ble_gap_set_device_name(payload->name);
                     if (errRc != ESP_OK) {
                         log_e("esp_ble_gap_set_device_name: rc=%d %s", errRc, GeneralUtils::errorToString(errRc));
@@ -143,6 +159,9 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                 }
                 case CMD_GENERAL_GET_NAME: {
                     // TODO
+                    if (DEBUG_GENERAL) {
+                        Serial.println("GET NAME NOT IMPLEMENTED");
+                    }
                     break;
                 }
                 default:
@@ -156,27 +175,42 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                 case CMD_MOTOR_SET_MOVEMENT_SPEED: {
                     PAYLOAD_CMD_MOTOR_SET_MOVEMENT_SPEED *payload =
                         (PAYLOAD_CMD_MOTOR_SET_MOVEMENT_SPEED *)msg->payload;
+                    if (DEBUG_MOTOR) {
+                        Serial.print("MOVEMENT_ID ");
+                        Serial.println(payload->movement_id);
+                        Serial.print("SPEED ");
+                        Serial.println(payload->speed);
+                    }
                     switch (payload->movement_id) {
                         case MOTOR_MOVEMENT_FORWARD:
                             Move_forward(payload->speed);
+                            motorSpeed = payload->speed;
+                            Serial.println(motorSpeed);
                             break;
                         case MOTOR_MOVEMENT_BACK:
                             Move_back(payload->speed);
+                            motorSpeed = payload->speed;
                             break;
                         case MOTOR_MOVEMENT_LEFT:
                             Move_left(payload->speed);
+                            motorSpeed = payload->speed;
                             break;
                         case MOTOR_MOVEMENT_RIGHT:
                             Move_right(payload->speed);
+                            motorSpeed = payload->speed;
                             break;
                         case MOTOR_MOVEMENT_TURN_LEFT:
                             Move_turnleft(payload->speed);
+                            motorSpeed = payload->speed;
                             break;
                         case MOTOR_MOVEMENT_TURN_RIGHT:
                             Move_turnright(payload->speed);
+                            motorSpeed = payload->speed;
                             break;
                         case MOTOR_MOVEMENT_STOP:
                             Move_stop(payload->speed);
+                            motorSpeed = payload->speed;
+                            break;
                         default:
                             Serial.printf("How did you get here?");
                             break;
@@ -185,6 +219,9 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                 }
                 case CMD_MOTOR_GET_MOVEMENT_SPEED: {
                     //TODO
+                    if (DEBUG_MOTOR) {
+                        Serial.println("GET MOVEMENT SPEED NOT IMPLEMENTED");
+                    }
                     break;
                 }
                 default:
@@ -243,14 +280,23 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             switch (msg->cmd) {
                 case CMD_LED_SET_BRIGHTNESS: {
                     PAYLOAD_CMD_LED_SET_BRIGHTNESS *payload = (PAYLOAD_CMD_LED_SET_BRIGHTNESS *)msg->payload;
-                    ledcWrite(LED_PIN, payload->brightness);
+                    if (DEBUG_LED) {
+                        Serial.print("BRIGHTNESS ");
+                        Serial.println(payload->brightness);
+                    }
+                    // pin is pulled up, use 255 - brightness to get the correct behaviour
+                    ledcWrite(LED_CHANNEL, 255-payload->brightness); 
                     ledBrightness = payload->brightness;
                     break;
                 }
-                case CMD_LED_GET_BRIGHTNESS:
-                    // TODO
+                case CMD_LED_GET_BRIGHTNESS: {
+                    if (DEBUG_LED) {
+                        Serial.println("GET BRIGHTNESS NOT IMPLEMENTED");
+                    }
                     break;
+                }
                 default:
+                    Serial.println("How did you get here?");
                     break;
             }
             break;
@@ -441,3 +487,19 @@ void RxCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
         Move_stop(100);
     }
 }
+
+//MISC
+/**
+ * @brief 
+ * 
+ * @param channel 
+ * @param value 
+ * @param valueMax 
+//  */
+// void ledcAnalogWrite(uint8_t channel, uint32_t value, uint32_t valueMax) {
+//   // calculate duty, 8191 from 2 ^ 13 - 1
+//   uint32_t duty = (8191 / valueMax) * min(value, valueMax);
+
+//   // write duty to LEDC
+//   ledcWrite(channel, duty);
+// }
