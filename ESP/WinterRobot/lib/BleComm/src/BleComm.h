@@ -39,9 +39,9 @@
 #define DEBUG_RAW_OUTPUT false
 #define DEBUG_GENERAL    false
 #define DEBUG_MOTOR      false
-#define DEBUG_SERVO      false
+#define DEBUG_SERVO      true
 #define DEBUG_I2C        false
-#define DEBUG_LED        true 
+#define DEBUG_LED        false
 #define DEBUG_BUTTON     false
 #define DEBUG_LCD        false
 #define DEBUG_IMU        false
@@ -119,7 +119,7 @@ typedef struct
 typedef struct
 {
     bool state;
-} PAYLOAD_RESP_BUTTON_STATE_A, PAYLOAD_RESP_BUTTON_STATE_B;
+} PAYLOAD_RESP_BUTTON_STATE;
 
 typedef struct
 {
@@ -321,41 +321,20 @@ enum ERRONO {
 class BleComm {
    private:
     // Server
-    BLEServer *pServer = NULL;
-
-    // Service
-    BLEService *pIdentityService;
-    BLEService *pDevInfoService;
-    BLEService *pCmdService;
-
-    // Characteristics
-    BLECharacteristic *pRespCharacteristic;
-    BLECharacteristic *pCMDCharacteristic;
-
     // MISC
-    static bool deviceConnected;
-    static bool oldDeviceConnected;
-    static unsigned int messageCount;
 
    public:
     BleComm();
     ~BleComm();
-
-    // Robot variables
-
     int start();
     bool isConnected();
-    MESSAGE *genMsg(int dev, int characteristic, char **params);
-    int sendMsg(MESSAGE *msg);
-    int recvMsg();
+    static void printMessage(MESSAGE* msg);
 };
 
 // Server Callbacks
 class ServerCallbacks : public BLEServerCallbacks {
-    void onConnect(BLEServer *pServer) {
-    }
-    void onDisconnect() {
-    }
+    void onConnect(BLEServer *pServer);
+    void onDisconnect();
 };
 
 // Identity Service Callbacks
@@ -373,7 +352,7 @@ class CMDCharacteristicCallbacks : public BLECharacteristicCallbacks {
 
 // Rx Characteristic Callbacks
 class RxCharacteristicCallbacks : public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *pCharacteristic);
+    void onNotify(BLECharacteristic *pCharacteristic);
 };
 
 #endif  // BLE_COMM_H
