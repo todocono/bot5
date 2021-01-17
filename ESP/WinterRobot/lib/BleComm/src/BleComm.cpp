@@ -225,7 +225,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_MOTOR_GET_MOVEMENT_SPEED payload;
                     msg.peripheral = PERI_MOTOR;
-                    msg.cmd = RESP_MOTOR_GET_MOVEMENT_SPEED;
+                    msg.cmd = CMD_MOTOR_GET_MOVEMENT_SPEED;
                     msg.count = respCount++;
                     payload.movement_id = motorMovementId;
                     payload.speed = motorSpeed;
@@ -265,7 +265,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_SERVO_GET_ANGLE respPayload;
                     msg.peripheral = PERI_SERVO;
-                    msg.cmd = RESP_SERVO_GET_ANGLE;
+                    msg.cmd = CMD_SERVO_GET_ANGLE;
                     msg.count = respCount++;
                     respPayload.channel = cmdPayload->channel;
                     respPayload.angle = servoAngle[cmdPayload->channel];
@@ -297,7 +297,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_SERVO_GET_PULSE_WIDTH respPayload;
                     msg.peripheral = PERI_SERVO;
-                    msg.cmd = RESP_SERVO_GET_PULSE_WIDTH;
+                    msg.cmd = CMD_SERVO_GET_PULSE_WIDTH;
                     msg.count = respCount++;
                     respPayload.channel = cmdPayload->channel;
                     respPayload.width = servoWidth[cmdPayload->channel];
@@ -357,7 +357,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_LED_GET_BRIGHTNESS payload;
                     msg.peripheral = PERI_LED;
-                    msg.cmd = RESP_LED_GET_BRIGHTNESS;
+                    msg.cmd = CMD_LED_GET_BRIGHTNESS;
                     msg.count = respCount++;
                     payload.brightness = ledBrightness;
                     memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_LED_GET_BRIGHTNESS));
@@ -382,7 +382,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_BUTTON_STATE payload;
                     msg.peripheral = PERI_BUTTON;
-                    msg.cmd = RESP_BUTTON_GET_STATE_A;
+                    msg.cmd = CMD_BUTTON_GET_STATE_A;
                     msg.count = respCount++;
                     payload.state = M5.BtnA.read();
                     memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_BUTTON_STATE));
@@ -399,7 +399,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_BUTTON_STATE payload;
                     msg.peripheral = PERI_BUTTON;
-                    msg.cmd = RESP_BUTTON_GET_STATE_B;
+                    msg.cmd = CMD_BUTTON_GET_STATE_B;
                     msg.count = respCount++;
                     payload.state = M5.BtnB.read();
                     memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_BUTTON_STATE));
@@ -427,7 +427,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_IMU_GYRO payload;
                     msg.peripheral = PERI_IMU;
-                    msg.cmd = RESP_IMU_GET_GYRO;
+                    msg.cmd = CMD_IMU_POLL_GYRO;
                     msg.count = respCount++;
                     M5.Imu.getGyroData(&payload.gyroX, &payload.gyroY, &payload.gyroZ);
                     memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_IMU_GYRO));
@@ -443,7 +443,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_IMU_ACCE payload;
                     msg.peripheral = PERI_IMU;
-                    msg.cmd = RESP_IMU_GET_ACCE;
+                    msg.cmd = CMD_IMU_POLL_ACCE;
                     msg.count = respCount++;
                     M5.Imu.getAccelData(&payload.acceX, &payload.acceY, &payload.acceZ);
                     memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_IMU_ACCE));
@@ -459,7 +459,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_IMU_AHRS payload;
                     msg.peripheral = PERI_IMU;
-                    msg.cmd = RESP_IMU_GET_AHRS;
+                    msg.cmd = CMD_IMU_POLL_AHRS;
                     msg.count = respCount++;
                     M5.Imu.getAhrsData(&payload.pitch, &payload.roll, &payload.yaw);
                     memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_IMU_AHRS));
@@ -475,7 +475,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_IMU_TEMP payload;
                     msg.peripheral = PERI_IMU;
-                    msg.cmd = RESP_IMU_GET_TEMP;
+                    msg.cmd = CMD_IMU_POLL_TEMP;
                     msg.count = respCount++;
                     M5.Imu.getTempData(&payload.temp);
                     memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_IMU_TEMP));
@@ -509,7 +509,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_BUZZER_GET_VOLUME payload;
                     msg.peripheral = PERI_BUZZER;
-                    msg.cmd = RESP_BUZZER_GET_VOLUME;
+                    msg.cmd = CMD_BUZZER_GET_VOLUME;
                     msg.count = respCount++;
                     payload.volume = buzzerVolume;
                     memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_BUZZER_GET_VOLUME));
@@ -539,7 +539,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_BUZZER_GET_FREQ_DURATION payload;
                     msg.peripheral = PERI_BUZZER;
-                    msg.cmd = RESP_BUZZER_GET_FREQ_DURATION;
+                    msg.cmd = CMD_BUZZER_GET_FREQ_DURATION;
                     msg.count = respCount++;
                     payload.freq = buzzerFreq;
                     payload.duration = buzzerDuration;
@@ -581,7 +581,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_IR_GET_STATE payload;
                     msg.peripheral = PERI_IR;
-                    msg.cmd = RESP_IR_GET_STATE;
+                    msg.cmd = CMD_IR_GET_STATE;
                     msg.count = respCount++;
                     payload.state = irState;
                     memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_IR_GET_STATE));
