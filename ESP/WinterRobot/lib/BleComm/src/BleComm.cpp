@@ -222,7 +222,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     break;
                 }
                 case CMD_MOTOR_GET_MOVEMENT_SPEED: {
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_MOTOR_GET_MOVEMENT_SPEED payload;
                     msg.peripheral = PERI_MOTOR;
                     msg.cmd = RESP_MOTOR_GET_MOVEMENT_SPEED;
@@ -235,12 +235,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         BleComm::printMessage(&msg);
                     }
 
-                    // zeroing out unused bytes
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_MOTOR_GET_MOVEMENT_SPEED);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
-                    }
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
                     pRespCharacteristic->notify();
                     break;
@@ -268,7 +262,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                 case CMD_SERVO_GET_ANGLE: {
                     PAYLOAD_CMD_SERVO_GET_ANGLE *cmdPayload =
                         (PAYLOAD_CMD_SERVO_GET_ANGLE *)msg->payload;
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_SERVO_GET_ANGLE respPayload;
                     msg.peripheral = PERI_SERVO;
                     msg.cmd = RESP_SERVO_GET_ANGLE;
@@ -279,13 +273,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     if (DEBUG_SERVO) {
                         Serial.println("SERVO ANGLE");
                         BleComm::printMessage(&msg);
-                    }
-
-                    // zeroing out unused bytes
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_SERVO_GET_ANGLE);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
                     }
 
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
@@ -307,7 +294,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                 case CMD_SERVO_GET_PULSE_WIDTH: {
                     PAYLOAD_CMD_SERVO_GET_PULSE_WIDTH *cmdPayload =
                         (PAYLOAD_CMD_SERVO_GET_PULSE_WIDTH *)msg->payload;
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_SERVO_GET_PULSE_WIDTH respPayload;
                     msg.peripheral = PERI_SERVO;
                     msg.cmd = RESP_SERVO_GET_PULSE_WIDTH;
@@ -318,13 +305,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     if (DEBUG_SERVO) {
                         Serial.println("SERVO WIDTH");
                         BleComm::printMessage(&msg);
-                    }
-
-                    // zeroing out unused bytes
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_SERVO_GET_PULSE_WIDTH);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
                     }
 
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
@@ -374,7 +354,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     break;
                 }
                 case CMD_LED_GET_BRIGHTNESS: {
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_LED_GET_BRIGHTNESS payload;
                     msg.peripheral = PERI_LED;
                     msg.cmd = RESP_LED_GET_BRIGHTNESS;
@@ -384,13 +364,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     if (DEBUG_LED) {
                         Serial.println("LED");
                         BleComm::printMessage(&msg);
-                    }
-
-                    // zeroing out unused bytes 
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_LED_GET_BRIGHTNESS);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
                     }
 
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
@@ -406,7 +379,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
         case PERI_BUTTON: {
             switch (msg->cmd) {
                 case CMD_BUTTON_GET_STATE_A: {
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_BUTTON_STATE payload;
                     msg.peripheral = PERI_BUTTON;
                     msg.cmd = RESP_BUTTON_GET_STATE_A;
@@ -418,19 +391,12 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         BleComm::printMessage(&msg);
                     }
 
-                    // zeroing out unused bytes 
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_BUTTON_STATE);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
-                    }
-
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
                     pRespCharacteristic->notify();
                     break;
                 }
                 case CMD_BUTTON_GET_STATE_B: {
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_BUTTON_STATE payload;
                     msg.peripheral = PERI_BUTTON;
                     msg.cmd = RESP_BUTTON_GET_STATE_B;
@@ -440,13 +406,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     if (DEBUG_BUTTON) {
                         Serial.println("BUTTON B");
                         BleComm::printMessage(&msg);
-                    }
-
-                    // zeroing out unused bytes
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_BUTTON_STATE);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
                     }
 
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
@@ -465,7 +424,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
         case PERI_IMU: {
             switch (msg->cmd) {
                 case CMD_IMU_POLL_GYRO: {
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_IMU_GYRO payload;
                     msg.peripheral = PERI_IMU;
                     msg.cmd = RESP_IMU_GET_GYRO;
@@ -476,18 +435,12 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         Serial.println("GYRO");
                         BleComm::printMessage(&msg);
                     }
-                    // zeroing out unused bytes 
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_IMU_GYRO);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
-                    }
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
                     pRespCharacteristic->notify();
                     break;
                 }
                 case CMD_IMU_POLL_ACCE: {
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_IMU_ACCE payload;
                     msg.peripheral = PERI_IMU;
                     msg.cmd = RESP_IMU_GET_ACCE;
@@ -498,18 +451,12 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         Serial.println("ACCE");
                         BleComm::printMessage(&msg);
                     }
-                    // zeroing out unused bytes
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_IMU_ACCE);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
-                    }
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
                     pRespCharacteristic->notify();
                     break;
                 }
                 case CMD_IMU_POLL_AHRS: {
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_IMU_AHRS payload;
                     msg.peripheral = PERI_IMU;
                     msg.cmd = RESP_IMU_GET_AHRS;
@@ -520,18 +467,12 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         Serial.println("AHRS");
                         BleComm::printMessage(&msg);
                     }
-                    // zeroing out unused bytes 
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_IMU_AHRS);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
-                    }
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
                     pRespCharacteristic->notify();
                     break;
                 }
                 case CMD_IMU_POLL_TEMP: {
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_IMU_TEMP payload;
                     msg.peripheral = PERI_IMU;
                     msg.cmd = RESP_IMU_GET_TEMP;
@@ -541,12 +482,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     if (DEBUG_IMU) {
                         Serial.println("TEMP");
                         BleComm::printMessage(&msg);
-                    }
-                    // zeroing out unused bytes 
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_IMU_TEMP);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
                     }
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
                     pRespCharacteristic->notify();
@@ -571,7 +506,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     break;
                 }
                 case CMD_BUZZER_GET_VOLUME: {
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_BUZZER_GET_VOLUME payload;
                     msg.peripheral = PERI_BUZZER;
                     msg.cmd = RESP_BUZZER_GET_VOLUME;
@@ -581,12 +516,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     if (DEBUG_BUZZER) {
                         Serial.println("BUZZER VOLUME");
                         BleComm::printMessage(&msg);
-                    }
-                    // zeroing out unused bytes
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_BUZZER_GET_VOLUME);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
                     }
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
                     pRespCharacteristic->notify();
@@ -607,7 +536,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     break;
                 }
                 case CMD_BUZZER_GET_FREQ_DURATION: {
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_BUZZER_GET_FREQ_DURATION payload;
                     msg.peripheral = PERI_BUZZER;
                     msg.cmd = RESP_BUZZER_GET_FREQ_DURATION;
@@ -618,12 +547,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     if (DEBUG_BUZZER) {
                         Serial.println("BUZZER FREQ DURATION");
                         BleComm::printMessage(&msg);
-                    }
-                    // zeroing out unused bytes 
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_BUZZER_GET_FREQ_DURATION);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
                     }
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
                     pRespCharacteristic->notify();
@@ -655,7 +578,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     break;
                 }
                 case CMD_IR_GET_STATE: {
-                    MESSAGE msg;
+                    MESSAGE msg = {};
                     PAYLOAD_RESP_IR_GET_STATE payload;
                     msg.peripheral = PERI_IR;
                     msg.cmd = RESP_IR_GET_STATE;
@@ -665,12 +588,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     if (DEBUG_BUZZER) {
                         Serial.println("IR STATE");
                         BleComm::printMessage(&msg);
-                    }
-                    // zeroing out unused bytes
-                    for (uint8_t i = 3 + sizeof(PAYLOAD_RESP_IR_GET_STATE);
-                         i < 20;
-                         ++i) {
-                        ((uint8_t *)&msg)[i] = 0;
                     }
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
                     pRespCharacteristic->notify();
