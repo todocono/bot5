@@ -27,36 +27,43 @@
 ## Methods for Peripherals
 
 ### Peripheral 0 - General
+
 To be implemented
 
 ### Peripheral 1 - Motors
 
 **bot5.motors.forward(speed, time=0)**
+
 Parameters:
 - speed: -127~127
 - time: default is 0, in units of ms
 
 **bot5.motors.back(speed, time=0)**
+
 Parameters:
 - speed: -127~127
 - time: default is 0, in units of ms
 
 **bot5.motors.left(speed)**
+
 Parameters:
 - speed: -127~127
 - time: default is 0, in units of ms
 
 **bot5.motors.right(speed)**
+
 Parameters:
 - speed: -127~127
 - time: default is 0, in units of ms
 
 **bot5.motors.turnleft(speed)**
+
 Parameters:
 - speed: -127~127
 - time: default is 0, in units of ms
 
 **bot5.motors.turnright(speed)**
+
 Parameters:
 - speed: -127~127
 - time: default is 0, in units of ms
@@ -66,10 +73,12 @@ Parameters:
 ### Peripheral 2 - Servos
 
 **bot5.servos.getAngle(channel)**
+
 Parameters:
 - channel: servo channel, either `1` or `2`
 
 **bot5.servos.setAngle(channel, angle)**
+
 Parameters:
 - channel: servo channel, either `1` or `2`
 - angle: 0~180 in units of degrees
@@ -81,6 +90,7 @@ To be implemented
 ### Peripheral 4 - Red LED
 
 **bot5.led.setBrightness(brightness)**
+
 Parameters:
 - brightness: 0~255
 
@@ -95,6 +105,7 @@ Parameters:
 ### Peripheral 6 - LCD
 
 **bot5.lcd.display(string)**
+
 Parameters:
 - string: less than or equal to 16 bytes
 
@@ -111,13 +122,15 @@ Parameters:
 ### Peripheral 8 - Buzzer
 
 **bot5.buzzer.setVolume(volume)**
+
 Parameters:
 - volume: 0~11
 
 **bot5.buzzer.getVolume()**
 
 **bot5.buzzer.setTone(freq, duration=0)**
-Parametesr:
+
+Parameters:
 - freq: in units of hz
 - duration: in units of ms
 
@@ -128,11 +141,13 @@ Parametesr:
 ### Peripheral 9 - Infrared Transmitter
 
 **bot5.IR.setState(state)**
-Parameter:
+
+Parameters:
 - state: `0`=off, `1`=on
 
 **bot5.IR.setState(state)**
-Parameter:
+
+Parameters:
 - state: `0`=off, `1`=on
 
 ### Peripheral 10 - Microphone
