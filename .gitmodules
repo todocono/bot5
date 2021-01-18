@@ -1,4 +1,3 @@
-[submodule "p5.ble.js"]
-    path = Web/lib/p5blejs
-    url = https://github.com/Zander-M/p5.ble.js
-    branch = master
+[submodule "Web/lib/p5ble"]
+	path = Web/lib/p5ble
+	url = https://github.com/Zander-M/p5.ble.js
