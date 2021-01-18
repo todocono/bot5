@@ -166,7 +166,7 @@ Payload format:
 | uint8_t | uint8_t |
 
 - **servo channel**
-    - '1' = Servo 1, '2' = Servo 2
+    - `1` = Servo 1, `2` = Servo 2
 
 - **angle**
     - angle in units of degree
@@ -175,6 +175,15 @@ Payload format:
 #### Command 1 - Get Angle of Servo
 
 Request response packet containing the angle of the servo.
+
+Payload format:
+
+| servo channel |
+|:-------:|
+| uint8_t |
+
+- **servo channel**
+    - `1` = Servo 1, `2` = Servo 2
 
 #### Command 2 - Set Pulse Width of Servo
 
@@ -187,7 +196,7 @@ Payload format:
 | uint8_t | uint16_t |
 
 - **servo channel**
-    - '1' = Servo 1, '2' = Servo 2
+    - `1` = Servo 1, `2` = Servo 2
 
 - **angle**
     - angle in units of microsecond
@@ -196,6 +205,15 @@ Payload format:
 #### Command 3 - Get Pulse Width of Servo
 
 Request response packet containing the pulse width of the servo.
+
+Payload format:
+
+| servo channel |
+|:-------:|
+| uint8_t |
+
+- **servo channel**
+    - `1` = Servo 1, `2` = Servo 2
 
 #### From Robot
 -------------------------------------------------------------------------------
@@ -211,7 +229,7 @@ Payload format:
 | uint8_t | uint8_t |
 
 - **servo channel**
-    - '1' = Servo 1, '2' = Servo 2
+    - `1` = Servo 1, `2` = Servo 2
 
 - **angle**
     - angle in units of degree
@@ -228,7 +246,7 @@ Payload format:
 | uint8_t | uint16_t |
 
 - **servo channel**
-    - '1' = Servo 1, '2' = Servo 2
+    - `1` = Servo 1, `2` = Servo 2
 
 - **angle**
     - angle in units of microsecond
