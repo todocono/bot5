@@ -320,15 +320,36 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             }
             break;
         }
-        case PERI_I2C: {  // TODO: get data not implemented
+        case PERI_I2C: {  // TODO: Test
             switch (msg->cmd) {
                 case CMD_I2C_GET_DATA: {
-                    // TODO
+                    PAYLOAD_CMD_I2C_GET_DATA *cmdPayload = (PAYLOAD_CMD_I2C_GET_DATA *)msg->payload;
+                    MESSAGE msg = {};
+                    PAYLOAD_RESP_I2C_GET_DATA respPayload;
+                    msg.peripheral = PERI_I2C;
+                    msg.cmd = RESP_I2C_GET_DATA;
+                    msg.count = respCount++;
+                    respPayload.address = cmdPayload->address;
+                    Wire.requestFrom(cmdPayload->address, cmdPayload->quantity);
+                    respPayload.data = Wire.read();
+                    while (Wire.available()) {
+                        respPayload.data <<= 8;
+                        respPayload.data |= Wire.read();
+                    }
+                    memcpy(&msg.payload, &respPayload, sizeof(PAYLOAD_RESP_I2C_GET_DATA));
+                    if (DEBUG_I2C) {
+                        Serial.println("I2C");
+                        BleComm::printMessage(&msg);
+                    }
+                    pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
+                    pRespCharacteristic->notify();
                     break;
                 }
                 case CMD_I2C_SET_DATA: {
                     PAYLOAD_CMD_I2C_SET_DATA *payload = (PAYLOAD_CMD_I2C_SET_DATA *)msg->payload;
-                    Send_iic(payload->address, payload->data);
+                    Wire.beginTransmission(payload->address);
+                    Wire.write(payload->data);
+                    Wire.endTransmission();
                     if (DEBUG_I2C) {
                         Serial.print("ADDRESS ");
                         Serial.println(payload->address);

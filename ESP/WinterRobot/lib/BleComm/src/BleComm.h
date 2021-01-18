@@ -103,8 +103,14 @@ typedef struct
 typedef struct
 {
     uint8_t address;
-    uint16_t data;
+    uint32_t data;
 } PAYLOAD_CMD_I2C_SET_DATA, PAYLOAD_RESP_I2C_GET_DATA;
+
+typedef struct
+{
+    uint8_t address;
+    uint8_t quantity;
+} PAYLOAD_CMD_I2C_GET_DATA;
 
 typedef struct
 {
