@@ -38,7 +38,7 @@ Each peripheral implements a series of commands. The command number tells each p
 
 **Packet ID** (1 byte)
 
-Each packet has an identifying number. This number begins at zero and increments each time a packet is sent to the robot. When the number reaches a value of 255, it is resetted to 0. In cases where the packet is a response to a previous request, the packet ID will match the ID from the request. 
+Each packet has an identifying number. This number begins at zero and increments each time a packet is sent to the robot. When the number reaches a value of 255, it resets to 0. In cases where the packet is a response to a previous request, the packet ID will match the ID from the request. 
 
 **Payload** (16 bytes)
 
@@ -257,7 +257,7 @@ Payload format:
 #### To Robot
 -------------------------------------------------------------------------------
 
-#### Command 0 - Write Data for I2C Device
+#### Command 0 - Write Data to I2C Device
 
 Allow writing to the two ports on the chassis.
 
@@ -732,9 +732,9 @@ To be implemented
 #### To Robot
 -------------------------------------------------------------------------------
 
-#### Command 0 - Get Data From Hall Effect Sensor
+#### Command 0 - Serial Print
 
-#### Command 1 - Serial Print
+#### Command 1 - Get Data From Hall Effect Sensor
 
 #### From Robot
 -------------------------------------------------------------------------------
