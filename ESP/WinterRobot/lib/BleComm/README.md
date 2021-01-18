@@ -250,7 +250,7 @@ Payload format:
 | uint8_t | uint16_t |
 
 - **address**
-    - format is 0xXX
+    - format is 0x57
     - will update addresses here later
 
 - **data**
