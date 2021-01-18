@@ -265,9 +265,10 @@ Payload format:
 
 | address | data |
 |:-------:|:-----:|
-| uint8_t | uint16_t |
+| uint8_t | uint8_t |
 
 - **address**
+    - address of the device to write bytes to
     - address of chassis Grove port is `0x57`
 
 - **data**
@@ -279,12 +280,16 @@ Request packet containing data read from I2C device.
 
 Payload format:
 
-| address |
-|:-------:|
-| uint8_t |
+| address | quantity |
+|:-------:|:--------:|
+| uint8_t | uint8_t |
 
 - **address**
+    - address of the device to request bytes from
     - address of chassis Grove port is `0x57`
+    
+- **quantity**
+    - number of bytes to request
 
 #### From Robot
 -------------------------------------------------------------------------------
@@ -297,7 +302,7 @@ Payload format:
 
 | address | data |
 |:-------:|:-----:|
-| uint8_t | uint16_t |
+| uint8_t | uint32_t |
 
 - **address**
     - address of chassis Grove port is `0x57`
