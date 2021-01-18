@@ -11,15 +11,14 @@ class BleComm {
     disconnect() { // Disconnect from BLE device
     }
     isConnected() { // Return whether the device is connected
-
     }
-    startNotify() { // Start notification for characteristic
+    startNotification() { // Start notification for characteristic
     }
-    stopNotify() { // Stop notification for characteristic
+    stopNotification() { // Stop notification for characteristic
     }
     sendCommand() { // Send command
     }
-    receiveNotify() { // Parse notification message
+    parseResponse() { // Parse response message
     }
 }
 
