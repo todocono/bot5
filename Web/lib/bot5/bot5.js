@@ -1,27 +1,4 @@
-import {p5ble} from "../p5ble/dist/p5.ble.js";
-
-class Bot5 {
-    constructor() {
-        this._message = new ArrayBuffer(20);
-        this._messageCount = 0;
-        this._p5ble = new p5ble();
-    }
-    connect() { // Connect to BLE device
-    }
-    disconnect() { // Disconnect from BLE device
-    }
-    isConnected() { // Return whether the device is connected
-    }
-    startNotification() { // Start notification for characteristic
-    }
-    stopNotification() { // Stop notification for characteristic
-    }
-    sendCommand() { // Send command
-    }
-    parseResponse() { // Parse response message
-    }
-}
-
+import { p5ble } from "../p5ble/dist/p5.ble.js";
 // Movement IDs
 const MovementId = {
     FORWARD: 0,
@@ -115,5 +92,329 @@ const Cmd = {
 
 // Payload 
 const Payload = {
+}
+
+class Bot5 {
+    constructor() {
+        this._p5ble = new p5ble();
+        this._message = new ArrayBuffer(20);
+        this._messageCount = 0;
+        this._p5ble = new p5ble();
+        this._isConnected = false;
+        this._respCharacteristic;
+        this._cmdCharacteristic;
+    }
+    connect(serviceUuid) { // Connect to BLE device
+        this._p5ble.connect(serviceUuid, this._gotCharacteristics);
+        this._isConnected = true;
+    }
+    _gotCharacteristics(error, characteristics) {
+        if (error) {
+            console.log(error);
+        }
+        this._respCharacteristic = characteristics[0];
+        this._cmdCharacteristic = characteristics[1];
+    }
+    disconnect() { // Disconnect from BLE device
+        this._p5ble.disconnect();
+        this._isConnected = false;
+    }
+    isConnected() { // Return whether the device is connected
+        return this._isConnected;
+    }
+    _parseResponse() { // Parse response message
+    }
+    startNotification() { // Start notification for characteristic
+    }
+    stopNotification() { // Stop notification for characteristic
+    }
+
+    motors = {
+        forward: (speed) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.MOTOR);
+            v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, MovementId.FORWARD);
+            v.setInt8(4, speed);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        back: (speed) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.MOTOR);
+            v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, MovementId.BACK);
+            v.setInt8(4, speed);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        left: (speed) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.MOTOR);
+            v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, MovementId.LEFT);
+            v.setInt8(4, speed);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        right: (speed) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.MOTOR);
+            v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, MovementId.RIGHT);
+            v.setInt8(4, speed);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+
+        },
+        turnLeft: (speed) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.MOTOR);
+            v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, MovementId.TURN_LEFT);
+            v.setInt8(4, speed);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        turnRight: (speed) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.MOTOR);
+            v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, MovementId.TURN_RIGHT);
+            v.setInt8(4, speed);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        stop: () => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.MOTOR);
+            v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, MovementId.STOP);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        getMovementSpeed: () => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.MOTOR);
+            v.setUint8(1, Cmd.MOTOR.GET_MOVEMENT_SPEED);
+            v.setUint8(2, this._messageCount++);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        }
+    };
+    servos = {
+        setAngle: (channel, angle) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.SERVO);
+            v.setUint8(1, Cmd.SERVO.SET_ANGLE);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, channel);
+            v.setUint8(4, angle);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        getAngle: (channel) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.SERVO);
+            v.setUint8(1, Cmd.SERVO.GET_ANGLE);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, channel);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        setPulseWidth: (channel, width) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.SERVO);
+            v.setUint8(1, Cmd.SERVO.SET_PULSE_WIDTH);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, channel);
+            v.setUint16(4, width);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        getPulseWidth: (channel) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.SERVO);
+            v.setUint8(1, Cmd.SERVO.GET_PULSE_WIDTH);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, channel);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+
+        }
+    };
+    i2c = {
+        setData: (address, data) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.I2C);
+            v.setUint8(1, Cmd.I2C.SET_DATA);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, address);
+            v.setUint8(4, data);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        getData: (address, quantity) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.I2C);
+            v.setUint8(1, Cmd.I2C.GET_DATA);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, address);
+            v.setUint8(4, quantity);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        }
+
+    };
+    led = {
+        setBrightness: (brightness) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.LED);
+            v.setUint8(1, Cmd.LED.SET_BRIGHTNESS);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, brightness);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        getBrightness: () => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.LED);
+            v.setUint8(1, Cmd.LED.GET_BRIGHTNESS);
+            v.setUint8(2, this._messageCount++);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        }
+    };
+    button = {
+        getStateA: () => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.BUTTON);
+            v.setUint8(1, Cmd.BUTTON.GET_STATE_A);
+            v.setUint8(2, this._messageCount++);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        getStateB: () => {
+
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.BUTTON);
+            v.setUint8(1, Cmd.BUTTON.GET_STATE_B);
+            v.setUint8(2, this._messageCount++);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        }
+    };
+    lcd = { // TODO: modify esp code
+        display: (input) => {
+        }
+    };
+    imu = {
+        getGyro: () => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.IMU);
+            v.setUint8(1, Cmd.IMU.POLL_GYRO);
+            v.setUint8(2, this._messageCount++);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        getAcce: () => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.IMU);
+            v.setUint8(1, Cmd.IMU.POLL_ACCE);
+            v.setUint8(2, this._messageCount++);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        getAhrs: () => {
+
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.IMU);
+            v.setUint8(1, Cmd.IMU.POLL_AHRS);
+            v.setUint8(2, this._messageCount++);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+         },
+        getTemp: () => { 
+
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.IMU);
+            v.setUint8(1, Cmd.IMU.POLL_TEMP);
+            v.setUint8(2, this._messageCount++);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        }
+
+    };
+    buzzer = {
+        setVolume: (volume) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.BUZZER);
+            v.setUint8(1, Cmd.BUZZER.SET_VOLUME);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, volume);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+         },
+        getVolume: () => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.BUZZER);
+            v.setUint8(1, Cmd.BUZZER.GET_VOLUME);
+            v.setUint8(2, this._messageCount++);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+         },
+        setTone: (freq, duration) => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.BUZZER);
+            v.setUint8(1, Cmd.BUZZER.SET_FREQ_DURATION);
+            v.setUint8(2, this._messageCount++);
+            v.setUint16(3, freq);
+            v.setUint32(5, duration);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+         },
+        getTone: () => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.BUZZER);
+            v.setUint8(1, Cmd.BUZZER.GET_FREQ_DURATION);
+            v.setUint8(2, this._messageCount++);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+         },
+        mute: () => { 
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.BUZZER);
+            v.setUint8(1, Cmd.BUZZER.MUTE);
+            v.setUint8(2, this._messageCount++);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        }
+    };
+    ir = {
+        setState: (state) => { 
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.IR);
+            v.setUint8(1, Cmd.IR.SET_STATE);
+            v.setUint8(2, this._messageCount++);
+            v.setUint8(3, state);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+        },
+        getState: () => {
+            msg = new ArrayBuffer(20);
+            v = new DataView(msg);
+            v.setUint8(0, Peri.IR);
+            v.setUint8(1, Cmd.IR.GET_STATE);
+            v.setUint8(2, this._messageCount++);
+            this._p5ble.write(this._cmdCharacteristic, msg);
+         }
+    };
 }
 
