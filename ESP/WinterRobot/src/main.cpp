@@ -16,12 +16,15 @@ void setup()
     ble.start();
 
     Serial.println("Starting BLE Service...");
-
+    M5.Lcd.setRotation(3);
     M5.Lcd.fillScreen(BLACK);
     M5.Lcd.setCursor(0, 10);
     M5.Lcd.setTextColor(WHITE);
     M5.Lcd.setTextSize(2);
-    M5.Lcd.printf("Starting BLE Service...");
+    M5.Lcd.println("Starting BLE Service...");
+    uint64_t chipid = ESP.getEfuseMac();
+    String blename = "BOT5-" + String((uint32_t)(chipid >> 32), HEX);
+    M5.Lcd.printf(String("Name:"+blename+"\n").c_str());
 }
 
 void loop()

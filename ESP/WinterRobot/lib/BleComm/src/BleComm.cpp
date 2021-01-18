@@ -102,6 +102,9 @@ void ServerCallbacks::onConnect(BLEServer *pServer) {
     M5.Lcd.setCursor(0, 10);
     M5.Lcd.setTextColor(WHITE);
     M5.Lcd.setTextSize(2);
+    uint64_t chipid = ESP.getEfuseMac();
+    String blename = "BOT5-" + String((uint32_t)(chipid >> 32), HEX);
+    M5.Lcd.println(blename);
     M5.Lcd.println("Client Connected! Initializing peripherals...");
 
     // Stop robot
