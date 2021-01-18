@@ -257,7 +257,7 @@ Payload format:
 #### To Robot
 -------------------------------------------------------------------------------
 
-#### Command 0 - Set Data for I2C
+#### Command 0 - Write Data for I2C Device
 
 Allow writing to the two ports on the chassis.
 
@@ -268,22 +268,30 @@ Payload format:
 | uint8_t | uint16_t |
 
 - **address**
-    - format is 0x57
-    - will update addresses here later
+    - address of chassis Grove port is `0x57`
 
 - **data**
     - data to be written to the ports
 
-#### Command 1 - Get Data for I2C
+#### Command 1 - Read Data from I2C Device
 
-Request packet containing data for I2C.
+Request packet containing data read from I2C device.
+
+Payload format:
+
+| address |
+|:-------:|
+| uint8_t |
+
+- **address**
+    - address of chassis Grove port is `0x57`
 
 #### From Robot
 -------------------------------------------------------------------------------
 
-#### Command 1 - Get Data for I2C Response 
+#### Command 1 - Read Data from I2C Device Response 
 
-Reponse to Get Data for I2C packet.
+Reponse to Read Data from I2C Device packet.
 
 Payload format:
 
@@ -292,12 +300,10 @@ Payload format:
 | uint8_t | uint16_t |
 
 - **address**
-    - format is 0xXX
-    - will update addresses here later
-
+    - address of chassis Grove port is `0x57`
 
 - **data**
-    - data written to the ports
+    - data read from port
 
 ### Peripheral 4 - Red LED
 
