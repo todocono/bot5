@@ -1,6 +1,6 @@
-import {p5ble} from "../p5blejs/dist/p5.ble";
+import {p5ble} from "../p5ble/dist/p5.ble.js";
 
-class BleComm {
+class Bot5 {
     constructor() {
         this._message = new ArrayBuffer(20);
         this._messageCount = 0;
