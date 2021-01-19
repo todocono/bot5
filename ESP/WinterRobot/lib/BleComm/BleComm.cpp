@@ -414,7 +414,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         Serial.println("BUTTON A");
                         BleComm::printMessage(&msg);
                     }
-
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
                     pRespCharacteristic->notify();
                     break;
