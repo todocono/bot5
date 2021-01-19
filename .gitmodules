@@ -1,3 +1,4 @@
 [submodule "Web/lib/p5ble"]
 	path = Web/lib/p5ble
 	url = https://github.com/Zander-M/p5.ble.js
+	branch = main
