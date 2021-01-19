@@ -1,4 +1,4 @@
-import { p5ble } from "../p5ble/dist/p5.ble.js";
+// import { p5ble } from "../p5ble/dist/p5.ble.js";
 // Movement IDs
 const MovementId = {
     FORWARD: 0,
@@ -92,25 +92,20 @@ const Cmd = {
 
 class Bot5 {
     constructor() {
+        var self = this;
         this._p5ble = new p5ble();
         this._message = new ArrayBuffer(20);
         this._messageCount = 0;
         this._p5ble = new p5ble();
         this._isConnected = false;
-        this._respCharacteristic;
-        this._cmdCharacteristic;
+        this._respCharacteristic = [];
+        this._cmdCharacteristic = [];
+        console.log("initialized.");
     }
     connect(serviceUuid) { // Connect to BLE device
         this._p5ble.connect(serviceUuid, this._gotCharacteristics);
         this._isConnected = true;
-        this._p5ble.startNotification(this._respCharacteristic, this._parseResponse);
-    }
-    _gotCharacteristics(error, characteristics) {
-        if (error) {
-            console.log(error);
-        }
-        this._respCharacteristic = characteristics[0];
-        this._cmdCharacteristic = characteristics[1];
+        this._p5ble.startNotifications(this._respCharacteristic, this._parseResponse)
     }
     disconnect() { // Disconnect from BLE device
         this._p5ble.disconnect();
@@ -119,6 +114,18 @@ class Bot5 {
     isConnected() { // Return whether the device is connected
         return this._isConnected;
     }
+    startNotification() { // Start notification for characteristic
+    }
+    stopNotification() { // Stop notification for characteristic
+    }
+    _gotCharacteristics(error, characteristics) {
+        if (error) {
+            console.log("error", error);
+        }
+        self._respCharacteristic = characteristics[0];
+        self._cmdCharacteristic = characteristics[1];
+        // console.log(characteristics);
+    }
     _parseResponse(msg) { // Parse response message
         let view = Dataview(msg);
         // parse device
@@ -126,7 +133,6 @@ class Bot5 {
             case Peri.GENERAL: {
                 break;
             }
-
             case Peri.MOTOR: {
                 switch (view.getUint8(1)) {
                     case Cmd.MOTOR.GET_MOVEMENT_SPEED: {
@@ -225,8 +231,8 @@ class Bot5 {
                 break;
             }
             case Peri.IR: {
-                switch(view.getUint8(1)) {
-                    case Cmd.IR.GET_STATE : {
+                switch (view.getUint8(1)) {
+                    case Cmd.IR.GET_STATE: {
                         this.ir.state = view.getUint8(3);
                         break;
                     }
@@ -236,90 +242,88 @@ class Bot5 {
             default:
                 break;
         }
-    }
-    startNotification() { // Start notification for characteristic
-    }
-    stopNotification() { // Stop notification for characteristic
+
+        console.log(msg);
     }
 
     motor = {
         forward: (speed) => {
-            msg = new ArrayBuffer(20);
-            v = new DataView(msg);
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
             v.setUint8(0, Peri.MOTOR);
             v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, MovementId.FORWARD);
             v.setInt8(4, speed);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         back: (speed) => {
-            msg = new ArrayBuffer(20);
-            v = new DataView(msg);
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
             v.setUint8(0, Peri.MOTOR);
             v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, MovementId.BACK);
             v.setInt8(4, speed);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         left: (speed) => {
-            msg = new ArrayBuffer(20);
-            v = new DataView(msg);
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
             v.setUint8(0, Peri.MOTOR);
             v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, MovementId.LEFT);
             v.setInt8(4, speed);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         right: (speed) => {
-            msg = new ArrayBuffer(20);
-            v = new DataView(msg);
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
             v.setUint8(0, Peri.MOTOR);
             v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, MovementId.RIGHT);
             v.setInt8(4, speed);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
 
         },
         turnLeft: (speed) => {
-            msg = new ArrayBuffer(20);
-            v = new DataView(msg);
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
             v.setUint8(0, Peri.MOTOR);
             v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, MovementId.TURN_LEFT);
             v.setInt8(4, speed);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         turnRight: (speed) => {
-            msg = new ArrayBuffer(20);
-            v = new DataView(msg);
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
             v.setUint8(0, Peri.MOTOR);
             v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, MovementId.TURN_RIGHT);
             v.setInt8(4, speed);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         stop: () => {
-            msg = new ArrayBuffer(20);
-            v = new DataView(msg);
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
             v.setUint8(0, Peri.MOTOR);
             v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, MovementId.STOP);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getMovementSpeed: () => {
-            msg = new ArrayBuffer(20);
-            v = new DataView(msg);
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
             v.setUint8(0, Peri.MOTOR);
             v.setUint8(1, Cmd.MOTOR.GET_MOVEMENT_SPEED);
-            v.setUint8(2, this._messageCount++);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         speed: 0,
         movementId: 0
@@ -330,38 +334,38 @@ class Bot5 {
             v = new DataView(msg);
             v.setUint8(0, Peri.SERVO);
             v.setUint8(1, Cmd.SERVO.SET_ANGLE);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, channel);
             v.setUint8(4, angle);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getAngle: (channel) => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
             v.setUint8(0, Peri.SERVO);
             v.setUint8(1, Cmd.SERVO.GET_ANGLE);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, channel);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         setPulseWidth: (channel, width) => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
             v.setUint8(0, Peri.SERVO);
             v.setUint8(1, Cmd.SERVO.SET_PULSE_WIDTH);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, channel);
             v.setUint16(4, width);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getPulseWidth: (channel) => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
             v.setUint8(0, Peri.SERVO);
             v.setUint8(1, Cmd.SERVO.GET_PULSE_WIDTH);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, channel);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
 
         },
         angle: [0, 0],
@@ -373,40 +377,40 @@ class Bot5 {
             v = new DataView(msg);
             v.setUint8(0, Peri.I2C);
             v.setUint8(1, Cmd.I2C.SET_DATA);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, address);
             v.setUint8(4, data);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getData: (address, quantity) => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
             v.setUint8(0, Peri.I2C);
             v.setUint8(1, Cmd.I2C.GET_DATA);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, address);
             v.setUint8(4, quantity);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         }
 
     };
     led = {
         setBrightness: (brightness) => {
-            msg = new ArrayBuffer(20);
-            v = new DataView(msg);
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
             v.setUint8(0, Peri.LED);
             v.setUint8(1, Cmd.LED.SET_BRIGHTNESS);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, brightness);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getBrightness: () => {
-            msg = new ArrayBuffer(20);
-            v = new DataView(msg);
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
             v.setUint8(0, Peri.LED);
             v.setUint8(1, Cmd.LED.GET_BRIGHTNESS);
-            v.setUint8(2, this._messageCount++);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         brightness: 0
     };
@@ -416,8 +420,8 @@ class Bot5 {
             v = new DataView(msg);
             v.setUint8(0, Peri.BUTTON);
             v.setUint8(1, Cmd.BUTTON.GET_STATE_A);
-            v.setUint8(2, this._messageCount++);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getStateB: () => {
 
@@ -425,8 +429,8 @@ class Bot5 {
             v = new DataView(msg);
             v.setUint8(0, Peri.BUTTON);
             v.setUint8(1, Cmd.BUTTON.GET_STATE_B);
-            v.setUint8(2, this._messageCount++);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         a: 0,
         b: 0
@@ -441,16 +445,16 @@ class Bot5 {
             v = new DataView(msg);
             v.setUint8(0, Peri.IMU);
             v.setUint8(1, Cmd.IMU.POLL_GYRO);
-            v.setUint8(2, this._messageCount++);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getAcce: () => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
             v.setUint8(0, Peri.IMU);
             v.setUint8(1, Cmd.IMU.POLL_ACCE);
-            v.setUint8(2, this._messageCount++);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getAhrs: () => {
 
@@ -458,8 +462,8 @@ class Bot5 {
             v = new DataView(msg);
             v.setUint8(0, Peri.IMU);
             v.setUint8(1, Cmd.IMU.POLL_AHRS);
-            v.setUint8(2, this._messageCount++);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getTemp: () => {
 
@@ -467,8 +471,8 @@ class Bot5 {
             v = new DataView(msg);
             v.setUint8(0, Peri.IMU);
             v.setUint8(1, Cmd.IMU.POLL_TEMP);
-            v.setUint8(2, this._messageCount++);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         gyroX: 0,
         gyroY: 0,
@@ -488,43 +492,43 @@ class Bot5 {
             v = new DataView(msg);
             v.setUint8(0, Peri.BUZZER);
             v.setUint8(1, Cmd.BUZZER.SET_VOLUME);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, volume);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getVolume: () => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
             v.setUint8(0, Peri.BUZZER);
             v.setUint8(1, Cmd.BUZZER.GET_VOLUME);
-            v.setUint8(2, this._messageCount++);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         setTone: (freq, duration) => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
             v.setUint8(0, Peri.BUZZER);
             v.setUint8(1, Cmd.BUZZER.SET_FREQ_DURATION);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint16(3, freq);
             v.setUint32(5, duration);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getTone: () => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
             v.setUint8(0, Peri.BUZZER);
             v.setUint8(1, Cmd.BUZZER.GET_FREQ_DURATION);
-            v.setUint8(2, this._messageCount++);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         mute: () => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
             v.setUint8(0, Peri.BUZZER);
             v.setUint8(1, Cmd.BUZZER.MUTE);
-            v.setUint8(2, this._messageCount++);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         volume: 0,
         freq: 0,
@@ -536,20 +540,19 @@ class Bot5 {
             v = new DataView(msg);
             v.setUint8(0, Peri.IR);
             v.setUint8(1, Cmd.IR.SET_STATE);
-            v.setUint8(2, this._messageCount++);
+            v.setUint8(2, self._messageCount++);
             v.setUint8(3, state);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getState: () => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
             v.setUint8(0, Peri.IR);
             v.setUint8(1, Cmd.IR.GET_STATE);
-            v.setUint8(2, this._messageCount++);
-            this._p5ble.write(this._cmdCharacteristic, msg);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         },
-        state: 0;
+        state: 0
 
     };
 }
-
