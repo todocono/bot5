@@ -104,7 +104,7 @@ class Bot5 {
     }
     connect(serviceUuid) { // Connect to BLE device
         this._p5ble.connect(serviceUuid, this._gotCharacteristics);
-        this._isConnected = true;
+        this._isConnected = true; // TODO: not working properly
         this._p5ble.startNotifications(this._respCharacteristic, this._parseResponse)
     }
     disconnect() { // Disconnect from BLE device
@@ -355,7 +355,7 @@ class Bot5 {
             v.setUint8(1, Cmd.SERVO.SET_PULSE_WIDTH);
             v.setUint8(2, self._messageCount++);
             v.setUint8(3, channel);
-            v.setUint16(4, width);
+            v.setUint16(4, width, true);
             this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getPulseWidth: (channel) => {
@@ -510,8 +510,8 @@ class Bot5 {
             v.setUint8(0, Peri.BUZZER);
             v.setUint8(1, Cmd.BUZZER.SET_FREQ_DURATION);
             v.setUint8(2, self._messageCount++);
-            v.setUint16(3, freq);
-            v.setUint32(5, duration);
+            v.setUint16(3, freq, true);
+            v.setUint32(5, duration, true);
             this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getTone: () => {

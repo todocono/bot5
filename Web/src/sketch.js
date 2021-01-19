@@ -23,6 +23,10 @@ function setup() {
   const backButton = createButton("back");
   const leftButton = createButton("left");
   const rightButton = createButton("right");
+  const toneButton = createButton("tone");
+  const toneSlider = createSlider(440, 1200);
+  const muteButton = createButton("mute");
+  const freq = createInput()
   onButton.mousePressed(ledOn);
   offButton.mousePressed(ledOff);
   forwardButton.mousePressed(()=>{bot5.motor.forward(127)});
@@ -33,7 +37,8 @@ function setup() {
   backButton.mouseReleased(()=>{bot5.motor.stop()});
   leftButton.mouseReleased(()=>{bot5.motor.stop()});
   rightButton.mouseReleased(()=>{bot5.motor.stop()});
-
+  toneButton.mousePressed(()=>{bot5.buzzer.setTone(int(freq.value()), 2000)});
+  muteButton.mousePressed(()=>{bot5.buzzer.mute()});
 }
 
 function ledOn() {
