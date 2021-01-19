@@ -98,7 +98,7 @@ Payload format:
 - **name**
     - a UTF-8 encoded, null terminating string containing current BLE device name
 
-### Peripheral 1 - Motors
+    ### Peripheral 1 - Motors
 
 #### To Robot
 -------------------------------------------------------------------------------
@@ -450,7 +450,7 @@ To be implemented
 #### To Robot
 -------------------------------------------------------------------------------
 
-#### Command 0 - Poll Gyroscope 
+#### Command 0 - Poll Gyroscope
 
 Poll gyroscope for x, y, z data.
 

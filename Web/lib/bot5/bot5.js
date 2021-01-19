@@ -90,10 +90,6 @@ const Cmd = {
     EXTERN: 16
 };
 
-// Payload 
-const Payload = {
-}
-
 class Bot5 {
     constructor() {
         this._p5ble = new p5ble();
@@ -107,6 +103,7 @@ class Bot5 {
     connect(serviceUuid) { // Connect to BLE device
         this._p5ble.connect(serviceUuid, this._gotCharacteristics);
         this._isConnected = true;
+        this._p5ble.startNotification(this._respCharacteristic, this._parseResponse);
     }
     _gotCharacteristics(error, characteristics) {
         if (error) {
@@ -122,14 +119,130 @@ class Bot5 {
     isConnected() { // Return whether the device is connected
         return this._isConnected;
     }
-    _parseResponse() { // Parse response message
+    _parseResponse(msg) { // Parse response message
+        let view = Dataview(msg);
+        // parse device
+        switch (view.getUint8(0)) {
+            case Peri.GENERAL: {
+                break;
+            }
+
+            case Peri.MOTOR: {
+                switch (view.getUint8(1)) {
+                    case Cmd.MOTOR.GET_MOVEMENT_SPEED: {
+                        this.motor.movementId = view.getUint8(3);
+                        this.motor.speed = view.getInt8(4);
+                        break;
+                    }
+                    default:
+                        break;
+                }
+                break;
+            }
+            case Peri.SERVO: {
+                switch (view.getUint8(1)) {
+                    case Cmd.SERVO.GET_ANGLE: {
+                        let channel = view.getUint8(3);
+                        this.servo.angle[channel] = view.getUint8(4);
+                        break;
+                    }
+                    case Cmd.SERVO.GET_PULSE_WIDTH: {
+                        let channel = view.getUint8(3);
+                        this.servo.pulseWidth[channel] = view.getUint16(4);
+                        break;
+                    }
+                }
+                break;
+            }
+            case Peri.I2C: {
+                // TODO
+            }
+            case Peri.LED: {
+                switch (view.getUint(1)) {
+                    case Cmd.LED.GET_BRIGHTNESS: {
+                        this.led.brightness = view.getUint(3);
+                        break;
+                    }
+                }
+                break;
+            }
+            case Peri.BUTTON: {
+                switch (view.getUint8(1)) {
+                    case Cmd.BUTTON.GET_STATE_A: {
+                        this.button.a = view.getUint8(3);
+                        break;
+                    }
+                    case Cmd.BUTTON.GET_STATE_B: {
+                        this.button.b = view.getUint8(3);
+                        break;
+                    }
+                }
+                break;
+            }
+            case Peri.LCD: {
+                break;
+            }
+
+            case Peri.IMU: {
+                switch (view.getUint8(1)) {
+                    case (Cmd.IMU.POLL_GYRO): {
+                        this.IMU.gyroX = view.getFloat16(3);
+                        this.IMU.gyroY = view.getFloat16(5);
+                        this.IMU.gyroZ = view.getFloat16(7);
+                        break;
+                    }
+                    case (Cmd.IMU.POLL_ACCE): {
+                        this.IMU.acceX = view.getFloat16(3);
+                        this.IMU.acceY = view.getFloat16(5);
+                        this.IMU.acceZ = view.getFloat16(7);
+                        break;
+                    }
+                    case (Cmd.IMU.POLL_AHRS): {
+                        this.IMU.pitch = view.getFloat16(3);
+                        this.IMU.roll = view.getFloat16(5);
+                        this.IMU.yaw = view.getFloat16(7);
+                        break;
+                    }
+                    case (Cmd.IMU.POLL_TEMP): {
+                        this.IMU.temp = view.getFloat16(3);
+                        break;
+                    }
+                }
+                break;
+            }
+            case Peri.BUZZER: {
+                switch (view.getUint8(1)) {
+                    case Cmd.BUZZER.GET_VOLUME: {
+                        this.buzzer.volume = view.getUint8(3);
+                        break;
+                    }
+                    case Cmd.BUZZER.GET_FREQ_DURATION: {
+                        this.buzzer.freq = view.getUint16(3);
+                        this.buzzer.duration = view.getUint32(5);
+                        break;
+                    }
+                }
+                break;
+            }
+            case Peri.IR: {
+                switch(view.getUint8(1)) {
+                    case Cmd.IR.GET_STATE : {
+                        this.ir.state = view.getUint8(3);
+                        break;
+                    }
+                }
+                break;
+            }
+            default:
+                break;
+        }
     }
     startNotification() { // Start notification for characteristic
     }
     stopNotification() { // Stop notification for characteristic
     }
 
-    motors = {
+    motor = {
         forward: (speed) => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
@@ -207,9 +320,11 @@ class Bot5 {
             v.setUint8(1, Cmd.MOTOR.GET_MOVEMENT_SPEED);
             v.setUint8(2, this._messageCount++);
             this._p5ble.write(this._cmdCharacteristic, msg);
-        }
+        },
+        speed: 0,
+        movementId: 0
     };
-    servos = {
+    servo = {
         setAngle: (channel, angle) => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
@@ -248,7 +363,9 @@ class Bot5 {
             v.setUint8(3, channel);
             this._p5ble.write(this._cmdCharacteristic, msg);
 
-        }
+        },
+        angle: [0, 0],
+        pulseWidth: [0, 0]
     };
     i2c = {
         setData: (address, data) => {
@@ -290,7 +407,8 @@ class Bot5 {
             v.setUint8(1, Cmd.LED.GET_BRIGHTNESS);
             v.setUint8(2, this._messageCount++);
             this._p5ble.write(this._cmdCharacteristic, msg);
-        }
+        },
+        brightness: 0
     };
     button = {
         getStateA: () => {
@@ -309,7 +427,9 @@ class Bot5 {
             v.setUint8(1, Cmd.BUTTON.GET_STATE_B);
             v.setUint8(2, this._messageCount++);
             this._p5ble.write(this._cmdCharacteristic, msg);
-        }
+        },
+        a: 0,
+        b: 0
     };
     lcd = { // TODO: modify esp code
         display: (input) => {
@@ -340,8 +460,8 @@ class Bot5 {
             v.setUint8(1, Cmd.IMU.POLL_AHRS);
             v.setUint8(2, this._messageCount++);
             this._p5ble.write(this._cmdCharacteristic, msg);
-         },
-        getTemp: () => { 
+        },
+        getTemp: () => {
 
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
@@ -349,7 +469,17 @@ class Bot5 {
             v.setUint8(1, Cmd.IMU.POLL_TEMP);
             v.setUint8(2, this._messageCount++);
             this._p5ble.write(this._cmdCharacteristic, msg);
-        }
+        },
+        gyroX: 0,
+        gyroY: 0,
+        gyroZ: 0,
+        acceX: 0,
+        acceY: 0,
+        acceZ: 0,
+        ahrsX: 0,
+        ahrsY: 0,
+        ahrsZ: 0,
+        temp: 0
 
     };
     buzzer = {
@@ -361,7 +491,7 @@ class Bot5 {
             v.setUint8(2, this._messageCount++);
             v.setUint8(3, volume);
             this._p5ble.write(this._cmdCharacteristic, msg);
-         },
+        },
         getVolume: () => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
@@ -369,7 +499,7 @@ class Bot5 {
             v.setUint8(1, Cmd.BUZZER.GET_VOLUME);
             v.setUint8(2, this._messageCount++);
             this._p5ble.write(this._cmdCharacteristic, msg);
-         },
+        },
         setTone: (freq, duration) => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
@@ -379,7 +509,7 @@ class Bot5 {
             v.setUint16(3, freq);
             v.setUint32(5, duration);
             this._p5ble.write(this._cmdCharacteristic, msg);
-         },
+        },
         getTone: () => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
@@ -387,18 +517,21 @@ class Bot5 {
             v.setUint8(1, Cmd.BUZZER.GET_FREQ_DURATION);
             v.setUint8(2, this._messageCount++);
             this._p5ble.write(this._cmdCharacteristic, msg);
-         },
-        mute: () => { 
+        },
+        mute: () => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
             v.setUint8(0, Peri.BUZZER);
             v.setUint8(1, Cmd.BUZZER.MUTE);
             v.setUint8(2, this._messageCount++);
             this._p5ble.write(this._cmdCharacteristic, msg);
-        }
+        },
+        volume: 0,
+        freq: 0,
+        duration: 0
     };
     ir = {
-        setState: (state) => { 
+        setState: (state) => {
             msg = new ArrayBuffer(20);
             v = new DataView(msg);
             v.setUint8(0, Peri.IR);
@@ -414,7 +547,9 @@ class Bot5 {
             v.setUint8(1, Cmd.IR.GET_STATE);
             v.setUint8(2, this._messageCount++);
             this._p5ble.write(this._cmdCharacteristic, msg);
-         }
+        },
+        state: 0;
+
     };
 }
 
