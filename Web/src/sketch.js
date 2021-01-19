@@ -19,9 +19,21 @@ function setup() {
 
   const onButton = createButton('On');
   const offButton = createButton('Off');
+  const forwardButton = createButton("forward");
+  const backButton = createButton("back");
+  const leftButton = createButton("left");
+  const rightButton = createButton("right");
   onButton.mousePressed(ledOn);
   offButton.mousePressed(ledOff);
-  brightnessSlider = createSlider(0, 255, 100);
+  forwardButton.mousePressed(()=>{bot5.motor.forward(127)});
+  backButton.mousePressed(()=>{bot5.motor.back(127)});
+  leftButton.mousePressed(()=>{bot5.motor.left(127)});
+  rightButton.mousePressed(()=>{bot5.motor.right(127)});
+  forwardButton.mouseReleased(()=>{bot5.motor.stop()});
+  backButton.mouseReleased(()=>{bot5.motor.stop()});
+  leftButton.mouseReleased(()=>{bot5.motor.stop()});
+  rightButton.mouseReleased(()=>{bot5.motor.stop()});
+
 }
 
 function ledOn() {

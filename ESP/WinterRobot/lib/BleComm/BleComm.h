@@ -36,9 +36,9 @@
 #define LED_CHANNEL 2
 
 // Debug Flag
-#define DEBUG_RAW_OUTPUT false
+#define DEBUG_RAW_OUTPUT true
 #define DEBUG_GENERAL    false
-#define DEBUG_MOTOR      false
+#define DEBUG_MOTOR      true 
 #define DEBUG_SERVO      false 
 #define DEBUG_I2C        false
 #define DEBUG_LED        false
