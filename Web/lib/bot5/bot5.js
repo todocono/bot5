@@ -505,25 +505,25 @@ class Bot5 {
             case Peri.IMU: {
                 switch (view.getUint8(1)) {
                     case (Cmd.IMU.POLL_GYRO): {
-                        this.IMU.gyroX = view.getFloat16(3);
-                        this.IMU.gyroY = view.getFloat16(5);
-                        this.IMU.gyroZ = view.getFloat16(7);
+                        this.IMU.gyroX = view.getFloat16(3, true);
+                        this.IMU.gyroY = view.getFloat16(5, true);
+                        this.IMU.gyroZ = view.getFloat16(7, true);
                         break;
                     }
                     case (Cmd.IMU.POLL_ACCE): {
-                        this.IMU.acceX = view.getFloat16(3);
-                        this.IMU.acceY = view.getFloat16(5);
-                        this.IMU.acceZ = view.getFloat16(7);
+                        this.IMU.acceX = view.getFloat16(3, true);
+                        this.IMU.acceY = view.getFloat16(5, true);
+                        this.IMU.acceZ = view.getFloat16(7, true);
                         break;
                     }
                     case (Cmd.IMU.POLL_AHRS): {
-                        this.IMU.pitch = view.getFloat16(3);
-                        this.IMU.roll = view.getFloat16(5);
-                        this.IMU.yaw = view.getFloat16(7);
+                        this.IMU.pitch = view.getFloat16(3, true);
+                        this.IMU.roll = view.getFloat16(5, true);
+                        this.IMU.yaw = view.getFloat16(7, true);
                         break;
                     }
                     case (Cmd.IMU.POLL_TEMP): {
-                        this.IMU.temp = view.getFloat16(3);
+                        this.IMU.temp = view.getFloat16(3, true);
                         break;
                     }
                 }
