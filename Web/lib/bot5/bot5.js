@@ -100,7 +100,7 @@ class Bot5 {
         this._isConnected = false;
         this._respCharacteristic = [];
         this._cmdCharacteristic = [];
-        console.log("initialized.");
+        console.log("bot initialized.");
     }
     connect(serviceUuid) { // Connect to BLE device
         this._p5ble.connect(serviceUuid, this._gotCharacteristics);
