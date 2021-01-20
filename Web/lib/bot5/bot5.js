@@ -365,9 +365,9 @@ class Bot5 {
         acceX: 0,
         acceY: 0,
         acceZ: 0,
-        ahrsX: 0,
-        ahrsY: 0,
-        ahrsZ: 0,
+        pitch: 0,
+        yaw: 0,
+        roll: 0,
         temp: 0
 
     };
@@ -439,7 +439,7 @@ class Bot5 {
         },
         state: 0
     };
-    _parseResponse = ((msg)=>{ // Parse response message
+    _parseResponse = ((msg) => { // Parse response message
         let view = msg;
         // parse device
         switch (view.getUint8(0)) {
@@ -505,25 +505,29 @@ class Bot5 {
             case Peri.IMU: {
                 switch (view.getUint8(1)) {
                     case (Cmd.IMU.POLL_GYRO): {
-                        this.IMU.gyroX = view.getFloat16(3, true);
-                        this.IMU.gyroY = view.getFloat16(5, true);
-                        this.IMU.gyroZ = view.getFloat16(7, true);
+                        this.imu.gyroX = view.getFloat32(3, true);
+                        this.imu.gyroY = view.getFloat32(7, true);
+                        this.imu.gyroZ = view.getFloat32(11, true);
+                        console.log("Gyro");
+                        console.log(view.getFloat32(3, true),
+                            view.getFloat32(7, true),
+                            view.getFloat32(11, true));
                         break;
                     }
                     case (Cmd.IMU.POLL_ACCE): {
-                        this.IMU.acceX = view.getFloat16(3, true);
-                        this.IMU.acceY = view.getFloat16(5, true);
-                        this.IMU.acceZ = view.getFloat16(7, true);
+                        this.imu.acceX = view.getFloat32(3, true);
+                        this.imu.acceY = view.getFloat32(7, true);
+                        this.imu.acceZ = view.getFloat32(11, true);
                         break;
                     }
                     case (Cmd.IMU.POLL_AHRS): {
-                        this.IMU.pitch = view.getFloat16(3, true);
-                        this.IMU.roll = view.getFloat16(5, true);
-                        this.IMU.yaw = view.getFloat16(7, true);
+                        this.imu.pitch = view.getFloat32(3, true);
+                        this.imu.roll = view.getFloat32(7, true);
+                        this.imu.yaw = view.getFloat32(11, true);
                         break;
                     }
                     case (Cmd.IMU.POLL_TEMP): {
-                        this.IMU.temp = view.getFloat16(3, true);
+                        this.imu.temp = view.getFloat32(3, true);
                         break;
                     }
                 }

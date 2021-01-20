@@ -16,6 +16,7 @@ void setup()
     ble.start();
 
     Serial.println("Starting BLE Service...");
+    Serial.println(sizeof(float_t));
     M5.Lcd.setRotation(3);
     M5.Lcd.fillScreen(BLACK);
     M5.Lcd.setCursor(0, 10);
@@ -32,6 +33,7 @@ void loop()
     if (ble.isConnected())
     {
         // Serial.println("connected");
+        delay(10);
     }
     else if (!ble.isConnected())
     {

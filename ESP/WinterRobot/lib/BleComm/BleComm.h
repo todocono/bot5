@@ -44,7 +44,7 @@
 #define DEBUG_LED        false
 #define DEBUG_BUTTON     false
 #define DEBUG_LCD        false
-#define DEBUG_IMU        false
+#define DEBUG_IMU        true
 #define DEBUG_BUZZER     false
 #define DEBUG_IR         false
 #define DEBUG_MICROPHONE false

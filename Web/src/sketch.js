@@ -11,6 +11,7 @@ let brightnessSlider;
 let isConnected = false;
 
 function setup() {
+  createCanvas(600, 460);
   bot5 = new Bot5();
 
   // Create a 'Connect' button
@@ -29,8 +30,13 @@ function setup() {
   const toneButton = createButton("tone");
   const setVolumeButton = createButton("setVolume");
   const getVolumeButton = createButton("getVolume");
+  const getGyroButton = createButton("getGyro");
+  const getAcceButton = createButton("getAcce");
+  const getAhrsButton = createButton("getAhrs");
+  const getTempButton = createButton("getTemp");
   const toneSlider = createSlider(440, 1200);
   const muteButton = createButton("mute");
+  const imuButton = createButton("imu");
   const freq = createInput()
   onButton.mousePressed(ledOn);
   offButton.mousePressed(ledOff);
@@ -46,6 +52,23 @@ function setup() {
   muteButton.mousePressed(() => { bot5.buzzer.mute() });
   setVolumeButton.mousePressed(() => bot5.buzzer.setVolume(100));
   getVolumeButton.mousePressed(() => bot5.buzzer.getVolume());
+  getGyroButton.mousePressed(() => {
+    bot5.imu.getGyro();
+    console.log(bot5.imu.gyroX, bot5.imu.gyroY, bot5.imu.gyroZ);
+  });
+  getAcceButton.mousePressed(() => {
+    bot5.imu.getAcce();
+    console.log(bot5.imu.acceX, bot5.imu.acceY, bot5.imu.acceZ);
+  });
+  getAhrsButton.mousePressed(() => {
+    bot5.imu.getAhrs();
+    console.log(bot5.imu.pitch, bot5.imu.yaw, bot5.imu.roll);
+  });
+  getTempButton.mousePressed(() => {
+    bot5.imu.getTemp();
+    console.log(bot5.imu.temp);
+  });
+  imuButton.mousePressed(listenIMU);
 }
 
 function ledOn() {
@@ -65,25 +88,44 @@ function connectToBle() {
 
 function startNotifications() {
   bot5.startNotifications();
-  setInterval(() => {
-    // setTimeout(()=>bot5.button.getStateA(),10);
-    setTimeout(()=>bot5.button.getStateB(),10);
+}
 
-    // console.log("Buttons");
-    // console.log(bot5.button.a);
-    console.log(bot5.button.b);
-  }, 50);
-  // setInterval(() => {
-  //   bot5.buzzer.getTone();
-  //   console.log(bot5.buzzer.freq);
-  //   console.log(bot5.buzzer.duration);
-  // }, 1000);
+function listenIMU() {
+  var interval = 100;
+  var currInt = 0;
+  setInterval(() => {
+    setTimeout(() => { bot5.imu.getGyro(); }, currInt+= interval);
+    setTimeout(() => { bot5.imu.getAcce(); }, currInt+= interval);
+    setTimeout(() => { bot5.imu.getAhrs(); }, currInt+= interval);
+    setTimeout(() => { bot5.imu.getTemp(); }, currInt+= interval);
+    setTimeout(() => {bot5.button.getStateA();}, currInt+= interval);
+    setTimeout(() => {bot5.button.getStateB();}, currInt+= interval);
+  }, interval * 6);
 }
 
 function draw() {
+
+  background(220);
+  textSize(12);
+  text("Gyro:", 10, 20);
+  text(bot5.imu.gyroX, 10, 40);
+  text(bot5.imu.gyroY, 10, 60);
+  text(bot5.imu.gyroZ, 10, 80);
+  text("Acce:", 10, 120);
+  text(bot5.imu.acceX, 10, 140);
+  text(bot5.imu.acceY, 10, 160);
+  text(bot5.imu.acceZ, 10, 180);
+  text("Ahrs:", 10, 220);
+  text(bot5.imu.pitch, 10, 240);
+  text(bot5.imu.yaw, 10, 260);
+  text(bot5.imu.roll, 10, 280);
+  text("Temp:", 10, 320);
+  text(bot5.imu.temp, 10, 340);
+  text("Button A:", 10, 360);
+  text(bot5.button.a, 10, 380);
+  text("Button B:", 10, 400);
+  text(bot5.button.b, 10, 420);
   if (bot5.isConnected()) {
-
-
     // onTimeout(() => {
     //   bot5.button.getStateA();
     //   console.log("button A:", bot5.button.a);
