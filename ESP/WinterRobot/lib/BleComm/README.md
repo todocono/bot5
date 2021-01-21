@@ -148,7 +148,7 @@ Payload format:
     - id corresponding to movement
 
 - **speed**
-    - range -127~127
+    - range 0~127
 
 ### Peripheral 2 - Servos
 
@@ -269,7 +269,7 @@ Payload format:
 
 - **address**
     - address of the device to write bytes to
-    - address of chassis Grove port is `0x57`
+    - address of M5 ultrasonic sensor is `0x57`
 
 - **data**
     - data to be written to the ports
@@ -286,7 +286,7 @@ Payload format:
 
 - **address**
     - address of the device to request bytes from
-    - address of chassis Grove port is `0x57`
+    - address of M5 ultrasonic sensor is `0x57`
     
 - **quantity**
     - number of bytes to request
@@ -305,7 +305,7 @@ Payload format:
 | uint8_t | uint32_t |
 
 - **address**
-    - address of chassis Grove port is `0x57`
+    - address of the device
 
 - **data**
     - data read from port
@@ -568,7 +568,7 @@ Set frequency and duration of buzzer tone in M5StickC Plus.
     - frequency of note in units of hz
 
 - **duration**
-    - duration of note in unts of ms
+    - duration of note in units of ms
 
 #### Command 3 - Get Frequency and Duration of Tone
 
@@ -604,7 +604,7 @@ Response to Get Frequency and Duration of Tone packet.
     - frequency of note in units of hz
 
 - **duration**
-    - duration of note in unts of ms
+    - duration of note in units of ms
 
 ### Peripheral 9 - Infrared Transmitter
 
