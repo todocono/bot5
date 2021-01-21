@@ -84,6 +84,7 @@ function ledOff() {
 function connectToBle() {
   // Connect to a device by passing the service UUID
   bot5.connect(serviceUuid);
+  // bot5.startNotifications();
 }
 
 function startNotifications() {

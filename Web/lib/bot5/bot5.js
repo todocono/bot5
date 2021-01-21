@@ -118,9 +118,9 @@ class Bot5 {
         this._payload2Characteristic = [];
         this._payload3Characteristic = [];
     }
-    connect(serviceUuid) { // Connect to BLE device
-        console.log(this.motor.movementId);
-        this._p5ble.connect(serviceUuid, this._gotCharacteristics);
+    async connect(serviceUuid) { // Connect to BLE device
+        await this._p5ble.connect(serviceUuid, this._gotCharacteristics);
+        this.startNotifications();
     }
     disconnect() { // Disconnect from BLE device
         this._p5ble.disconnect();

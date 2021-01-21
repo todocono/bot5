@@ -35,8 +35,15 @@ void setup() {
 }
 
 void loop() {
-    // if (ble.isConnected()) {
-    //     ble.notify();
-    // } else {
-    // }
+    if (ble.isConnected()) {
+        ble.notify();
+        delay(10);
+        if (millis() % 2000 == 0) {
+            Serial.println("Connected");
+        }
+    } else {
+        if (millis() % 2000 == 0) {
+            Serial.println("Disconnected");
+        }
+    }
 }
