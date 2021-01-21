@@ -1,20 +1,21 @@
 // Winter Robot Main Program
 
 #include <Arduino.h>
+
 #include "BleComm.h"
 #include "M5Display.h"
 
 BleComm ble;
+float_t gyroX, gyroY, gyroZ;
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
     M5.begin();
 
     // caution: the pin is pulled up, set HIGH to turn off the LED
     RoverC_Init();
     ble.start();
-
+    M5.Imu.Init();
     Serial.println("Starting BLE Service...");
     Serial.println(sizeof(float_t));
     M5.Lcd.setRotation(3);
@@ -25,19 +26,18 @@ void setup()
     M5.Lcd.println("Starting BLE Service...");
     uint64_t chipid = ESP.getEfuseMac();
     String blename = "BOT5-" + String((uint32_t)(chipid >> 32), HEX);
-    M5.Lcd.printf(String("Name:"+blename+"\n").c_str());
+    M5.Lcd.printf(String("Name:" + blename + "\n").c_str());
 }
 
-void loop()
-{
-    if (ble.isConnected())
-    {
+void loop() {
         // Serial.println("connected");
         ble.notify();
-        delay(10);
-    }
-    else if (!ble.isConnected())
-    {
+        // M5.Imu.getGyroData(&gyroX, &gyroY, &gyroZ);
+        // Serial.print(gyroX);
+        // Serial.print(",");
+        // Serial.print(gyroY);
+        // Serial.print(",");
+        // Serial.println(gyroZ);
+        // delay(100);
         // Serial.println("disconnected");
-    }
 }
