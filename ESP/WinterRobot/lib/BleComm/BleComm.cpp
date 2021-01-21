@@ -16,6 +16,13 @@ uint32_t buzzerDuration;
 uint8_t irState;
 uint8_t respCount;
 
+bool listenGyro = false;
+bool listenAcce = false;
+bool listenAhrs = false;
+bool listenTemp = false;
+bool listenButton = false;
+bool listenUltrasonic = false;
+
 // Runtime global handles
 // Server
 BLEServer *pServer = NULL;
@@ -28,6 +35,12 @@ BLEService *pCmdService;
 // Characteristic
 BLECharacteristic *pCMDCharacteristic;
 BLECharacteristic *pRespCharacteristic;
+BLECharacteristic *pGyroCharacteristic;
+BLECharacteristic *pAcceCharacteristic;
+BLECharacteristic *pAhrsCharacteristic;
+BLECharacteristic *pTempCharacteristic;
+BLECharacteristic *pButtonCharacteristic;
+BLECharacteristic *pUltrasonicCharacteristic;
 
 BleComm::BleComm() {
 }
@@ -41,6 +54,8 @@ BleComm::~BleComm() {
  * @return int 
  */
 int BleComm::start() {
+    Serial.println("Starting Service");
+
     // Create the BLE Device
     uint64_t chipid = ESP.getEfuseMac();
     String blename = "BOT5-" + String((uint32_t)(chipid >> 32), HEX);
@@ -48,21 +63,23 @@ int BleComm::start() {
     sprintf(name, blename.c_str());
 
     // Create the BLE Server
+    Serial.println("Create Server");
     pServer = BLEDevice::createServer();
     pServer->setCallbacks(new ServerCallbacks());
 
     // Create the BLE Services
-    pIdentityService = pServer->createService(IDENTITY_SERVICE_UUID);
-    pDevInfoService = pServer->createService(DEV_INFO_SERVICE_UUID);
+    // pIdentityService = pServer->createService(IDENTITY_SERVICE_UUID);
+    // pDevInfoService = pServer->createService(DEV_INFO_SERVICE_UUID);
+    Serial.println("Create Service");
     pCmdService = pServer->createService(CMD_SERVICE_UUID);
 
     // Initialize the BLE Characteristics
 
     // Response Characteristic
+    Serial.println("Create Characteristics");
     pRespCharacteristic = pCmdService->createCharacteristic(
         CMD_CHARACTERISTIC_TX_UUID,
         BLECharacteristic::PROPERTY_NOTIFY);
-
     pRespCharacteristic->addDescriptor(new BLE2902());
 
     // Command Characteristic
@@ -71,9 +88,45 @@ int BleComm::start() {
         BLECharacteristic::PROPERTY_WRITE);
     pCMDCharacteristic->setCallbacks(new CMDCharacteristicCallbacks());
 
+    // Gyro Characteristic
+    pGyroCharacteristic = pCmdService->createCharacteristic(
+        RESP_GYRO_UUID,
+        BLECharacteristic::PROPERTY_NOTIFY);
+    pGyroCharacteristic->addDescriptor(new BlePeri((uint16_t)0x2902));
+
+    // Acce Characteristic
+    pAcceCharacteristic = pCmdService->createCharacteristic(
+        RESP_ACCE_UUID,
+        BLECharacteristic::PROPERTY_NOTIFY);
+    pAcceCharacteristic->addDescriptor(new BlePeri((uint16_t)0x2902));
+
+    // AHRS Characteristic
+    pAhrsCharacteristic = pCmdService->createCharacteristic(
+        RESP_AHRS_UUID,
+        BLECharacteristic::PROPERTY_NOTIFY);
+    pAhrsCharacteristic->addDescriptor(new BlePeri((uint16_t)0x2902));
+
+    // Temp Characteristic
+    pTempCharacteristic = pCmdService->createCharacteristic(
+        RESP_TEMP_UUID,
+        BLECharacteristic::PROPERTY_NOTIFY);
+    pTempCharacteristic->addDescriptor(new BlePeri((uint16_t)0x2902));
+
+    // Button Characteristic
+    pButtonCharacteristic = pCmdService->createCharacteristic(
+        RESP_BUTTON_UUID,
+        BLECharacteristic::PROPERTY_NOTIFY);
+    pButtonCharacteristic->addDescriptor(new BlePeri((uint16_t)0x2902));
+
+    // Ultrasonic Characteristic
+    pUltrasonicCharacteristic = pCmdService->createCharacteristic(
+        RESP_ULTRASONIC_UUID,
+        BLECharacteristic::PROPERTY_NOTIFY);
+    pUltrasonicCharacteristic->addDescriptor(new BlePeri((uint16_t)0x2902));
+
     // Start advertising
-    pIdentityService->start();
-    pDevInfoService->start();
+    // pIdentityService->start();
+    // pDevInfoService->start();
     pCmdService->start();
     BLEAdvertising *pAdvertising = pServer->getAdvertising();
     // pAdvertising->addServiceUUID(IDENTITY_SERVICE_UUID);
@@ -92,6 +145,64 @@ int BleComm::start() {
  */
 bool BleComm::isConnected() {
     return pServer->getConnectedCount() > 0;
+}
+
+bool BleComm::isListenGyro() {
+    return listenGyro;
+}
+bool BleComm::isListenAcce() {
+    return listenAcce;
+}
+bool BleComm::isListenAhrs() {
+    return listenAhrs;
+}
+bool BleComm::isListenTemp() {
+    return listenTemp;
+}
+bool BleComm::isListenButton() {
+    return listenButton;
+}
+bool BleComm::isListenUltrasonic() {
+    return listenUltrasonic;
+}
+void BleComm::notifyGyro() {
+    PAYLOAD_RESP_IMU_GYRO payload;
+    M5.Imu.getGyroData(&payload.gyroX, &payload.gyroY, &payload.gyroZ);
+    pGyroCharacteristic->setValue((uint8_t *)&payload,
+                                  sizeof(PAYLOAD_RESP_IMU_GYRO));
+    pGyroCharacteristic->notify();
+}
+void BleComm::notifyAcce() {
+    PAYLOAD_RESP_IMU_ACCE payload;
+    M5.Imu.getAccelData(&payload.acceX, &payload.acceY, &payload.acceZ);
+    pAhrsCharacteristic->setValue((uint8_t *)&payload,
+                                  sizeof(PAYLOAD_RESP_IMU_ACCE));
+    pAcceCharacteristic->notify();
+}
+void BleComm::notifyAhrs() {
+    PAYLOAD_RESP_IMU_AHRS payload;
+    M5.Imu.getAhrsData(&payload.pitch, &payload.roll, &payload.yaw);
+    pAhrsCharacteristic->setValue((uint8_t *)&payload,
+                                  sizeof(PAYLOAD_RESP_IMU_AHRS));
+    pAhrsCharacteristic->notify();
+}
+void BleComm::notifyTemp() {
+    PAYLOAD_RESP_IMU_TEMP payload;
+    M5.Imu.getTempData(&payload.temp);
+    pTempCharacteristic->setValue((uint8_t *)&payload,
+                                  sizeof(PAYLOAD_RESP_IMU_TEMP));
+    pTempCharacteristic->notify();
+}
+void BleComm::notifyButton() {
+    PAYLOAD_RESP_ALL_BUTTON_STATE payload;
+    payload.aState = M5.BtnA.read();
+    payload.bState = M5.BtnB.read();
+    pButtonCharacteristic->setValue((uint8_t *)&payload,
+                                    sizeof(PAYLOAD_RESP_ALL_BUTTON_STATE));
+    pButtonCharacteristic->notify();
+}
+
+void BleComm::notifyUltrasonic() {
 }
 
 void ServerCallbacks::onConnect(BLEServer *pServer) {
@@ -435,6 +546,14 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     pRespCharacteristic->notify();
                     break;
                 }
+                // case CMD_BUTTON_START_LISTEN_STATE: {
+                // listenButton = true;
+                // break;
+                // }
+                // case CMD_BUTTON_STOP_LISTEN_STATE: {
+                // listenButton = false;
+                // break;
+                // }
                 default: {
                     Serial.println("How did you get here?");
                     break;
@@ -510,6 +629,38 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     pRespCharacteristic->notify();
                     break;
                 }
+                // case CMD_IMU_START_LISTEN_GYRO: {
+                //     listenGyro = true;
+                //     break;
+                // }
+                // case CMD_IMU_START_LISTEN_ACCE: {
+                //     listenAcce = true;
+                //     break;
+                // }
+                // case CMD_IMU_START_LISTEN_AHRS: {
+                //     listenAhrs = true;
+                //     break;
+                // }
+                // case CMD_IMU_START_LISTEN_TEMP: {
+                //     listenTemp = true;
+                //     break;
+                // }
+                // case CMD_IMU_STOP_LISTEN_GYRO: {
+                //     listenGyro = false;
+                //     break;
+                // }
+                // case CMD_IMU_STOP_LISTEN_ACCE: {
+                //     listenAcce = false;
+                //     break;
+                // }
+                // case CMD_IMU_STOP_LISTEN_AHRS: {
+                //     listenAhrs = false;
+                //     break;
+                // }
+                // case CMD_IMU_STOP_LISTEN_TEMP: {
+                // listenTemp = true;
+                // break;
+                // }
                 default:
                     Serial.println("How did you get here?");
                     break;
@@ -752,4 +903,33 @@ void BleComm::printMessage(MESSAGE *msg) {
     for (int i = 0; i < 16; ++i)
         Serial.println(msg->payload[i]);
     Serial.println(msg->chksm);
+}
+
+BlePeri::~BlePeri() {
+}
+BlePeri::BlePeri(uint16_t uuid) : BLEDescriptor(BLEUUID(uuid)) {
+}
+
+void BlePeri::setNotifications(bool flag) {
+    uint8_t *pValue = getValue();
+    if (flag)
+        pValue[0] |= 1 << 0;
+    else
+        pValue[0] &= ~(1 << 0);
+}
+
+bool BlePeri::getNotifications() {
+    return (getValue()[0] & (1 << 0)) != 0;
+}  // getNotifications
+
+void BlePeri::setIndications(bool flag) {
+    uint8_t *pValue = getValue();
+    if (flag)
+        pValue[0] |= 1 << 1;
+    else
+        pValue[0] &= ~(1 << 1);
+}  // setIndications
+
+bool BlePeri::getIndications() {
+    return (getValue()[0] & (1 << 1)) != 0;
 }

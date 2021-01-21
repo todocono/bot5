@@ -7,6 +7,7 @@
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEService.h>
+#include <BLEDescriptor.h>
 #include <BLEUtils.h>
 #include <GeneralUtils.h>
 
@@ -24,9 +25,18 @@
 #define DEV_INFO_SERVICE_UUID "ad505ba2-54d1-11eb-ae93-0242ac130002"  // UART service UUID
 
 // CMD Service
-#define CMD_SERVICE_UUID "f6a44d18-6e45-4630-b85e-da3817f10edd"            // UART service UUID
-#define CMD_CHARACTERISTIC_TX_UUID "f6a44d18-6e45-4631-b85e-da3817f10edd"  // UART service UUID
-#define CMD_CHARACTERISTIC_RX_UUID "f6a44d18-6e45-4632-b85e-da3817f10edd"  // UART service UUID
+// #define CMD_SERVICE_UUID           "f6a44d18-6e45-4630-b85e-da3817f10edd"            // UART service UUID
+#define CMD_SERVICE_UUID           "417c891e-f837-4a72-a097-ed1a8c4a4840"            // UART service UUID
+
+// #define CMD_CHARACTERISTIC_TX_UUID "f6a44d18-6e45-4631-b85e-da3817f10edd"  // UART service UUID
+#define CMD_CHARACTERISTIC_TX_UUID "417c891e-f837-4a72-a097-ed1a8c4a4841"  // UART service UUID
+#define CMD_CHARACTERISTIC_RX_UUID "417c891e-f837-4a72-a097-ed1a8c4a4842"  // UART service UUID
+#define RESP_GYRO_UUID             "417c891e-f837-4a72-a097-ed1a8c4a4843"              // GYRO READING
+#define RESP_ACCE_UUID             "f6a44d18-6e45-4634-b85e-da3817f10edd"              // ACCE READING
+#define RESP_AHRS_UUID             "f6a44d18-6e45-4635-b85e-da3817f10edd"              // AHRS READING
+#define RESP_TEMP_UUID             "f6a44d18-6e45-4636-b85e-da3817f10edd"              // TEMPERATURE READING
+#define RESP_BUTTON_UUID           "f6a44d18-6e45-4637-b85e-da3817f10edd"            // BUTTON STATE READING
+#define RESP_ULTRASONIC_UUID       "f6a44d18-6e45-4638-b85e-da3817f10edd"        // ULTRASONIC READING
 
 // Pin Definition
 #define IR_TX_PIN 9
@@ -37,22 +47,22 @@
 
 // Debug Flag
 #define DEBUG_RAW_OUTPUT false
-#define DEBUG_GENERAL    false
-#define DEBUG_MOTOR      false 
-#define DEBUG_SERVO      false 
-#define DEBUG_I2C        false
-#define DEBUG_LED        false
-#define DEBUG_BUTTON     false
-#define DEBUG_LCD        false
-#define DEBUG_IMU        true
-#define DEBUG_BUZZER     false
-#define DEBUG_IR         false
+#define DEBUG_GENERAL false
+#define DEBUG_MOTOR false
+#define DEBUG_SERVO false
+#define DEBUG_I2C false
+#define DEBUG_LED false
+#define DEBUG_BUTTON false
+#define DEBUG_LCD false
+#define DEBUG_IMU true
+#define DEBUG_BUZZER false
+#define DEBUG_IR false
 #define DEBUG_MICROPHONE false
-#define DEBUG_POWER      false
-#define DEBUG_GROVE      false
-#define DEBUG_WIFI       false
-#define DEBUG_CAMERA     false
-#define DEBUG_EXTERN     false
+#define DEBUG_POWER false
+#define DEBUG_GROVE false
+#define DEBUG_WIFI false
+#define DEBUG_CAMERA false
+#define DEBUG_EXTERN false
 
 /**
  * @brief Message struct 
@@ -126,6 +136,12 @@ typedef struct
 {
     uint8_t state;
 } PAYLOAD_RESP_BUTTON_STATE;
+
+typedef struct
+{
+    uint8_t aState;
+    uint8_t bState;
+} PAYLOAD_RESP_ALL_BUTTON_STATE;
 
 typedef struct
 {
@@ -247,7 +263,9 @@ enum CMD_LED {
 
 enum CMD_BUTTON {
     CMD_BUTTON_GET_STATE_A = 0,
-    CMD_BUTTON_GET_STATE_B
+    CMD_BUTTON_GET_STATE_B,
+    CMD_BUTTON_START_LISTEN_STATE,
+    CMD_BUTTON_STOP_LISTEN_STATE
 };
 
 enum CMD_LCD {
@@ -259,6 +277,14 @@ enum CMD_IMU {
     CMD_IMU_POLL_ACCE,
     CMD_IMU_POLL_AHRS,
     CMD_IMU_POLL_TEMP,
+    CMD_IMU_START_LISTEN_GYRO,
+    CMD_IMU_START_LISTEN_ACCE,
+    CMD_IMU_START_LISTEN_AHRS,
+    CMD_IMU_START_LISTEN_TEMP,
+    CMD_IMU_STOP_LISTEN_GYRO,
+    CMD_IMU_STOP_LISTEN_ACCE,
+    CMD_IMU_STOP_LISTEN_AHRS,
+    CMD_IMU_STOP_LISTEN_TEMP,
     CMD_IMU_CONFIG
 };
 
@@ -275,7 +301,7 @@ enum CMD_IR {
     CMD_IR_GET_STATE
 };
 
-// TODO: Define packages for microphone, power, RTC, 
+// TODO: Define packages for microphone, power, RTC,
 // Grove, WiFi, Camera and extern ESP32.
 
 // ERRONO
@@ -296,30 +322,46 @@ class BleComm {
     ~BleComm();
     int start();
     bool isConnected();
+    bool isListenGyro();
+    bool isListenAcce();
+    bool isListenAhrs();
+    bool isListenTemp();
+    bool isListenButton();
+    bool isListenUltrasonic();
+    void notifyGyro();
+    void notifyAcce();
+    void notifyAhrs();
+    void notifyTemp();
+    void notifyButton();
+    void notifyUltrasonic();
     static void printMessage(MESSAGE* msg);
 };
 
+class BlePeri : public BLEDescriptor {
+    public:
+    BlePeri(uint16_t uuid);
+    ~BlePeri();
+    void setNotifications(bool flag);
+    bool getNotifications();
+	void setIndications(bool flag);
+	bool getIndications();
+};
 // Server Callbacks
 class ServerCallbacks : public BLEServerCallbacks {
-    void onConnect(BLEServer *pServer);
+    void onConnect(BLEServer* pServer);
     void onDisconnect();
 };
 
 // Identity Service Callbacks
 class GetIdServiceCallbacks : public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *pCharacteristic) {
+    void onWrite(BLECharacteristic* pCharacteristic) {
         // TODO: handle incoming messages
     }
 };
 
 // CMD Characteristic Callbacks
 class CMDCharacteristicCallbacks : public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *pCharacteristic);
-};
-
-// Rx Characteristic Callbacks
-class RxCharacteristicCallbacks : public BLECharacteristicCallbacks {
-    void onNotify(BLECharacteristic *pCharacteristic);
+    void onWrite(BLECharacteristic* pCharacteristic);
 };
 
 #endif  // BLE_COMM_H

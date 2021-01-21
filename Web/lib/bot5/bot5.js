@@ -58,6 +58,8 @@ const Cmd = {
     BUTTON: {
         GET_STATE_A: 0,
         GET_STATE_B: 1,
+        START_LISTEN_STATE: 2,
+        STOP_LISTEN_STATE: 3
     },
     LCD: {
         GEN_QR_CODE: 0
@@ -67,7 +69,15 @@ const Cmd = {
         POLL_ACCE: 1,
         POLL_AHRS: 2,
         POLL_TEMP: 3,
-        CONFIG: 4
+        START_LISTEN_GYRO: 4,
+        START_LISTEN_ACCE: 5,
+        START_LISTEN_AHRS: 6,
+        START_LISTEN_TEMP: 7,
+        STOP_LISTEN_GYRO: 8,
+        STOP_LISTEN_ACCE: 9,
+        STOP_LISTEN_AHRS: 10,
+        STOP_LISTEN_TEMP: 11,
+        CONFIG: 12
     },
     BUZZER: {
         SET_VOLUME: 0,
@@ -100,6 +110,12 @@ class Bot5 {
         this._isConnected = false;
         this._respCharacteristic = [];
         this._cmdCharacteristic = [];
+        this._gyroCharacteristic = [];
+        this._acceCharacteristic = [];
+        this._ahrsCharacteristic = [];
+        this._tempCharacteristic = [];
+        this._buttonCharacteristic = [];
+        this._ultrasonicCharacteristic = [];
 
         console.log("bot initialized.");
     }
@@ -114,22 +130,163 @@ class Bot5 {
     isConnected() { // Return whether the device is connected
         return this._isConnected;
     }
-    startNotifications() { // Stop notification for characteristic
+    startNotifications() { // Start notification for characteristic
         this._p5ble.startNotifications(self._respCharacteristic, this._parseResponse);
+        this._p5ble.startNotifications(self._gyroCharacteristic, this._parseGyro);
+        this._p5ble.startNotifications(self._acceCharacteristic, this._parseAcce);
+        this._p5ble.startNotifications(self._ahrsCharacteristic, this._parseAhrs);
+        this._p5ble.startNotifications(self._tempCharacteristic, this._parseTemp);
+        this._p5ble.startNotifications(self._buttonCharacteristic, this._parseButton);
+        this._p5ble.startNotifications(self._ultrasonicCharacteristic, this._parseUltrasonic);
         this._isConnected = true; // TODO: not working properly
     }
     stopNotifications() { // Stop notification for characteristic
         this._p5ble.stopNotifications(self._respCharacteristic);
+        this._p5ble.stopNotifications(self._gyroCharacteristic);
+        this._p5ble.stopNotifications(self._acceCharacteristic);
+        this._p5ble.stopNotifications(self._ahrsCharacteristic);
+        this._p5ble.stopNotifications(self._tempCharacteristic);
+        this._p5ble.stopNotifications(self._buttonCharacteristic);
+        this._p5ble.stopNotifications(self._ultrasonicCharacteristic);
     }
     _gotCharacteristics(error, characteristics) {
         if (error) {
             console.log("error", error);
         }
+        console.log(characteristics);
         self._respCharacteristic = characteristics[0];
         self._cmdCharacteristic = characteristics[1];
+        self._gyroCharacteristic = characteristics[2];
+        self._acceCharacteristic = characteristics[3];
+        self._ahrsCharacteristic = characteristics[4];
+        self._tempCharacteristic = characteristics[5];
+        self._buttonCharacteristic = characteristics[6];
+        self._ultrasonicCharacteristic = characteristics[7];
         // self._p5ble.startNotifications(characteristics[0], self.parseTest);
         // console.log(characteristics);
     }
+
+    _parseResponse = ((msg) => { // Parse response message
+        let view = msg;
+        // parse device
+        switch (view.getUint8(0)) {
+            case Peri.GENERAL: {
+                break;
+            }
+            case Peri.MOTOR: {
+                switch (view.getUint8(1)) {
+                    case Cmd.MOTOR.GET_MOVEMENT_SPEED: {
+                        this.motor.movementId = view.getUint8(3);
+                        this.motor.speed = view.getInt8(4);
+                        break;
+                    }
+                    default:
+                        break;
+                }
+                break;
+            }
+            case Peri.SERVO: {
+                switch (view.getUint8(1)) {
+                    case Cmd.SERVO.GET_ANGLE: {
+                        let channel = view.getUint8(3);
+                        this.servo.angle[channel] = view.getUint8(4);
+                        break;
+                    }
+                    case Cmd.SERVO.GET_PULSE_WIDTH: {
+                        let channel = view.getUint8(3);
+                        this.servo.pulseWidth[channel] = view.getUint16(4);
+                        break;
+                    }
+                }
+                break;
+            }
+            case Peri.I2C: {
+                // TODO
+            }
+            case Peri.LED: {
+                switch (view.getUint(1)) {
+                    case Cmd.LED.GET_BRIGHTNESS: {
+                        this.led.brightness = view.getUint(3);
+                        break;
+                    }
+                }
+                break;
+            }
+            case Peri.BUTTON: {
+                switch (view.getUint8(1)) {
+                    case Cmd.BUTTON.GET_STATE_A: {
+                        this.button.a = view.getUint8(3);
+                        break;
+                    }
+                    case Cmd.BUTTON.GET_STATE_B: {
+                        console.log(view.getUint8(3));
+                        this.button.b = view.getUint8(3);
+                        break;
+                    }
+                }
+                break;
+            }
+            case Peri.LCD: {
+                break;
+            }
+            case Peri.IMU: {
+                switch (view.getUint8(1)) {
+                    case (Cmd.IMU.POLL_GYRO): {
+                        this.imu.gyroX = view.getFloat32(3, true);
+                        this.imu.gyroY = view.getFloat32(7, true);
+                        this.imu.gyroZ = view.getFloat32(11, true);
+                        console.log("Gyro");
+                        console.log(view.getFloat32(3, true),
+                            view.getFloat32(7, true),
+                            view.getFloat32(11, true));
+                        break;
+                    }
+                    case (Cmd.IMU.POLL_ACCE): {
+                        this.imu.acceX = view.getFloat32(3, true);
+                        this.imu.acceY = view.getFloat32(7, true);
+                        this.imu.acceZ = view.getFloat32(11, true);
+                        break;
+                    }
+                    case (Cmd.IMU.POLL_AHRS): {
+                        this.imu.pitch = view.getFloat32(3, true);
+                        this.imu.roll = view.getFloat32(7, true);
+                        this.imu.yaw = view.getFloat32(11, true);
+                        break;
+                    }
+                    case (Cmd.IMU.POLL_TEMP): {
+                        this.imu.temp = view.getFloat32(3, true);
+                        break;
+                    }
+                }
+                break;
+            }
+            case Peri.BUZZER: {
+                switch (view.getUint8(1)) {
+                    case Cmd.BUZZER.GET_VOLUME: {
+                        this.buzzer.volume = view.getUint8(3);
+                        break;
+                    }
+                    case Cmd.BUZZER.GET_FREQ_DURATION: {
+                        this.buzzer.freq = view.getUint16(3, true);
+                        this.buzzer.duration = view.getUint32(5, true);
+                        break;
+                    }
+                }
+                break;
+            }
+            case Peri.IR: {
+                switch (view.getUint8(1)) {
+                    case Cmd.IR.GET_STATE: {
+                        this.ir.state = view.getUint8(3);
+                        break;
+                    }
+                }
+                break;
+            }
+            default:
+                break;
+        }
+    }).bind(this);
 
     motor = {
         forward: (speed) => {
@@ -309,11 +466,26 @@ class Bot5 {
             this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getStateB: () => {
-
             let msg = new ArrayBuffer(20);
             let v = new DataView(msg);
             v.setUint8(0, Peri.BUTTON);
             v.setUint8(1, Cmd.BUTTON.GET_STATE_B);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        startListenAllButton: () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.BUTTON);
+            v.setUint8(1, Cmd.BUTTON.START_LISTEN_STATE);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        stopListenAllButton: () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.BUTTON);
+            v.setUint8(1, Cmd.BUTTON.STOP_LISTEN_STATE);
             v.setUint8(2, self._messageCount++);
             this._p5ble.write(self._cmdCharacteristic, msg);
         },
@@ -356,6 +528,70 @@ class Bot5 {
             let v = new DataView(msg);
             v.setUint8(0, Peri.IMU);
             v.setUint8(1, Cmd.IMU.POLL_TEMP);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        startListenGyro: () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.IMU);
+            v.setUint8(1, Cmd.IMU.START_LISTEN_GYRO);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        startListenAcce: () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.IMU);
+            v.setUint8(1, Cmd.IMU.START_LISTEN_ACCE);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        startListenAhrs: () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.IMU);
+            v.setUint8(1, Cmd.IMU.START_LISTEN_AHRS);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        startListenTemp: () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.IMU);
+            v.setUint8(1, Cmd.IMU.START_LISTEN_TEMP);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        stopListenGyro: () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.IMU);
+            v.setUint8(1, Cmd.IMU.STOP_LISTEN_GYRO);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        stopListenAcce: () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.IMU);
+            v.setUint8(1, Cmd.IMU.STOP_LISTEN_ACCE);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        stopListenAhrs: () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.IMU);
+            v.setUint8(1, Cmd.IMU.STOP_LISTEN_AHRS);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        stopListenTemp: () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.IMU);
+            v.setUint8(1, Cmd.IMU.STOP_LISTEN_TEMP);
             v.setUint8(2, self._messageCount++);
             this._p5ble.write(self._cmdCharacteristic, msg);
         },
@@ -439,125 +675,4 @@ class Bot5 {
         },
         state: 0
     };
-    _parseResponse = ((msg) => { // Parse response message
-        let view = msg;
-        // parse device
-        switch (view.getUint8(0)) {
-            case Peri.GENERAL: {
-                break;
-            }
-            case Peri.MOTOR: {
-                switch (view.getUint8(1)) {
-                    case Cmd.MOTOR.GET_MOVEMENT_SPEED: {
-                        this.motor.movementId = view.getUint8(3);
-                        this.motor.speed = view.getInt8(4);
-                        break;
-                    }
-                    default:
-                        break;
-                }
-                break;
-            }
-            case Peri.SERVO: {
-                switch (view.getUint8(1)) {
-                    case Cmd.SERVO.GET_ANGLE: {
-                        let channel = view.getUint8(3);
-                        this.servo.angle[channel] = view.getUint8(4);
-                        break;
-                    }
-                    case Cmd.SERVO.GET_PULSE_WIDTH: {
-                        let channel = view.getUint8(3);
-                        this.servo.pulseWidth[channel] = view.getUint16(4);
-                        break;
-                    }
-                }
-                break;
-            }
-            case Peri.I2C: {
-                // TODO
-            }
-            case Peri.LED: {
-                switch (view.getUint(1)) {
-                    case Cmd.LED.GET_BRIGHTNESS: {
-                        this.led.brightness = view.getUint(3);
-                        break;
-                    }
-                }
-                break;
-            }
-            case Peri.BUTTON: {
-                switch (view.getUint8(1)) {
-                    case Cmd.BUTTON.GET_STATE_A: {
-                        this.button.a = view.getUint8(3);
-                        break;
-                    }
-                    case Cmd.BUTTON.GET_STATE_B: {
-                        console.log(view.getUint8(3));
-                        this.button.b = view.getUint8(3);
-                        break;
-                    }
-                }
-                break;
-            }
-            case Peri.LCD: {
-                break;
-            }
-            case Peri.IMU: {
-                switch (view.getUint8(1)) {
-                    case (Cmd.IMU.POLL_GYRO): {
-                        this.imu.gyroX = view.getFloat32(3, true);
-                        this.imu.gyroY = view.getFloat32(7, true);
-                        this.imu.gyroZ = view.getFloat32(11, true);
-                        console.log("Gyro");
-                        console.log(view.getFloat32(3, true),
-                            view.getFloat32(7, true),
-                            view.getFloat32(11, true));
-                        break;
-                    }
-                    case (Cmd.IMU.POLL_ACCE): {
-                        this.imu.acceX = view.getFloat32(3, true);
-                        this.imu.acceY = view.getFloat32(7, true);
-                        this.imu.acceZ = view.getFloat32(11, true);
-                        break;
-                    }
-                    case (Cmd.IMU.POLL_AHRS): {
-                        this.imu.pitch = view.getFloat32(3, true);
-                        this.imu.roll = view.getFloat32(7, true);
-                        this.imu.yaw = view.getFloat32(11, true);
-                        break;
-                    }
-                    case (Cmd.IMU.POLL_TEMP): {
-                        this.imu.temp = view.getFloat32(3, true);
-                        break;
-                    }
-                }
-                break;
-            }
-            case Peri.BUZZER: {
-                switch (view.getUint8(1)) {
-                    case Cmd.BUZZER.GET_VOLUME: {
-                        this.buzzer.volume = view.getUint8(3);
-                        break;
-                    }
-                    case Cmd.BUZZER.GET_FREQ_DURATION: {
-                        this.buzzer.freq = view.getUint16(3, true);
-                        this.buzzer.duration = view.getUint32(5, true);
-                        break;
-                    }
-                }
-                break;
-            }
-            case Peri.IR: {
-                switch (view.getUint8(1)) {
-                    case Cmd.IR.GET_STATE: {
-                        this.ir.state = view.getUint8(3);
-                        break;
-                    }
-                }
-                break;
-            }
-            default:
-                break;
-        }
-    }).bind(this);
 }

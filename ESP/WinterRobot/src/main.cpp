@@ -33,6 +33,21 @@ void loop()
     if (ble.isConnected())
     {
         // Serial.println("connected");
+        if (ble.isListenAcce()) {
+            ble.notifyAcce();
+        } 
+        if (ble.isListenAhrs()) {
+            ble.notifyAhrs();
+        } 
+        if (ble.isListenGyro()) {
+            ble.notifyGyro();
+        } 
+        if (ble.isListenTemp()) {
+            ble.notifyTemp();
+        } 
+        if (ble.isListenButton()){
+            ble.notifyButton();
+        } 
         delay(10);
     }
     else if (!ble.isConnected())
