@@ -16,11 +16,11 @@ uint32_t buzzerDuration;
 uint8_t irState;
 uint8_t respCount;
 
-bool listenGyro = false;
-bool listenAcce = false;
-bool listenAhrs = false;
-bool listenTemp = false;
-bool listenButton = false;
+bool listenGyro =       true;
+bool listenAcce =       true;
+bool listenAhrs =       true;
+bool listenTemp =       true;
+bool listenButton =     true;
 bool listenUltrasonic = false;
 
 // Runtime global handles
@@ -35,12 +35,9 @@ BLEService *pCmdService;
 // Characteristic
 BLECharacteristic *pCMDCharacteristic;
 BLECharacteristic *pRespCharacteristic;
-BLECharacteristic *pGyroCharacteristic;
-BLECharacteristic *pAcceCharacteristic;
-BLECharacteristic *pAhrsCharacteristic;
-BLECharacteristic *pTempCharacteristic;
-BLECharacteristic *pButtonCharacteristic;
-BLECharacteristic *pUltrasonicCharacteristic;
+BLECharacteristic *pPayload1Characteristic;
+BLECharacteristic *pPayload2Characteristic;
+BLECharacteristic *pPayload3Characteristic;
 
 BleComm::BleComm() {
 }
@@ -88,41 +85,23 @@ int BleComm::start() {
         BLECharacteristic::PROPERTY_WRITE);
     pCMDCharacteristic->setCallbacks(new CMDCharacteristicCallbacks());
 
-    // Gyro Characteristic
-    pGyroCharacteristic = pCmdService->createCharacteristic(
-        RESP_GYRO_UUID,
+    // Payload 1 Characteristic
+    pPayload1Characteristic = pCmdService->createCharacteristic(
+        RESP_PAYLOAD1_UUID,
         BLECharacteristic::PROPERTY_NOTIFY);
-    pGyroCharacteristic->addDescriptor(new BlePeri((uint16_t)0x2902));
+    pPayload1Characteristic->addDescriptor(new BLE2902());
 
-    // Acce Characteristic
-    pAcceCharacteristic = pCmdService->createCharacteristic(
-        RESP_ACCE_UUID,
+    // Payload 2 Characteristic
+    pPayload2Characteristic = pCmdService->createCharacteristic(
+        RESP_PAYLOAD2_UUID,
         BLECharacteristic::PROPERTY_NOTIFY);
-    pAcceCharacteristic->addDescriptor(new BlePeri((uint16_t)0x2902));
+    pPayload2Characteristic->addDescriptor(new BLE2902());
 
-    // AHRS Characteristic
-    pAhrsCharacteristic = pCmdService->createCharacteristic(
-        RESP_AHRS_UUID,
+    // Payload 3 Characteristic
+    pPayload3Characteristic = pCmdService->createCharacteristic(
+        RESP_PAYLOAD3_UUID,
         BLECharacteristic::PROPERTY_NOTIFY);
-    pAhrsCharacteristic->addDescriptor(new BlePeri((uint16_t)0x2902));
-
-    // Temp Characteristic
-    pTempCharacteristic = pCmdService->createCharacteristic(
-        RESP_TEMP_UUID,
-        BLECharacteristic::PROPERTY_NOTIFY);
-    pTempCharacteristic->addDescriptor(new BlePeri((uint16_t)0x2902));
-
-    // Button Characteristic
-    pButtonCharacteristic = pCmdService->createCharacteristic(
-        RESP_BUTTON_UUID,
-        BLECharacteristic::PROPERTY_NOTIFY);
-    pButtonCharacteristic->addDescriptor(new BlePeri((uint16_t)0x2902));
-
-    // Ultrasonic Characteristic
-    pUltrasonicCharacteristic = pCmdService->createCharacteristic(
-        RESP_ULTRASONIC_UUID,
-        BLECharacteristic::PROPERTY_NOTIFY);
-    pUltrasonicCharacteristic->addDescriptor(new BlePeri((uint16_t)0x2902));
+    pPayload3Characteristic->addDescriptor(new BLE2902());
 
     // Start advertising
     // pIdentityService->start();
@@ -165,44 +144,37 @@ bool BleComm::isListenButton() {
 bool BleComm::isListenUltrasonic() {
     return listenUltrasonic;
 }
-void BleComm::notifyGyro() {
-    PAYLOAD_RESP_IMU_GYRO payload;
-    M5.Imu.getGyroData(&payload.gyroX, &payload.gyroY, &payload.gyroZ);
-    pGyroCharacteristic->setValue((uint8_t *)&payload,
-                                  sizeof(PAYLOAD_RESP_IMU_GYRO));
-    pGyroCharacteristic->notify();
-}
-void BleComm::notifyAcce() {
-    PAYLOAD_RESP_IMU_ACCE payload;
-    M5.Imu.getAccelData(&payload.acceX, &payload.acceY, &payload.acceZ);
-    pAhrsCharacteristic->setValue((uint8_t *)&payload,
-                                  sizeof(PAYLOAD_RESP_IMU_ACCE));
-    pAcceCharacteristic->notify();
-}
-void BleComm::notifyAhrs() {
-    PAYLOAD_RESP_IMU_AHRS payload;
-    M5.Imu.getAhrsData(&payload.pitch, &payload.roll, &payload.yaw);
-    pAhrsCharacteristic->setValue((uint8_t *)&payload,
-                                  sizeof(PAYLOAD_RESP_IMU_AHRS));
-    pAhrsCharacteristic->notify();
-}
-void BleComm::notifyTemp() {
-    PAYLOAD_RESP_IMU_TEMP payload;
-    M5.Imu.getTempData(&payload.temp);
-    pTempCharacteristic->setValue((uint8_t *)&payload,
-                                  sizeof(PAYLOAD_RESP_IMU_TEMP));
-    pTempCharacteristic->notify();
-}
-void BleComm::notifyButton() {
-    PAYLOAD_RESP_ALL_BUTTON_STATE payload;
-    payload.aState = M5.BtnA.read();
-    payload.bState = M5.BtnB.read();
-    pButtonCharacteristic->setValue((uint8_t *)&payload,
-                                    sizeof(PAYLOAD_RESP_ALL_BUTTON_STATE));
-    pButtonCharacteristic->notify();
-}
+void BleComm::notify() {
+    PAYLOAD_1 payload1 = {};
+    PAYLOAD_2 payload2 = {};
+    PAYLOAD_3 payload3 = {};
 
-void BleComm::notifyUltrasonic() {
+    if (listenGyro){
+        M5.Imu.getGyroData(&payload1.gyroX, &payload1.gyroY, &payload1.gyroZ);
+    }
+    if (listenAcce) {
+        M5.Imu.getAccelData(&payload2.acceX, &payload2.acceY, &payload2.acceZ);
+    }
+    if (listenAhrs) {
+        M5.Imu.getAhrsData(&payload3.pitch, &payload3.roll, &payload3.yaw);
+    }
+    if (listenButton) {
+        payload1.buttonA = M5.BtnA.read();
+        payload1.buttonB = M5.BtnB.read();
+    }
+    if (listenTemp) {
+        M5.Imu.getTempData(&payload3.temp);
+    }
+
+    pPayload1Characteristic->setValue((uint8_t *)&payload1,
+                                  sizeof(PAYLOAD_1));
+    pPayload2Characteristic->setValue((uint8_t *)&payload2,
+                                  sizeof(PAYLOAD_2));
+    pPayload3Characteristic->setValue((uint8_t *)&payload3,
+                                  sizeof(PAYLOAD_3));
+    pPayload1Characteristic->notify();
+    pPayload2Characteristic->notify();
+    pPayload3Characteristic->notify();
 }
 
 void ServerCallbacks::onConnect(BLEServer *pServer) {

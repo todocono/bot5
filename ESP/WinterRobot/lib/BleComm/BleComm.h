@@ -4,10 +4,10 @@
 
 #include <Arduino.h>
 #include <BLE2902.h>
+#include <BLEDescriptor.h>
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEService.h>
-#include <BLEDescriptor.h>
 #include <BLEUtils.h>
 #include <GeneralUtils.h>
 
@@ -26,17 +26,14 @@
 
 // CMD Service
 // #define CMD_SERVICE_UUID           "f6a44d18-6e45-4630-b85e-da3817f10edd"            // UART service UUID
-#define CMD_SERVICE_UUID           "417c891e-f837-4a72-a097-ed1a8c4a4840"            // UART service UUID
+#define CMD_SERVICE_UUID "417c891e-f837-4a72-a097-ed1a8c4a4840"  // UART service UUID
 
 // #define CMD_CHARACTERISTIC_TX_UUID "f6a44d18-6e45-4631-b85e-da3817f10edd"  // UART service UUID
 #define CMD_CHARACTERISTIC_TX_UUID "417c891e-f837-4a72-a097-ed1a8c4a4841"  // UART service UUID
 #define CMD_CHARACTERISTIC_RX_UUID "417c891e-f837-4a72-a097-ed1a8c4a4842"  // UART service UUID
-#define RESP_GYRO_UUID             "417c891e-f837-4a72-a097-ed1a8c4a4843"              // GYRO READING
-#define RESP_ACCE_UUID             "f6a44d18-6e45-4634-b85e-da3817f10edd"              // ACCE READING
-#define RESP_AHRS_UUID             "f6a44d18-6e45-4635-b85e-da3817f10edd"              // AHRS READING
-#define RESP_TEMP_UUID             "f6a44d18-6e45-4636-b85e-da3817f10edd"              // TEMPERATURE READING
-#define RESP_BUTTON_UUID           "f6a44d18-6e45-4637-b85e-da3817f10edd"            // BUTTON STATE READING
-#define RESP_ULTRASONIC_UUID       "f6a44d18-6e45-4638-b85e-da3817f10edd"        // ULTRASONIC READING
+#define RESP_PAYLOAD1_UUID "417c891e-f837-4a72-a097-ed1a8c4a4843"          // GYRO READING
+#define RESP_PAYLOAD2_UUID "417c891e-f837-4a72-a097-ed1a8c4a4844"          // GYRO READING
+#define RESP_PAYLOAD3_UUID "417c891e-f837-4a72-a097-ed1a8c4a4845"          // GYRO READING
 
 // Pin Definition
 #define IR_TX_PIN 9
@@ -194,6 +191,32 @@ typedef struct
     uint8_t state;
 } PAYLOAD_CMD_IR_SET_STATE, PAYLOAD_RESP_IR_GET_STATE;
 
+typedef struct
+{
+    float_t gyroX;
+    float_t gyroY;
+    float_t gyroZ;
+    bool buttonA;
+    bool buttonB;
+} PAYLOAD_1;
+
+typedef struct
+{
+    float_t acceX;
+    float_t acceY;
+    float_t acceZ;
+    float_t ultrasonic;
+    float_t mic;
+} PAYLOAD_2;
+
+typedef struct
+{
+    float_t pitch;
+    float_t roll;
+    float_t yaw;
+    float_t temp;
+} PAYLOAD_3;
+
 #pragma pack()
 
 /**
@@ -328,23 +351,18 @@ class BleComm {
     bool isListenTemp();
     bool isListenButton();
     bool isListenUltrasonic();
-    void notifyGyro();
-    void notifyAcce();
-    void notifyAhrs();
-    void notifyTemp();
-    void notifyButton();
-    void notifyUltrasonic();
+    void notify();
     static void printMessage(MESSAGE* msg);
 };
 
 class BlePeri : public BLEDescriptor {
-    public:
+   public:
     BlePeri(uint16_t uuid);
     ~BlePeri();
     void setNotifications(bool flag);
     bool getNotifications();
-	void setIndications(bool flag);
-	bool getIndications();
+    void setIndications(bool flag);
+    bool getIndications();
 };
 // Server Callbacks
 class ServerCallbacks : public BLEServerCallbacks {

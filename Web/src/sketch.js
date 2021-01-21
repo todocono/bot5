@@ -1,6 +1,6 @@
 // P5 library
 
-const serviceUuid = "f6a44d18-6e45-4630-b85e-da3817f10edd";
+const serviceUuid = "417c891e-f837-4a72-a097-ed1a8c4a4840";
 // const rxUuid = "f6a44d18-6e45-4631-b85e-da3817f10edd";
 // const txUuid = "f6a44d18-6e45-4632-b85e-da3817f10edd";
 
@@ -94,12 +94,12 @@ function listenIMU() {
   var interval = 100;
   var currInt = 0;
   setInterval(() => {
-    setTimeout(() => { bot5.imu.getGyro(); }, currInt+= interval);
-    setTimeout(() => { bot5.imu.getAcce(); }, currInt+= interval);
-    setTimeout(() => { bot5.imu.getAhrs(); }, currInt+= interval);
-    setTimeout(() => { bot5.imu.getTemp(); }, currInt+= interval);
-    setTimeout(() => {bot5.button.getStateA();}, currInt+= interval);
-    setTimeout(() => {bot5.button.getStateB();}, currInt+= interval);
+    setTimeout(() => { bot5.imu.getGyro(); }, currInt += interval);
+    setTimeout(() => { bot5.imu.getAcce(); }, currInt += interval);
+    setTimeout(() => { bot5.imu.getAhrs(); }, currInt += interval);
+    setTimeout(() => { bot5.imu.getTemp(); }, currInt += interval);
+    setTimeout(() => { bot5.button.getStateA(); }, currInt += interval);
+    setTimeout(() => { bot5.button.getStateB(); }, currInt += interval);
   }, interval * 6);
 }
 
@@ -125,19 +125,25 @@ function draw() {
   text(bot5.button.a, 10, 380);
   text("Button B:", 10, 400);
   text(bot5.button.b, 10, 420);
-  if (bot5.isConnected()) {
-    // onTimeout(() => {
-    //   bot5.button.getStateA();
-    //   console.log("button A:", bot5.button.a);
-    // }, 500);
-    // onTimeout(() => {
-    //   bot5.button.getStateB();
-    //   console.log("button B:", bot5.button.b);
-    // }, 500);
-    // var brightness = brightnessSlider.value();
-    // bot5.led.setBrightness(brightness);
-    // console.log("Brightness", brightness);
-    // myBLE.write(myCharacteristic, value);
-  } else {
-  }
+  ellipse(200, bot5.imu.gyroX / 10 + 100, 2, 2)
+  ellipse(220, bot5.imu.gyroY / 10 + 100, 2, 2)
+  ellipse(240, bot5.imu.gyroZ / 10 + 100, 2, 2)
+  ellipse(200, bot5.imu.acceX + 200, 2, 2)
+  ellipse(220, bot5.imu.acceY + 200, 2, 2)
+  ellipse(240, bot5.imu.acceZ + 200, 2, 2)
+  ellipse(200, bot5.imu.pitch / 100 + 300, 2, 2)
+  ellipse(220, bot5.imu.roll / 100 + 300, 2, 2)
+  ellipse(240, bot5.imu.yaw / 100 + 300, 2, 2)
+  // onTimeout(() => {
+  //   bot5.button.getStateA();
+  //   console.log("button A:", bot5.button.a);
+  // }, 500);
+  // onTimeout(() => {
+  //   bot5.button.getStateB();
+  //   console.log("button B:", bot5.button.b);
+  // }, 500);
+  // var brightness = brightnessSlider.value();
+  // bot5.led.setBrightness(brightness);
+  // console.log("Brightness", brightness);
+  // myBLE.write(myCharacteristic, value);
 }

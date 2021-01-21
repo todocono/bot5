@@ -110,14 +110,9 @@ class Bot5 {
         this._isConnected = false;
         this._respCharacteristic = [];
         this._cmdCharacteristic = [];
-        this._gyroCharacteristic = [];
-        this._acceCharacteristic = [];
-        this._ahrsCharacteristic = [];
-        this._tempCharacteristic = [];
-        this._buttonCharacteristic = [];
-        this._ultrasonicCharacteristic = [];
-
-        console.log("bot initialized.");
+        this._payload1Characteristic = [];
+        this._payload2Characteristic = [];
+        this._payload3Characteristic = [];
     }
     connect(serviceUuid) { // Connect to BLE device
         console.log(this.motor.movementId);
@@ -132,22 +127,16 @@ class Bot5 {
     }
     startNotifications() { // Start notification for characteristic
         this._p5ble.startNotifications(self._respCharacteristic, this._parseResponse);
-        this._p5ble.startNotifications(self._gyroCharacteristic, this._parseGyro);
-        this._p5ble.startNotifications(self._acceCharacteristic, this._parseAcce);
-        this._p5ble.startNotifications(self._ahrsCharacteristic, this._parseAhrs);
-        this._p5ble.startNotifications(self._tempCharacteristic, this._parseTemp);
-        this._p5ble.startNotifications(self._buttonCharacteristic, this._parseButton);
-        this._p5ble.startNotifications(self._ultrasonicCharacteristic, this._parseUltrasonic);
+        this._p5ble.startNotifications(self._payload1Characteristic, this._parse1);
+        this._p5ble.startNotifications(self._payload2Characteristic, this._parse2);
+        this._p5ble.startNotifications(self._payload3Characteristic, this._parse3);
         this._isConnected = true; // TODO: not working properly
     }
     stopNotifications() { // Stop notification for characteristic
+        this._p5ble.stopNotifications(self._payload1Characteristic);
+        this._p5ble.stopNotifications(self._payload2Characteristic);
+        this._p5ble.stopNotifications(self._payload3Characteristic);
         this._p5ble.stopNotifications(self._respCharacteristic);
-        this._p5ble.stopNotifications(self._gyroCharacteristic);
-        this._p5ble.stopNotifications(self._acceCharacteristic);
-        this._p5ble.stopNotifications(self._ahrsCharacteristic);
-        this._p5ble.stopNotifications(self._tempCharacteristic);
-        this._p5ble.stopNotifications(self._buttonCharacteristic);
-        this._p5ble.stopNotifications(self._ultrasonicCharacteristic);
     }
     _gotCharacteristics(error, characteristics) {
         if (error) {
@@ -156,12 +145,9 @@ class Bot5 {
         console.log(characteristics);
         self._respCharacteristic = characteristics[0];
         self._cmdCharacteristic = characteristics[1];
-        self._gyroCharacteristic = characteristics[2];
-        self._acceCharacteristic = characteristics[3];
-        self._ahrsCharacteristic = characteristics[4];
-        self._tempCharacteristic = characteristics[5];
-        self._buttonCharacteristic = characteristics[6];
-        self._ultrasonicCharacteristic = characteristics[7];
+        self._payload1Characteristic= characteristics[2];
+        self._payload2Characteristic= characteristics[3];
+        self._payload3Characteristic= characteristics[4];
         // self._p5ble.startNotifications(characteristics[0], self.parseTest);
         // console.log(characteristics);
     }
@@ -286,6 +272,26 @@ class Bot5 {
             default:
                 break;
         }
+    }).bind(this);
+
+    _parse1 = ((msg) => {
+        this.imu.gyroX = msg.getFloat32(0, true);
+        this.imu.gyroY = msg.getFloat32(4, true);
+        this.imu.gyroZ = msg.getFloat32(8, true);
+        this.button.a = msg.getUint8(12);
+        this.button.b = msg.getUint8(13);
+    }).bind(this);
+    _parse2 = ((msg) => {
+        this.imu.acceX = msg.getFloat32(0, true);
+        this.imu.acceY = msg.getFloat32(4, true);
+        this.imu.acceZ = msg.getFloat32(8, true);
+        // TODO: ultrasonic & microphone
+    }).bind(this);
+    _parse3 = ((msg) => {
+        this.imu.pitch= msg.getFloat32(0, true);
+        this.imu.roll= msg.getFloat32(4, true);
+        this.imu.yaw= msg.getFloat32(8, true);
+        this.imu.temp = msg.getFloat32(12, true) 
     }).bind(this);
 
     motor = {
