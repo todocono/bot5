@@ -90,10 +90,14 @@ const Cmd = {
         SET_STATE: 0,
         GET_STATE: 1,
     },
-    // TODO
+    RTC: {
+        SET_TIME: 0,
+        GET_TIME: 1,
+        SET_DATE: 2,
+        GET_DATE: 3
+    },
     MICROPHONE: 10,
     POWER: 11,
-    RTC: 12,
     GROVE: 13,
     WIFI: 14,
     CAMERA: 15,
@@ -145,13 +149,12 @@ class Bot5 {
         console.log(characteristics);
         self._respCharacteristic = characteristics[0];
         self._cmdCharacteristic = characteristics[1];
-        self._payload1Characteristic= characteristics[2];
-        self._payload2Characteristic= characteristics[3];
-        self._payload3Characteristic= characteristics[4];
+        self._payload1Characteristic = characteristics[2];
+        self._payload2Characteristic = characteristics[3];
+        self._payload3Characteristic = characteristics[4];
         // self._p5ble.startNotifications(characteristics[0], self.parseTest);
         // console.log(characteristics);
     }
-
     _parseResponse = ((msg) => { // Parse response message
         let view = msg;
         // parse device
@@ -269,11 +272,36 @@ class Bot5 {
                 }
                 break;
             }
+            case Peri.RTC: {
+                switch (view.getUint8(1)) {
+                    case (Cmd.RTC.GET_TIME): {
+                        this.rtc.hour = view.getUint8(3);
+                        this.rtc.minute = view.getUint8(4);
+                        this.rtc.second = view.getUint8(5);
+                        console.log("RTC");
+                        console.log(view.getUint8(3),
+                            view.getUint8(4),
+                            view.getUint8(5));
+                        break;
+                    }
+                    case (Cmd.RTC.GET_DATE): {
+                        this.rtc.weekday = view.getUint8(3);
+                        this.rtc.month =   view.getUint8(4);
+                        this.rtc.date =    view.getUint8(5);
+                        this.rtc.year =    view.getUint16(7, true);
+                        console.log("RTC");
+                        console.log(view.getUint8(3),
+                                    view.getUint8(4),
+                                    view.getUint8(5),
+                                    view.getUint16(7, true));
+                        break;
+                    }
+                }
+            }
             default:
                 break;
         }
     }).bind(this);
-
     _parse1 = ((msg) => {
         this.imu.gyroX = msg.getFloat32(0, true);
         this.imu.gyroY = msg.getFloat32(4, true);
@@ -288,10 +316,10 @@ class Bot5 {
         // TODO: ultrasonic & microphone
     }).bind(this);
     _parse3 = ((msg) => {
-        this.imu.pitch= msg.getFloat32(0, true);
-        this.imu.roll= msg.getFloat32(4, true);
-        this.imu.yaw= msg.getFloat32(8, true);
-        this.imu.temp = msg.getFloat32(12, true) 
+        this.imu.pitch = msg.getFloat32(0, true);
+        this.imu.roll = msg.getFloat32(4, true);
+        this.imu.yaw = msg.getFloat32(8, true);
+        this.imu.temp = msg.getFloat32(12, true)
     }).bind(this);
 
     motor = {
@@ -681,4 +709,52 @@ class Bot5 {
         },
         state: 0
     };
+    rtc = {
+        setTime: (hour, minute, second) => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.RTC);
+            v.setUint8(1, Cmd.RTC.SET_TIME);
+            v.setUint8(2, self._messageCount++);
+            v.setUint8(3, hour);
+            v.setUint8(4, minute);
+            v.setUint8(5, second);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        getTime: () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.RTC);
+            v.setUint8(1, Cmd.RTC.GET_TIME);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        setDate: (weekday, month, date, year) => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.RTC);
+            v.setUint8(1, Cmd.RTC.SET_TIME);
+            v.setUint8(2, self._messageCount++);
+            v.setUint8(3, weekday);
+            v.setUint8(4, month);
+            v.setUint8(5, date);
+            v.setUint16(7, year, true);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        getDate: () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.RTC);
+            v.setUint8(1, Cmd.RTC.GET_DATE);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        hour: 0,
+        minute: 0,
+        second: 0,
+        weekday: 0,
+        month: 0,
+        date: 0,
+        year: 0
+    }
 }

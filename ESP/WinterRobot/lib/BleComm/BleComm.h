@@ -51,7 +51,8 @@
 #define DEBUG_LED false
 #define DEBUG_BUTTON false
 #define DEBUG_LCD false
-#define DEBUG_IMU true
+#define DEBUG_IMU false
+#define DEBUG_RTC true
 #define DEBUG_BUZZER false
 #define DEBUG_IR false
 #define DEBUG_MICROPHONE false
@@ -193,6 +194,16 @@ typedef struct
 
 typedef struct
 {
+    RTC_TimeTypeDef time;
+} PAYLOAD_CMD_RTC_SET_TIME, PAYLOAD_RESP_RTC_GET_TIME;
+
+typedef struct
+{
+    RTC_DateTypeDef date;
+} PAYLOAD_CMD_RTC_SET_DATE, PAYLOAD_RESP_RTC_GET_DATE;
+
+typedef struct
+{
     float_t gyroX;
     float_t gyroY;
     float_t gyroZ;
@@ -324,7 +335,14 @@ enum CMD_IR {
     CMD_IR_GET_STATE
 };
 
-// TODO: Define packages for microphone, power, RTC,
+enum CMD_RTC {
+    CMD_RTC_SET_TIME = 0,
+    CMD_RTC_GET_TIME,
+    CMD_RTC_SET_DATE,
+    CMD_RTC_GET_DATE
+};
+
+// TODO: Define packages for microphone, power,
 // Grove, WiFi, Camera and extern ESP32.
 
 // ERRONO

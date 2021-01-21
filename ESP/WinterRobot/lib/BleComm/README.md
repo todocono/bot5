@@ -673,28 +673,34 @@ To be implemented
 #### To Robot
 -------------------------------------------------------------------------------
 
-#### Command 0 - Get Time
+#### Command 0 - Set Time
+
+Set current time.
+
+#### Command 1 - Get Time
 
 Request packet containing time.
 
-#### Command 1 - Get Date
+#### Command 2 - Set Date
+
+Set current date.
+
+#### Command 3 - Get Date
 
 Request packet containing date.
 
 #### From Robot
 -------------------------------------------------------------------------------
 
-#### Command 0 - Get Time Response
+#### Command 1 - Get Time Response
 
 Response to Get Time packet.
 
-To be implemented
 
-#### Command 1 - Get Date Response
+#### Command 3 - Get Date Response
 
 Response to Get Date packet.
 
-To be implemented
 
 ### Peripheral 13 - Grove Port
 

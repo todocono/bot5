@@ -17,7 +17,12 @@ void setup() {
     ble.start();
     M5.Imu.Init();
     Serial.println("Starting BLE Service...");
-    Serial.println(sizeof(float_t));
+    RTC_DateTypeDef date;
+    Serial.printf("%p %p %p %p",
+                  &date.WeekDay,
+                  &date.Month,
+                  &date.Date,
+                  &date.Year);
     M5.Lcd.setRotation(3);
     M5.Lcd.fillScreen(BLACK);
     M5.Lcd.setCursor(0, 10);
@@ -30,14 +35,8 @@ void setup() {
 }
 
 void loop() {
-        // Serial.println("connected");
-        ble.notify();
-        // M5.Imu.getGyroData(&gyroX, &gyroY, &gyroZ);
-        // Serial.print(gyroX);
-        // Serial.print(",");
-        // Serial.print(gyroY);
-        // Serial.print(",");
-        // Serial.println(gyroZ);
-        // delay(100);
-        // Serial.println("disconnected");
+    // if (ble.isConnected()) {
+    //     ble.notify();
+    // } else {
+    // }
 }

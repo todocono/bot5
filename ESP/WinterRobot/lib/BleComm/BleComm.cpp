@@ -16,11 +16,11 @@ uint32_t buzzerDuration;
 uint8_t irState;
 uint8_t respCount;
 
-bool listenGyro =       true;
-bool listenAcce =       true;
-bool listenAhrs =       true;
-bool listenTemp =       true;
-bool listenButton =     true;
+bool listenGyro = true;
+bool listenAcce = true;
+bool listenAhrs = true;
+bool listenTemp = true;
+bool listenButton = true;
 bool listenUltrasonic = false;
 
 // Runtime global handles
@@ -149,7 +149,7 @@ void BleComm::notify() {
     PAYLOAD_2 payload2 = {};
     PAYLOAD_3 payload3 = {};
 
-    if (listenGyro){
+    if (listenGyro) {
         M5.Imu.getGyroData(&payload1.gyroX, &payload1.gyroY, &payload1.gyroZ);
     }
     if (listenAcce) {
@@ -167,11 +167,11 @@ void BleComm::notify() {
     }
 
     pPayload1Characteristic->setValue((uint8_t *)&payload1,
-                                  sizeof(PAYLOAD_1));
+                                      sizeof(PAYLOAD_1));
     pPayload2Characteristic->setValue((uint8_t *)&payload2,
-                                  sizeof(PAYLOAD_2));
+                                      sizeof(PAYLOAD_2));
     pPayload3Characteristic->setValue((uint8_t *)&payload3,
-                                  sizeof(PAYLOAD_3));
+                                      sizeof(PAYLOAD_3));
     pPayload1Characteristic->notify();
     pPayload2Characteristic->notify();
     pPayload3Characteristic->notify();
@@ -752,7 +752,76 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             // TODO
             break;
         }
-        case PERI_RTC: {  // TODO
+        case PERI_RTC: {  
+            switch (msg->cmd) {
+                case CMD_RTC_SET_TIME: {
+                    PAYLOAD_CMD_RTC_SET_TIME *payload = (PAYLOAD_CMD_RTC_SET_TIME *)msg->payload;
+                    if (DEBUG_RTC) {
+                        Serial.println("RTC SET TIME");
+                        Serial.print(payload->time.Hours);
+                        Serial.println("h");
+                        Serial.print(payload->time.Minutes);
+                        Serial.println("m");
+                        Serial.print(payload->time.Seconds);
+                        Serial.println("s");
+                    }
+                    M5.Rtc.SetTime(&(payload->time));
+                    break;
+                }
+                case CMD_RTC_GET_TIME: {
+                    MESSAGE msg = {};
+                    PAYLOAD_RESP_RTC_GET_TIME respPayload;
+                    RTC_TimeTypeDef time;
+                    msg.peripheral = PERI_RTC;
+                    msg.cmd = CMD_RTC_GET_TIME;
+                    msg.count = respCount++;
+                    M5.Rtc.GetTime(&(respPayload.time));
+                    memcpy(&msg.payload, &respPayload, sizeof(PAYLOAD_RESP_RTC_GET_TIME));
+                    if (DEBUG_RTC) {
+                        Serial.println("GET TIME");
+                        BleComm::printMessage(&msg);
+                    }
+                    pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
+                    pRespCharacteristic->notify();
+                    break;
+                }
+                case CMD_RTC_SET_DATE: {
+                    PAYLOAD_CMD_RTC_SET_DATE *payload = (PAYLOAD_CMD_RTC_SET_DATE*)msg->payload;
+                    if (DEBUG_RTC) {
+                        Serial.println("RTC SET DATE");
+                        Serial.print(payload->date.Year);
+                        Serial.println("y");
+                        Serial.print(payload->date.Month);
+                        Serial.println("m");
+                        Serial.print(payload->date.Date);
+                        Serial.println("d");
+                        Serial.print(payload->date.WeekDay);
+                        Serial.println("weekday");
+                    }
+                    M5.Rtc.SetData(&(payload->date));
+                    break;
+                }
+                case CMD_RTC_GET_DATE: {
+                    MESSAGE msg = {};
+                    PAYLOAD_RESP_RTC_GET_DATE respPayload;
+                    RTC_DateTypeDef date;
+                    msg.peripheral = PERI_RTC;
+                    msg.cmd = CMD_RTC_GET_DATE;
+                    msg.count = respCount++;
+                    M5.Rtc.GetData(&(respPayload.date));
+                    memcpy(&msg.payload, &respPayload, sizeof(PAYLOAD_RESP_RTC_GET_DATE));
+                    if (DEBUG_RTC) {
+                        Serial.println("GET DATE");
+                        BleComm::printMessage(&msg);
+                    }
+                    pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
+                    pRespCharacteristic->notify();
+                    break;
+                }
+                default:{
+                    Serial.println("How did you get here?");
+                }
+            }
             break;
         }
         case PERI_GROVE: {  // TODO
