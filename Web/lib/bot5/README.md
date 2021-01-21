@@ -23,12 +23,20 @@
 
 ## Setup for Bot5
 
+`var bot5 = new Bot5()`
 
 ## Methods for Peripherals
 
 ### Peripheral 0 - General
 
-To be implemented
+**bot5.connect(serviceUuid)**
+
+Parameters:
+- `serviceUuid` unique number used to identify services and attriutes
+
+**bot5.disconnect()**
+
+**bot5.isConnected()**
 
 ### Peripheral 1 - Motors
 
@@ -150,12 +158,12 @@ Parameters:
 
 ### Peripheral 9 - Infrared Transmitter
 
-**bot5.IR.setState(state)**
+**bot5.ir.setState(state)**
 
 Parameters:
 - `state` off = `0`, on = `1`
 
-**bot5.IR.setState(state)**
+**bot5.ir.setState(state)**
 
 Parameters:
 - `state` off = `0`, on = `1`
