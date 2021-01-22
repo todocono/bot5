@@ -11,7 +11,7 @@ let brightnessSlider;
 let isConnected = false;
 
 function setup() {
-  createCanvas(600, 460);
+  createCanvas(600, 600);
   bot5 = new Bot5();
 
   // Create a 'Connect' button
@@ -38,6 +38,8 @@ function setup() {
   const muteButton = createButton("mute");
   const imuButton = createButton("imu");
   const freq = createInput()
+  const timeButton = createButton("time");
+  const dateButton = createButton("date");
   onButton.mousePressed(ledOn);
   offButton.mousePressed(ledOff);
   forwardButton.mousePressed(() => { bot5.motor.forward(127) });
@@ -69,6 +71,11 @@ function setup() {
     console.log(bot5.imu.temp);
   });
   imuButton.mousePressed(listenIMU);
+  timeButton.mousePressed(listenTime);
+  dateButton.mousePressed(() => {
+    bot5.rtc.getDate();
+    console.log(bot5.rtc.weekday, bot5.rtc.month, bot5.rtc.date, bot5.rtc.year);  
+  });
 }
 
 function ledOn() {
@@ -84,7 +91,6 @@ function ledOff() {
 function connectToBle() {
   // Connect to a device by passing the service UUID
   bot5.connect(serviceUuid);
-  // bot5.startNotifications();
 }
 
 function startNotifications() {
@@ -102,6 +108,10 @@ function listenIMU() {
     setTimeout(() => { bot5.button.getStateA(); }, currInt += interval);
     setTimeout(() => { bot5.button.getStateB(); }, currInt += interval);
   }, interval * 6);
+}
+
+function listenTime(){
+  setInterval(() => { bot5.rtc.getTime();}, 1000 );
 }
 
 function draw() {
@@ -126,15 +136,24 @@ function draw() {
   text(bot5.button.a, 10, 380);
   text("Button B:", 10, 400);
   text(bot5.button.b, 10, 420);
+  text("Time:", 10, 460);
+  text(bot5.rtc.hour, 10, 480);
+  text(bot5.rtc.minute, 30, 480);
+  text(bot5.rtc.second, 50, 480);
+  text("Date:", 10, 500);
+  text(bot5.rtc.weekday, 10, 520);
+  text(bot5.rtc.month, 30, 520);
+  text(bot5.rtc.date, 50, 520);
+  text(bot5.rtc.year, 70, 520);
   ellipse(200, bot5.imu.gyroX / 10 + 100, 2, 2)
   ellipse(220, bot5.imu.gyroY / 10 + 100, 2, 2)
   ellipse(240, bot5.imu.gyroZ / 10 + 100, 2, 2)
   ellipse(200, bot5.imu.acceX + 200, 2, 2)
   ellipse(220, bot5.imu.acceY + 200, 2, 2)
   ellipse(240, bot5.imu.acceZ + 200, 2, 2)
-  ellipse(200, bot5.imu.pitch / 100 + 300, 2, 2)
-  ellipse(220, bot5.imu.roll / 100 + 300, 2, 2)
-  ellipse(240, bot5.imu.yaw / 100 + 300, 2, 2)
+  ellipse(200, bot5.imu.pitch  + 300, 2, 2)
+  ellipse(220, bot5.imu.roll + 300, 2, 2)
+  ellipse(240, bot5.imu.yaw + 300, 2, 2)
   // onTimeout(() => {
   //   bot5.button.getStateA();
   //   console.log("button A:", bot5.button.a);
