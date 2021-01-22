@@ -42,7 +42,7 @@ Using a QR code on the screen, we can make a useless invention that can be acces
 
 9. [Pet Training](https://editor.p5js.org/momoe-nomoto/sketches/TCazky67P)
 
-Using spoken commands, we can teach “stupid pet tricks” to the bot that will be performed.
+Using ML5 to recognize spoken commands, we can teach “stupid pet tricks” to the bot that will be performed.
 
 10. [Dance With Me](https://editor.p5js.org/momoe-nomoto/sketches/PCEsJ2NKG)
 
