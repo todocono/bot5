@@ -32,7 +32,7 @@ Using the buzzer and the movements, bot5 can wake you up once a certain time is 
 
 We can turn the bot into a moving remote control. Using the on screen joystick we can move the bot and we can use the infrared transmitter to send “OFF” commands to TVs.
 
-7. Space Exploration
+7. [Space Exploration](https://editor.p5js.org/momoe-nomoto/sketches/2A-2txtNN)
 
 Using an ultrasonic sensor, we can draw the surroundings on the screen as radar and we can navigate using a control similar to Turtle.
 
@@ -40,9 +40,9 @@ Using an ultrasonic sensor, we can draw the surroundings on the screen as radar 
 
 Using a QR code on the screen, we can make a useless invention that can be accessed through the on-board web server.
 
-9. Pet Training
+9. [Pet Training](https://editor.p5js.org/momoe-nomoto/sketches/TCazky67P)
 
-Using the video input from the webcam, we can teach “stupid pet tricks” to the bot that will be performed
+Using spoken commands, we can teach “stupid pet tricks” to the bot that will be performed.
 
 10. [Dance With Me](https://editor.p5js.org/momoe-nomoto/sketches/PCEsJ2NKG)
 
