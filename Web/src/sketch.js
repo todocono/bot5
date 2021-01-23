@@ -14,7 +14,7 @@ let brightnessSlider;
 let isConnected = false;
 
 function setup() {
-  createCanvas(600, 500);
+  createCanvas(600, 600);
   bot5 = new Bot5();
 
   // Create a 'Connect' button
@@ -38,6 +38,8 @@ function setup() {
   const muteButton = createButton("mute");
   const imuButton = createButton("imu");
   const freq = createInput()
+  const timeButton = createButton("time");
+  const dateButton = createButton("date");
   onButton.mousePressed(ledOn);
   offButton.mousePressed(ledOff);
   forwardButton.mousePressed(() => { bot5.motor.forward(127) });
@@ -79,6 +81,10 @@ function startNotifications() {
   bot5.startNotifications();
 }
 
+
+function listenTime(){
+  setInterval(() => { bot5.rtc.getTime();}, 1000 );
+}
 
 function draw() {
 

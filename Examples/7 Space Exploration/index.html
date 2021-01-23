@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="utf-8">
+  <title>Bot5: Space Exploration</title>
+  <script src="p5.min.js"></script>
+  <script src="p5.dom.min.js"></script>
+  <script src="p5.sound.min.js"></script>
+  <script src="bot5.js"></script>
+  <script src="p5.ble.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="utf-8">
+</head>
+
+<body>
+  <h1>
+    <center>Bot5: Space Exploration</center>
+  </h1>
+
+  <h4 id="connectedStatus">Disconnected</h4>
+
+  <button id="connect" type="submit" onclick="connectToBle()"> connect</button>
+  <button id="disconnect" type="submit" onclick="disconnectToBle()">disconnect </button>
+
+  <br>
+  <br>
+  <br>
+  <br>
+  Move the robot and avoid obstacles. Robot will beep when you are close to an obstacle.
+
+  <script src="sketch.js"></script>
+
+  <script>
+
+    const serviceUuid = "417c891e-f837-4a72-a097-ed1a8c4a4840";
+
+    let bot5;
+    let isConnected = false;
+
+    var connectButton = document.getElementById("connect");
+    var disconnectButton = document.getElementById("disconnect");
+
+    bot5 = new Bot5();
+
+    function connectToBle() {
+      bot5.connect(serviceUuid);
+    }
+
+    function disconnectToBle() {
+      bot5.disconnect();
+      // Check if myBLE is connected
+      isConnected = bot5.isConnected();
+    }
+
+    function bot5Connect() {
+      isConnected = bot5.isConnected();
+      if (isConnected) {
+        connectedStatus.innerHTML = "Connected";
+        connectedStatus.style.color = "green";
+      } else {
+        connectedStatus.innerHTML = "Disconnected";
+        connectedStatus.style.color = "red";
+      }
+    }
+
+  </script>
+
+
+
+
+
+</body></html>
