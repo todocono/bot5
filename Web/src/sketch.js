@@ -1,6 +1,9 @@
 // P5 library
 
 const serviceUuid = "417c891e-f837-4a72-a097-ed1a8c4a4840";
+// const serviceUuid = "1efd3aa6-5cb4-11eb-ae93-0242ac130002";
+// const serviceUuid = "f6a44d18-6e45-4630-b85e-da3817f10edd";
+// const serviceUuid = "f6a44d18-6e45-4630-b85e-da3817f10edd";
 // const rxUuid = "f6a44d18-6e45-4631-b85e-da3817f10edd";
 // const txUuid = "f6a44d18-6e45-4632-b85e-da3817f10edd";
 
@@ -11,12 +14,14 @@ let brightnessSlider;
 let isConnected = false;
 
 function setup() {
-  createCanvas(600, 460);
+  createCanvas(600, 500);
   bot5 = new Bot5();
 
   // Create a 'Connect' button
   const connectButton = createButton('Connect');
   connectButton.mousePressed(connectToBle);
+  const disconnectButton = createButton('Disconnect');
+  disconnectButton.mousePressed(disconnectToBle);
 
   const notificationButton = createButton('Notification');
   notificationButton.mousePressed(startNotifications);
@@ -30,11 +35,6 @@ function setup() {
   const toneButton = createButton("tone");
   const setVolumeButton = createButton("setVolume");
   const getVolumeButton = createButton("getVolume");
-  const getGyroButton = createButton("getGyro");
-  const getAcceButton = createButton("getAcce");
-  const getAhrsButton = createButton("getAhrs");
-  const getTempButton = createButton("getTemp");
-  const toneSlider = createSlider(440, 1200);
   const muteButton = createButton("mute");
   const imuButton = createButton("imu");
   const freq = createInput()
@@ -52,23 +52,6 @@ function setup() {
   muteButton.mousePressed(() => { bot5.buzzer.mute() });
   setVolumeButton.mousePressed(() => bot5.buzzer.setVolume(100));
   getVolumeButton.mousePressed(() => bot5.buzzer.getVolume());
-  getGyroButton.mousePressed(() => {
-    bot5.imu.getGyro();
-    console.log(bot5.imu.gyroX, bot5.imu.gyroY, bot5.imu.gyroZ);
-  });
-  getAcceButton.mousePressed(() => {
-    bot5.imu.getAcce();
-    console.log(bot5.imu.acceX, bot5.imu.acceY, bot5.imu.acceZ);
-  });
-  getAhrsButton.mousePressed(() => {
-    bot5.imu.getAhrs();
-    console.log(bot5.imu.pitch, bot5.imu.yaw, bot5.imu.roll);
-  });
-  getTempButton.mousePressed(() => {
-    bot5.imu.getTemp();
-    console.log(bot5.imu.temp);
-  });
-  imuButton.mousePressed(listenIMU);
 }
 
 function ledOn() {
@@ -84,25 +67,18 @@ function ledOff() {
 function connectToBle() {
   // Connect to a device by passing the service UUID
   bot5.connect(serviceUuid);
-  // bot5.startNotifications();
+  console.log("Connect");
+  // bot5.statNotifications();
+}
+
+function disconnectToBle() {
+  bot5.disconnect();
 }
 
 function startNotifications() {
   bot5.startNotifications();
 }
 
-function listenIMU() {
-  var interval = 100;
-  var currInt = 0;
-  setInterval(() => {
-    setTimeout(() => { bot5.imu.getGyro(); }, currInt += interval);
-    setTimeout(() => { bot5.imu.getAcce(); }, currInt += interval);
-    setTimeout(() => { bot5.imu.getAhrs(); }, currInt += interval);
-    setTimeout(() => { bot5.imu.getTemp(); }, currInt += interval);
-    setTimeout(() => { bot5.button.getStateA(); }, currInt += interval);
-    setTimeout(() => { bot5.button.getStateB(); }, currInt += interval);
-  }, interval * 6);
-}
 
 function draw() {
 
@@ -126,25 +102,16 @@ function draw() {
   text(bot5.button.a, 10, 380);
   text("Button B:", 10, 400);
   text(bot5.button.b, 10, 420);
-  ellipse(200, bot5.imu.gyroX / 10 + 100, 2, 2)
-  ellipse(220, bot5.imu.gyroY / 10 + 100, 2, 2)
-  ellipse(240, bot5.imu.gyroZ / 10 + 100, 2, 2)
-  ellipse(200, bot5.imu.acceX + 200, 2, 2)
-  ellipse(220, bot5.imu.acceY + 200, 2, 2)
-  ellipse(240, bot5.imu.acceZ + 200, 2, 2)
-  ellipse(200, bot5.imu.pitch / 100 + 300, 2, 2)
-  ellipse(220, bot5.imu.roll / 100 + 300, 2, 2)
-  ellipse(240, bot5.imu.yaw / 100 + 300, 2, 2)
-  // onTimeout(() => {
-  //   bot5.button.getStateA();
-  //   console.log("button A:", bot5.button.a);
-  // }, 500);
-  // onTimeout(() => {
-  //   bot5.button.getStateB();
-  //   console.log("button B:", bot5.button.b);
-  // }, 500);
-  // var brightness = brightnessSlider.value();
-  // bot5.led.setBrightness(brightness);
-  // console.log("Brightness", brightness);
-  // myBLE.write(myCharacteristic, value);
+  text("Distance:", 10, 440);
+  text(bot5.ultrasonic.distance, 10, 460);
+  ellipse(200, bot5.imu.gyroX + 100, 2, 2);
+  ellipse(220, bot5.imu.gyroY + 100, 2, 2);
+  ellipse(240, bot5.imu.gyroZ + 100, 2, 2);
+  ellipse(200, bot5.imu.acceX + 200, 2, 2);
+  ellipse(220, bot5.imu.acceY + 200, 2, 2);
+  ellipse(240, bot5.imu.acceZ + 200, 2, 2);
+  ellipse(200, bot5.imu.pitch + 300, 2, 2);
+  ellipse(220, bot5.imu.roll + 300, 2, 2);
+  ellipse(240, bot5.imu.yaw + 300, 2, 2);
+
 }

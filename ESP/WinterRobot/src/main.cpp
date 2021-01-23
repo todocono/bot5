@@ -6,7 +6,6 @@
 #include "M5Display.h"
 
 BleComm ble;
-float_t gyroX, gyroY, gyroZ;
 
 void setup() {
     Serial.begin(115200);
@@ -17,12 +16,6 @@ void setup() {
     ble.start();
     M5.Imu.Init();
     Serial.println("Starting BLE Service...");
-    RTC_DateTypeDef date;
-    Serial.printf("%p %p %p %p",
-                  &date.WeekDay,
-                  &date.Month,
-                  &date.Date,
-                  &date.Year);
     M5.Lcd.setRotation(3);
     M5.Lcd.fillScreen(BLACK);
     M5.Lcd.setCursor(0, 10);
@@ -35,15 +28,10 @@ void setup() {
 }
 
 void loop() {
-    if (ble.isConnected()) {
-        ble.notify();
-        delay(10);
-        if (millis() % 2000 == 0) {
-            Serial.println("Connected");
-        }
-    } else {
-        if (millis() % 2000 == 0) {
-            Serial.println("Disconnected");
-        }
-    }
+    // IMU test
+    // float a, b, c;
+    // M5.Imu.getAccelData(&a, &b, &c);
+    // Serial.printf("%f, %f, %f\n", a, b, c);
+    ble.notify();
+    delay(20);
 }

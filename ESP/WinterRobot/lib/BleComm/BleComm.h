@@ -19,14 +19,15 @@
 // https://www.uuidgenerator.net/
 
 // Identity Service
-#define IDENTITY_SERVICE_UUID "a060821e-54d1-11eb-ae93-0242ac130002"  // UART service UUID
+// #define IDENTITY_SERVICE_UUID "a060821e-54d1-11eb-ae93-0242ac130002"  // UART service UUID
 
 // Dev info Service
-#define DEV_INFO_SERVICE_UUID "ad505ba2-54d1-11eb-ae93-0242ac130002"  // UART service UUID
+// #define DEV_INFO_SERVICE_UUID "ad505ba2-54d1-11eb-ae93-0242ac130002"  // UART service UUID
 
 // CMD Service
 // #define CMD_SERVICE_UUID           "f6a44d18-6e45-4630-b85e-da3817f10edd"            // UART service UUID
 #define CMD_SERVICE_UUID "417c891e-f837-4a72-a097-ed1a8c4a4840"  // UART service UUID
+// #define CMD_SERVICE_UUID "1efd3aa6-5cb4-11eb-ae93-0242ac130002"  // UART service UUID
 
 // #define CMD_CHARACTERISTIC_TX_UUID "f6a44d18-6e45-4631-b85e-da3817f10edd"  // UART service UUID
 #define CMD_CHARACTERISTIC_TX_UUID "417c891e-f837-4a72-a097-ed1a8c4a4841"  // UART service UUID
@@ -368,6 +369,7 @@ class BleComm {
     bool isListenAhrs();
     bool isListenTemp();
     bool isListenButton();
+    bool isListenMic();
     bool isListenUltrasonic();
     void notify();
     static void printMessage(MESSAGE* msg);
@@ -404,3 +406,4 @@ class CMDCharacteristicCallbacks : public BLECharacteristicCallbacks {
 
 // MISC
 // void ledcAnalogWrite(uint8_t channel, uint32_t value, uint32_t valueMax=255);
+float readEUS();

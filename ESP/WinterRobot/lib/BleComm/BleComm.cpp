@@ -21,15 +21,16 @@ bool listenAcce = true;
 bool listenAhrs = true;
 bool listenTemp = true;
 bool listenButton = true;
-bool listenUltrasonic = false;
+bool listenMic = false;
+bool listenUltrasonic = true;
 
 // Runtime global handles
 // Server
 BLEServer *pServer = NULL;
 
 // Service
-BLEService *pIdentityService;
-BLEService *pDevInfoService;
+// BLEService *pIdentityService;
+// BLEService *pDevInfoService;
 BLEService *pCmdService;
 
 // Characteristic
@@ -39,9 +40,12 @@ BLECharacteristic *pPayload1Characteristic;
 BLECharacteristic *pPayload2Characteristic;
 BLECharacteristic *pPayload3Characteristic;
 
+PAYLOAD_1 payload1 ;
+PAYLOAD_2 payload2 ;
+PAYLOAD_3 payload3 ;
+
 BleComm::BleComm() {
 }
-
 BleComm::~BleComm() {
 }
 
@@ -65,10 +69,11 @@ int BleComm::start() {
     pServer->setCallbacks(new ServerCallbacks());
 
     // Create the BLE Services
-    // pIdentityService = pServer->createService(IDENTITY_SERVICE_UUID);
-    // pDevInfoService = pServer->createService(DEV_INFO_SERVICE_UUID);
     Serial.println("Create Service");
+    // pDevInfoService = pServer->createService(DEV_INFO_SERVICE_UUID);
+    // pIdentityService = pServer->createService(IDENTITY_SERVICE_UUID);
     pCmdService = pServer->createService(CMD_SERVICE_UUID);
+
 
     // Initialize the BLE Characteristics
 
@@ -104,18 +109,18 @@ int BleComm::start() {
     pPayload3Characteristic->addDescriptor(new BLE2902());
 
     // Start advertising
-    // pIdentityService->start();
     // pDevInfoService->start();
+    // pIdentityService->start();
     pCmdService->start();
+
     BLEAdvertising *pAdvertising = pServer->getAdvertising();
-    // pAdvertising->addServiceUUID(IDENTITY_SERVICE_UUID);
-    // pAdvertising->addServiceUUID(DEV_INFO_SERVICE_UUID);
     pAdvertising->addServiceUUID(CMD_SERVICE_UUID);
+    // pAdvertising->addServiceUUID(DEV_INFO_SERVICE_UUID);
+    // pAdvertising->addServiceUUID(IDENTITY_SERVICE_UUID);
     pAdvertising->setScanResponse(true);
     BLEDevice::startAdvertising();
     return 0;
 }
-
 /**
  * @brief Return whether the service is connected
  * 
@@ -125,7 +130,6 @@ int BleComm::start() {
 bool BleComm::isConnected() {
     return pServer->getConnectedCount() > 0;
 }
-
 bool BleComm::isListenGyro() {
     return listenGyro;
 }
@@ -141,14 +145,16 @@ bool BleComm::isListenTemp() {
 bool BleComm::isListenButton() {
     return listenButton;
 }
+bool BleComm::isListenMic() {
+    return listenMic;
+}
 bool BleComm::isListenUltrasonic() {
     return listenUltrasonic;
 }
 void BleComm::notify() {
-    PAYLOAD_1 payload1 = {};
-    PAYLOAD_2 payload2 = {};
-    PAYLOAD_3 payload3 = {};
-
+    payload1 = {};
+    payload2 = {};
+    payload3 = {};
     if (listenGyro) {
         M5.Imu.getGyroData(&payload1.gyroX, &payload1.gyroY, &payload1.gyroZ);
     }
@@ -165,7 +171,12 @@ void BleComm::notify() {
     if (listenTemp) {
         M5.Imu.getTempData(&payload3.temp);
     }
-
+    if (listenMic) {
+        // TODO
+    }
+    if (listenUltrasonic) {
+        payload2.ultrasonic = readEUS();
+    }
     pPayload1Characteristic->setValue((uint8_t *)&payload1,
                                       sizeof(PAYLOAD_1));
     pPayload2Characteristic->setValue((uint8_t *)&payload2,
@@ -176,7 +187,6 @@ void BleComm::notify() {
     pPayload2Characteristic->notify();
     pPayload3Characteristic->notify();
 }
-
 void ServerCallbacks::onConnect(BLEServer *pServer) {
     // Initialize peripherals
     // TODO: Handle the initial values
@@ -210,7 +220,6 @@ void ServerCallbacks::onConnect(BLEServer *pServer) {
     // Clear response count
     respCount = 0;
 }
-
 void ServerCallbacks::onDisconnect() {
     M5.Lcd.fillScreen(BLACK);
     M5.Lcd.setCursor(0, 10);
@@ -227,8 +236,6 @@ void ServerCallbacks::onDisconnect() {
  */
 void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
     MESSAGE *msg = (MESSAGE *)pCharacteristic->getData();
-    // TODO: error check
-
     // For debugging
     if (DEBUG_RAW_OUTPUT) {
         BleComm::printMessage(msg);
@@ -752,7 +759,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             // TODO
             break;
         }
-        case PERI_RTC: {  
+        case PERI_RTC: {
             switch (msg->cmd) {
                 case CMD_RTC_SET_TIME: {
                     PAYLOAD_CMD_RTC_SET_TIME *payload = (PAYLOAD_CMD_RTC_SET_TIME *)msg->payload;
@@ -771,7 +778,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                 case CMD_RTC_GET_TIME: {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_RTC_GET_TIME respPayload;
-                    RTC_TimeTypeDef time;
                     msg.peripheral = PERI_RTC;
                     msg.cmd = CMD_RTC_GET_TIME;
                     msg.count = respCount++;
@@ -786,7 +792,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     break;
                 }
                 case CMD_RTC_SET_DATE: {
-                    PAYLOAD_CMD_RTC_SET_DATE *payload = (PAYLOAD_CMD_RTC_SET_DATE*)msg->payload;
+                    PAYLOAD_CMD_RTC_SET_DATE *payload = (PAYLOAD_CMD_RTC_SET_DATE *)msg->payload;
                     if (DEBUG_RTC) {
                         Serial.println("RTC SET DATE");
                         Serial.print(payload->date.Year);
@@ -804,7 +810,6 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                 case CMD_RTC_GET_DATE: {
                     MESSAGE msg = {};
                     PAYLOAD_RESP_RTC_GET_DATE respPayload;
-                    RTC_DateTypeDef date;
                     msg.peripheral = PERI_RTC;
                     msg.cmd = CMD_RTC_GET_DATE;
                     msg.count = respCount++;
@@ -818,7 +823,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     pRespCharacteristic->notify();
                     break;
                 }
-                default:{
+                default: {
                     Serial.println("How did you get here?");
                 }
             }
@@ -848,95 +853,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
     }
 }
 
-/**
- * @brief Handling RX message
- * @author Momoe Nomoto
- */
-// void RxCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
-//     std::string value = pCharacteristic->getValue();
-//     //data = pCharacteristic->getData();
-
-//     Serial.print("Message: ");
-//     Serial.println(value.c_str());
-
-//     std::string param1 = value.substr(0, value.find(' '));
-//     value = value.substr(value.find(' ') + 1);
-//     std::string param2;
-//     std::string param3;
-//     if (value.length() > 3) {
-//         param2 = value.substr(0, value.find(' '));
-//         param3 = value.substr(value.find(' ') + 1);
-//     } else {
-//         param2 = value;
-//     }
-
-//     if (param1.at(0) == 'w') {
-//         if (param3.empty()) {
-//             Move_forward(atoi(param2.c_str()));
-//         } else {
-//             Move_forward(atoi(param2.c_str()));
-//             delay(atoi(param3.c_str()));
-//             Move_stop(0);
-//         }
-//     } else if (param1.at(0) == 's') {
-//         Move_stop(0);
-//     } else if (param1.at(0) == 'x') {
-//         if (param3.empty()) {
-//             Move_back(atoi(param2.c_str()));
-//         } else {
-//             Move_back(atoi(param2.c_str()));
-//             delay(atoi(param3.c_str()));
-//             Move_stop(0);
-//         }
-//     } else if (param1.at(0) == 'a') {
-//         if (param3.empty()) {
-//             Move_left(atoi(param2.c_str()));
-//         } else {
-//             Move_left(atoi(param2.c_str()));
-//             delay(atoi(param3.c_str()));
-//             Move_stop(0);
-//         }
-//     } else if (param1.at(0) == 'd') {
-//         if (param3.empty()) {
-//             Move_right(atoi(param2.c_str()));
-//         } else {
-//             Move_right(atoi(param2.c_str()));
-//             delay(atoi(param3.c_str()));
-//             Move_stop(0);
-//         }
-//     } else if (param1.at(0) == 'q') {
-//         if (param3.empty()) {
-//             Move_turnleft(atoi(param2.c_str()));
-//         } else {
-//             Move_turnleft(atoi(param2.c_str()));
-//             delay(atoi(param3.c_str()));
-//             Move_stop(0);
-//         }
-//     } else if (param1.at(0) == 'e') {
-//         if (param3.empty()) {
-//             Move_turnright(atoi(param2.c_str()));
-//         } else {
-//             Move_turnright(atoi(param2.c_str()));
-//             delay(atoi(param3.c_str()));
-//             Move_stop(0);
-//         }
-//     } else if (param1.at(0) == 'z') {
-//         Servo_angle(1, 90);
-//     } else if (param1.at(0) == 'c') {
-//         Servo_angle(1, 0);
-//     } else if (param1.at(0) == 'b') {
-//         // ( uint16_t freq, uint16_t duration);
-//         M5.Beep.tone(atoi(param2.c_str()), atoi(param3.c_str()));
-//         //      while (true){
-//         //        M5.Beep.update();
-//         //      }
-//     } else {
-//         Move_stop(100);
-//     }
-// }
-
 // MISC
-
 void BleComm::printMessage(MESSAGE *msg) {
     Serial.println(msg->peripheral);
     Serial.println(msg->cmd);
@@ -950,7 +867,6 @@ BlePeri::~BlePeri() {
 }
 BlePeri::BlePeri(uint16_t uuid) : BLEDescriptor(BLEUUID(uuid)) {
 }
-
 void BlePeri::setNotifications(bool flag) {
     uint8_t *pValue = getValue();
     if (flag)
@@ -958,11 +874,9 @@ void BlePeri::setNotifications(bool flag) {
     else
         pValue[0] &= ~(1 << 0);
 }
-
 bool BlePeri::getNotifications() {
     return (getValue()[0] & (1 << 0)) != 0;
 }  // getNotifications
-
 void BlePeri::setIndications(bool flag) {
     uint8_t *pValue = getValue();
     if (flag)
@@ -970,7 +884,20 @@ void BlePeri::setIndications(bool flag) {
     else
         pValue[0] &= ~(1 << 1);
 }  // setIndications
-
 bool BlePeri::getIndications() {
     return (getValue()[0] & (1 << 1)) != 0;
+}
+
+float readEUS()
+{
+    uint32_t data;
+    Wire.beginTransmission(0x57);
+    Wire.write(0x01);
+    Wire.endTransmission();
+    delay(120);
+    Wire.requestFrom(0x57,3);
+    data  = Wire.read();data <<= 8;
+    data |= Wire.read();data <<= 8;
+    data |= Wire.read();
+    return float(data) / 1000;
 }

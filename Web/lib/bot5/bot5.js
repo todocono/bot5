@@ -121,6 +121,7 @@ class Bot5 {
     async connect(serviceUuid) { // Connect to BLE device
         await this._p5ble.connect(serviceUuid, this._gotCharacteristics);
         this.startNotifications();
+        this._isConnected = true;
     }
     disconnect() { // Disconnect from BLE device
         this._p5ble.disconnect();
@@ -313,7 +314,7 @@ class Bot5 {
         this.imu.acceX = msg.getFloat32(0, true);
         this.imu.acceY = msg.getFloat32(4, true);
         this.imu.acceZ = msg.getFloat32(8, true);
-        // TODO: ultrasonic & microphone
+        this.ultrasonic.distance = msg.getFloat32(12, true);
     }).bind(this);
     _parse3 = ((msg) => {
         this.imu.pitch = msg.getFloat32(0, true);
@@ -756,5 +757,8 @@ class Bot5 {
         month: 0,
         date: 0,
         year: 0
-    }
+    };
+    ultrasonic = {
+        distance : 0 
+    };
 }
