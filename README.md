@@ -28,7 +28,7 @@ Using the IMU, we can play something on the screen once the IMU position changes
 
 Using the buzzer and the movements, bot5 can wake you up once a certain time is reached, in a similar way to Clocky. 
 
-~~6. [No More TV](https://editor.p5js.org/momoe-nomoto/sketches/okq3yo4IE)
+~~6. [No More TV](https://editor.p5js.org/momoe-nomoto/sketches/okq3yo4IE)~~
 
 ~~We can turn the bot into a moving remote control. Using the on screen joystick we can move the bot and we can use the infrared transmitter to send “OFF” commands to TVs.~~
 
@@ -36,7 +36,7 @@ Using the buzzer and the movements, bot5 can wake you up once a certain time is 
 
 Using an ultrasonic sensor, we can draw the surroundings on the screen as radar and we can navigate using a control similar to Turtle.
 
-~~8. IoT Toilette Paper Dispenser
+~~8. IoT Toilette Paper Dispenser~~
 
 ~~Using a QR code on the screen, we can make a useless invention that can be accessed through the on-board web server.~~
 
