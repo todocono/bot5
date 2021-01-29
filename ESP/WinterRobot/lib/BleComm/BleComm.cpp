@@ -22,7 +22,7 @@ bool listenAhrs = true;
 bool listenTemp = true;
 bool listenButton = true;
 bool listenMic = false;
-bool listenUltrasonic = true;
+bool listenUltrasonic = false;
 
 // Runtime global handles
 // Server
@@ -175,7 +175,7 @@ void BleComm::notify() {
         // TODO
     }
     if (listenUltrasonic) {
-        payload2.ultrasonic = readEUS();
+    //     payload2.ultrasonic = readEUS();
     }
     pPayload1Characteristic->setValue((uint8_t *)&payload1,
                                       sizeof(PAYLOAD_1));
