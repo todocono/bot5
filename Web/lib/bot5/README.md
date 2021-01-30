@@ -32,7 +32,7 @@
 **bot5.connect(serviceUuid)**
 
 Parameters:
-- `serviceUuid` unique number used to identify services and attriutes
+- `serviceUuid` unique number used to identify services and attributes
 
 **bot5.disconnect()**
 
