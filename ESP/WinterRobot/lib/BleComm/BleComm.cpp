@@ -12,7 +12,6 @@ uint16_t servoWidth[2];
 uint8_t ledBrightness;
 uint8_t buzzerVolume;
 uint16_t buzzerFreq;
-uint32_t buzzerDuration;
 uint8_t irState;
 uint8_t respCount;
 
@@ -674,31 +673,27 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     pRespCharacteristic->notify();
                     break;
                 }
-                case CMD_BUZZER_SET_FREQ_DURATION: {
-                    PAYLOAD_CMD_BUZZER_SET_FREQ_DURATION *payload = (PAYLOAD_CMD_BUZZER_SET_FREQ_DURATION *)msg->payload;
+                case CMD_BUZZER_SET_FREQ: {
+                    PAYLOAD_CMD_BUZZER_SET_FREQ *payload = (PAYLOAD_CMD_BUZZER_SET_FREQ *)msg->payload;
                     // LSB_MSB
                     if (DEBUG_BUZZER) {
                         Serial.print("FREQUENCY ");
                         Serial.println(payload->freq);
-                        Serial.print("DURATION");
-                        Serial.println(payload->duration);
                     }
                     buzzerFreq = payload->freq;
-                    buzzerDuration = payload->duration;
-                    M5.Beep.tone(payload->freq, payload->duration);
+                    M5.Beep.tone(payload->freq, 5000); // remove duration
                     break;
                 }
-                case CMD_BUZZER_GET_FREQ_DURATION: {
+                case CMD_BUZZER_GET_FREQ: {
                     MESSAGE msg = {};
-                    PAYLOAD_RESP_BUZZER_GET_FREQ_DURATION payload;
+                    PAYLOAD_RESP_BUZZER_GET_FREQ payload;
                     msg.peripheral = PERI_BUZZER;
-                    msg.cmd = CMD_BUZZER_GET_FREQ_DURATION;
+                    msg.cmd = CMD_BUZZER_GET_FREQ;
                     msg.count = respCount++;
                     payload.freq = buzzerFreq;
-                    payload.duration = buzzerDuration;
-                    memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_BUZZER_GET_FREQ_DURATION));
+                    memcpy(&msg.payload, &payload, sizeof(PAYLOAD_RESP_BUZZER_GET_FREQ));
                     if (DEBUG_BUZZER) {
-                        Serial.println("BUZZER FREQ DURATION");
+                        Serial.println("BUZZER FREQ");
                         BleComm::printMessage(&msg);
                     }
                     pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));

@@ -1,4 +1,3 @@
-// import { p5ble } from "../p5ble/dist/p5.ble.js";
 // Movement IDs
 const MovementId = {
     FORWARD: 0,
@@ -82,8 +81,8 @@ const Cmd = {
     BUZZER: {
         SET_VOLUME: 0,
         GET_VOLUME: 1,
-        SET_FREQ_DURATION: 2,
-        GET_FREQ_DURATION: 3,
+        SET_FREQ: 2,
+        GET_FREQ: 3,
         MUTE: 4
     },
     IR: {
@@ -256,7 +255,7 @@ class Bot5 {
                         this.buzzer.volume = view.getUint8(3);
                         break;
                     }
-                    case Cmd.BUZZER.GET_FREQ_DURATION: {
+                    case Cmd.BUZZER.GET_FREQ: {
                         this.buzzer.freq = view.getUint16(3, true);
                         this.buzzer.duration = view.getUint32(5, true);
                         break;
@@ -314,7 +313,7 @@ class Bot5 {
         this.imu.acceX = msg.getFloat32(0, true);
         this.imu.acceY = msg.getFloat32(4, true);
         this.imu.acceZ = msg.getFloat32(8, true);
-        this.ultrasonic.distance = msg.getFloat32(12, true);
+        // this.ultrasonic.distance = msg.getFloat32(12, true);
     }).bind(this);
     _parse3 = ((msg) => {
         this.imu.pitch = msg.getFloat32(0, true);
@@ -660,21 +659,20 @@ class Bot5 {
             v.setUint8(2, self._messageCount++);
             this._p5ble.write(self._cmdCharacteristic, msg);
         },
-        setTone: (freq, duration) => {
+        setTone: (freq) => {
             let msg = new ArrayBuffer(20);
             let v = new DataView(msg);
             v.setUint8(0, Peri.BUZZER);
-            v.setUint8(1, Cmd.BUZZER.SET_FREQ_DURATION);
+            v.setUint8(1, Cmd.BUZZER.SET_FREQ);
             v.setUint8(2, self._messageCount++);
             v.setUint16(3, freq, true);
-            v.setUint32(5, duration, true);
             this._p5ble.write(self._cmdCharacteristic, msg);
         },
         getTone: () => {
             let msg = new ArrayBuffer(20);
             let v = new DataView(msg);
             v.setUint8(0, Peri.BUZZER);
-            v.setUint8(1, Cmd.BUZZER.GET_FREQ_DURATION);
+            v.setUint8(1, Cmd.BUZZER.GET_FREQ);
             v.setUint8(2, self._messageCount++);
             this._p5ble.write(self._cmdCharacteristic, msg);
         },
