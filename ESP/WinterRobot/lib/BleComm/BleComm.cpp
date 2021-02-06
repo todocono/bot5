@@ -558,7 +558,10 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         Serial.println("Background Color Font Color");
                         Serial.printf("%d, %d", payload->bgColor, payload->fontColor);
                     }
-
+                    M5.Lcd.fillScreen(payload->bgColor);
+                    M5.Lcd.setTextColor(payload->fontColor);
+                    M5.Lcd.setTextSize(payload->size);
+                    M5.Lcd.println(payload->content);
                     break;
                 }
                 default:

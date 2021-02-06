@@ -6,7 +6,8 @@ const MovementId = {
     RIGHT: 3,
     STOP: 4,
     TURN_LEFT: 5,
-    TURN_RIGHT: 6
+    TURN_RIGHT: 6,
+    FOUR_WHEEL_CONTROL: 7
 };
 
 // Peripheral IDs
@@ -401,6 +402,20 @@ class Bot5 {
             v.setUint8(2, self._messageCount++);
             this._p5ble.write(self._cmdCharacteristic, msg);
         },
+        fourWheelDrive: (frontLeft, frontRight, rearLeft, rearRight) => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.MOTOR);
+            v.setUint8(1, Cmd.MOTOR.SET_MOVEMENT_SPEED);
+            v.setUint8(2, self._messageCount++);
+            v.setUint8(3, MovementId.FOUR_WHEEL_CONTROL);
+            v.setInt8(4, 0);
+            v.setInt8(5, frontLeft);
+            v.setInt8(6, frontRight);
+            v.setInt8(7, rearLeft);
+            v.setInt8(8, rearRight);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
         speed: 0,
         movementId: 0
     };
@@ -526,7 +541,7 @@ class Bot5 {
         a: 0,
         b: 0
     };
-    lcd = { // TODO: modify esp code
+    lcd = {
         display: (input) => {
         }
     };

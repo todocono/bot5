@@ -151,8 +151,9 @@ typedef struct
     char content[10];
     uint16_t x;
     uint16_t y;
-    uint8_t bgColor;
-    uint8_t fontColor;
+    uint32_t bgColor;
+    uint16_t fontColor;
+    uint8_t  size;
 } PAYLOAD_CMD_LCD_STRING;
 
 typedef struct
