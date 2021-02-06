@@ -90,6 +90,10 @@ typedef struct
 {
     uint8_t movement_id;
     int8_t speed;
+    int8_t FL;
+    int8_t FR;
+    int8_t RL;
+    int8_t RR;
 } PAYLOAD_CMD_MOTOR_SET_MOVEMENT_SPEED, PAYLOAD_RESP_MOTOR_GET_MOVEMENT_SPEED;
 
 typedef struct
@@ -144,12 +148,12 @@ typedef struct
 
 typedef struct
 {
-    char url[10];
+    char content[10];
     uint16_t x;
     uint16_t y;
-    uint8_t width;
-    uint8_t version;
-} PAYLOAD_CMD_GEN_QR_CODE;
+    uint8_t bgColor;
+    uint8_t fontColor;
+} PAYLOAD_CMD_LCD_STRING;
 
 typedef struct
 {
@@ -275,7 +279,8 @@ enum MOTOR_MOVEMENT_ID {
     MOTOR_MOVEMENT_RIGHT,
     MOTOR_MOVEMENT_STOP,
     MOTOR_MOVEMENT_TURN_LEFT,
-    MOTOR_MOVEMENT_TURN_RIGHT
+    MOTOR_MOVEMENT_TURN_RIGHT,
+    MOTOR_MOVEMENT_FOUR_WHEEL_CONTROL
 };
 
 enum CMD_SERVO {
@@ -303,7 +308,7 @@ enum CMD_BUTTON {
 };
 
 enum CMD_LCD {
-    CMD_LCD_GEN_QR_CODE = 0
+    CMD_LCD_DISPLAY_STRING = 0
 };
 
 enum CMD_IMU {

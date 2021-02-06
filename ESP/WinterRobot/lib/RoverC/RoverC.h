@@ -22,6 +22,8 @@ void Move_stop(int8_t Speed);
 
 void Send_iic(uint8_t Register, uint8_t Speed);
 
+void Four_wheel_control(int8_t FL, int8_t FR, int8_t RL, int8_t RR); 
+
 void Servo_angle(uint8_t Servo_ch, uint8_t degree);
 
 void Servo_pulse(uint8_t Servo_ch, uint16_t width);

@@ -2,6 +2,8 @@
 
 #include "BleComm.h"
 
+#include "M5Display.h"
+
 // Runtime global variables
 
 char name[16];
@@ -39,9 +41,9 @@ BLECharacteristic *pPayload1Characteristic;
 BLECharacteristic *pPayload2Characteristic;
 BLECharacteristic *pPayload3Characteristic;
 
-PAYLOAD_1 payload1 ;
-PAYLOAD_2 payload2 ;
-PAYLOAD_3 payload3 ;
+PAYLOAD_1 payload1;
+PAYLOAD_2 payload2;
+PAYLOAD_3 payload3;
 
 BleComm::BleComm() {
 }
@@ -72,7 +74,6 @@ int BleComm::start() {
     // pDevInfoService = pServer->createService(DEV_INFO_SERVICE_UUID);
     // pIdentityService = pServer->createService(IDENTITY_SERVICE_UUID);
     pCmdService = pServer->createService(CMD_SERVICE_UUID);
-
 
     // Initialize the BLE Characteristics
 
@@ -174,7 +175,7 @@ void BleComm::notify() {
         // TODO
     }
     if (listenUltrasonic) {
-    //     payload2.ultrasonic = readEUS();
+        //     payload2.ultrasonic = readEUS();
     }
     pPayload1Characteristic->setValue((uint8_t *)&payload1,
                                       sizeof(PAYLOAD_1));
@@ -306,6 +307,12 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                             break;
                         case MOTOR_MOVEMENT_STOP:
                             Move_stop(payload->speed);
+                            break;
+                        case MOTOR_MOVEMENT_FOUR_WHEEL_CONTROL:
+                            Four_wheel_control(payload->FL,
+                                               payload->FR,
+                                               payload->RL,
+                                               payload->RR);
                             break;
                         default:
                             Serial.printf("How did you get here?");
@@ -539,7 +546,24 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             }
             break;
         }
-        case PERI_LCD: {  // TODO
+        case PERI_LCD: {
+            switch (msg->cmd) {
+                case CMD_LCD_DISPLAY_STRING: {
+                    PAYLOAD_CMD_LCD_STRING *payload = (PAYLOAD_CMD_LCD_STRING *)msg->payload;
+                    if (DEBUG_LCD) {
+                        Serial.println("LCD String");
+                        Serial.println(payload->content);
+                        Serial.println("Position");
+                        Serial.printf("%d, %d\n", payload->x, payload->y);
+                        Serial.println("Background Color Font Color");
+                        Serial.printf("%d, %d", payload->bgColor, payload->fontColor);
+                    }
+
+                    break;
+                }
+                default:
+                    break;
+            }
         }
         case PERI_IMU: {
             switch (msg->cmd) {
@@ -681,7 +705,7 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         Serial.println(payload->freq);
                     }
                     buzzerFreq = payload->freq;
-                    M5.Beep.tone(payload->freq, 5000); // remove duration
+                    M5.Beep.tone(payload->freq, 5000);  // remove duration
                     break;
                 }
                 case CMD_BUZZER_GET_FREQ: {
@@ -883,16 +907,17 @@ bool BlePeri::getIndications() {
     return (getValue()[0] & (1 << 1)) != 0;
 }
 
-float readEUS()
-{
+float readEUS() {
     uint32_t data;
     Wire.beginTransmission(0x57);
     Wire.write(0x01);
     Wire.endTransmission();
     delay(120);
-    Wire.requestFrom(0x57,3);
-    data  = Wire.read();data <<= 8;
-    data |= Wire.read();data <<= 8;
+    Wire.requestFrom(0x57, 3);
+    data = Wire.read();
+    data <<= 8;
+    data |= Wire.read();
+    data <<= 8;
     data |= Wire.read();
     return float(data) / 1000;
 }

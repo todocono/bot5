@@ -61,6 +61,13 @@ void Move_stop(int8_t Speed) {
     Send_iic(0x03, 0);
 }
 
+void Four_wheel_control(int8_t FL, int8_t FR, int8_t RL, int8_t RR) {
+    Send_iic(0x00, FL);
+    Send_iic(0x01, FR);
+    Send_iic(0x02, RL);
+    Send_iic(0x03, RR);
+}
+
 void Servo_angle(uint8_t Servo_ch, uint8_t degree) {
     degree = min(90, int(degree));
     degree = max(0, int(degree));
