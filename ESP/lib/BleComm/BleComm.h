@@ -44,7 +44,7 @@
 #define LED_CHANNEL 2
 
 // Debug Flag
-#define DEBUG_RAW_OUTPUT false
+#define DEBUG_RAW_OUTPUT true 
 #define DEBUG_GENERAL false
 #define DEBUG_MOTOR false
 #define DEBUG_SERVO false
@@ -147,7 +147,7 @@ typedef struct
 
 typedef struct
 {
-    char content[5];
+    char content[6];
     uint16_t x;
     uint16_t y;
     uint32_t bgColor;

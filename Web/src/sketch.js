@@ -14,7 +14,7 @@ let brightnessSlider;
 let isConnected = false;
 
 function setup() {
-  createCanvas(600, 600);
+  createCanvas(600, 500);
   bot5 = new Bot5();
 
   // Create a 'Connect' button
@@ -23,37 +23,77 @@ function setup() {
   const disconnectButton = createButton('Disconnect');
   disconnectButton.mousePressed(disconnectToBle);
 
-  const notificationButton = createButton('Notification');
-  notificationButton.mousePressed(startNotifications);
+  // const notificationButton = createButton('Notification');
+  // notificationButton.mousePressed(startNotifications);
 
-  const onButton = createButton('On');
-  const offButton = createButton('Off');
-  const forwardButton = createButton("forward");
-  const backButton = createButton("back");
-  const leftButton = createButton("left");
-  const rightButton = createButton("right");
-  const toneButton = createButton("tone");
-  const setVolumeButton = createButton("setVolume");
-  const getVolumeButton = createButton("getVolume");
-  const muteButton = createButton("mute");
-  const imuButton = createButton("imu");
-  const freq = createInput()
-  const timeButton = createButton("time");
-  const dateButton = createButton("date");
-  onButton.mousePressed(ledOn);
-  offButton.mousePressed(ledOff);
-  forwardButton.mousePressed(() => { bot5.motor.forward(127) });
-  backButton.mousePressed(() => { bot5.motor.back(127) });
-  leftButton.mousePressed(() => { bot5.motor.left(127) });
-  rightButton.mousePressed(() => { bot5.motor.right(127) });
-  forwardButton.mouseReleased(() => { bot5.motor.stop() });
-  backButton.mouseReleased(() => { bot5.motor.stop() });
-  leftButton.mouseReleased(() => { bot5.motor.stop() });
-  rightButton.mouseReleased(() => { bot5.motor.stop() });
-  toneButton.mousePressed(() => { bot5.buzzer.setTone(int(freq.value()), 2000) });
-  muteButton.mousePressed(() => { bot5.buzzer.mute() });
-  setVolumeButton.mousePressed(() => bot5.buzzer.setVolume(100));
-  getVolumeButton.mousePressed(() => bot5.buzzer.getVolume());
+  // const onButton = createButton('On');
+  // const offButton = createButton('Off');
+  // const forwardButton = createButton("forward");
+  // const backButton = createButton("back");
+  // const leftButton = createButton("left");
+  // const rightButton = createButton("right");
+  // const toneButton = createButton("tone");
+  // const setVolumeButton = createButton("setVolume");
+  // const getVolumeButton = createButton("getVolume");
+  // const muteButton = createButton("mute");
+  // const imuButton = createButton("imu");
+  const dispColor = createSelect();
+  const colorButton = createButton("Color");
+  const content = createInput();
+  const stringButton = createButton("String");
+  stringButton.mousePressed(() => {
+    bot5.lcd.displayString(content.value(), 10, 50,
+                           bot5.lcd.GREEN,
+                           bot5.lcd.NAVY,
+                           8)
+  })
+  // const timeButton = createButton("time");
+  // const dateButton = createButton("date");
+  dispColor.option("black");
+  dispColor.option("red");
+  dispColor.option("green");
+  dispColor.option("blue");
+  dispColor.option("white");
+  colorButton.mousePressed(() => {
+
+    switch(dispColor.value()) {
+      case "black": {
+        bot5.lcd.displayColor(bot5.lcd.BLACK);
+        break;
+      }
+      case "red": {
+        bot5.lcd.displayColor(bot5.lcd.RED);
+        break;
+      }
+      case "green": {
+        bot5.lcd.displayColor(bot5.lcd.GREEN);
+        break;
+      }
+      case "blue": {
+        bot5.lcd.displayColor(bot5.lcd.BLUE);
+        break;
+      }
+      case "white": {
+        bot5.lcd.displayColor(bot5.lcd.WHITE);
+        break;
+      }
+    }
+  })
+
+  // onButton.mousePressed(ledOn);
+  // offButton.mousePressed(ledOff);
+  // forwardButton.mousePressed(() => { bot5.motor.forward(127) });
+  // backButton.mousePressed(() => { bot5.motor.back(127) });
+  // leftButton.mousePressed(() => { bot5.motor.left(127) });
+  // rightButton.mousePressed(() => { bot5.motor.right(127) });
+  // forwardButton.mouseReleased(() => { bot5.motor.stop() });
+  // backButton.mouseReleased(() => { bot5.motor.stop() });
+  // leftButton.mouseReleased(() => { bot5.motor.stop() });
+  // rightButton.mouseReleased(() => { bot5.motor.stop() });
+  // toneButton.mousePressed(() => { bot5.buzzer.setTone(int(freq.value()), 2000) });
+  // muteButton.mousePressed(() => { bot5.buzzer.mute() });
+  // setVolumeButton.mousePressed(() => bot5.buzzer.setVolume(100));
+  // getVolumeButton.mousePressed(() => bot5.buzzer.getVolume());
 }
 
 function ledOn() {

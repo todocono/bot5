@@ -560,17 +560,17 @@ class Bot5 {
             v.setUint8(3 + i, 0); // null character at end of string
             v.setUint16(9, x, true);
             v.setUint16(11, y, true);
-            v.setUint32(13, bgColor, true);
+            v.setUint16(13, bgColor, true);
             v.setUint16(17, fontColor, true);
             v.setUint8(19, size);
-            // create string
+            console.log(msg);
             this._p5ble.write(self._cmdCharacteristic, msg);
         },
         displayColor: (bgColor) => {
             let msg = new ArrayBuffer(20);
             let v = new DataView(msg);
             v.setUint8(0, Peri.LCD);
-            v.setUint8(1, Cmd.LCD.DISPLAY_STRING);
+            v.setUint8(1, Cmd.LCD.DISPLAY_COLOR);
             v.setUint8(2, self._messageCount++);
             v.setUint32(3, bgColor, true);
             this._p5ble.write(self._cmdCharacteristic, msg);

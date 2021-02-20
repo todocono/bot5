@@ -556,7 +556,9 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         Serial.println("Position");
                         Serial.printf("%u, %u\n", payload->x, payload->y);
                         Serial.println("Background Color Font Color");
-                        Serial.printf("%u, %u\n", payload->bgColor, payload->fontColor);
+                        Serial.printf("%x, %x\n", payload->bgColor, payload->fontColor);
+                        Serial.println("Text Size");
+                        Serial.printf("%u\n", payload->size);
                     }
                     M5.Lcd.setCursor(payload->x, payload->y);
                     M5.Lcd.fillScreen(payload->bgColor);
@@ -888,12 +890,12 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
 
 // MISC
 void BleComm::printMessage(MESSAGE *msg) {
-    Serial.println(msg->peripheral);
-    Serial.println(msg->cmd);
-    Serial.println(msg->count);
+    Serial.printf("%x\n", msg->peripheral);
+    Serial.printf("%x\n", msg->cmd);
+    Serial.printf("%x\n",msg->count);
     for (int i = 0; i < 16; ++i)
-        Serial.println(msg->payload[i]);
-    Serial.println(msg->chksm);
+        Serial.printf("%x\n", msg->payload[i]);
+    Serial.printf("%x\n", msg->chksm);
 }
 
 BlePeri::~BlePeri() {
