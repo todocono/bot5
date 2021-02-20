@@ -554,15 +554,26 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                         Serial.println("LCD String");
                         Serial.println(payload->content);
                         Serial.println("Position");
-                        Serial.printf("%d, %d\n", payload->x, payload->y);
+                        Serial.printf("%u, %u\n", payload->x, payload->y);
                         Serial.println("Background Color Font Color");
-                        Serial.printf("%d, %d", payload->bgColor, payload->fontColor);
+                        Serial.printf("%u, %u\n", payload->bgColor, payload->fontColor);
                     }
+                    M5.Lcd.setCursor(payload->x, payload->y);
                     M5.Lcd.fillScreen(payload->bgColor);
                     M5.Lcd.setTextColor(payload->fontColor);
                     M5.Lcd.setTextSize(payload->size);
                     M5.Lcd.println(payload->content);
                     break;
+                }
+                case CMD_LCD_DISPLAY_COLOR: {
+                    PAYLOAD_CMD_LCD_COLOR *payload = (PAYLOAD_CMD_LCD_COLOR *)msg->payload;
+                    if (DEBUG_LCD) {
+                        Serial.println("LCD Color");
+                        Serial.printf("%u\n", payload->bgColor);
+                    }
+                    M5.Lcd.fillScreen(payload->bgColor);
+                    break;
+
                 }
                 default:
                     break;

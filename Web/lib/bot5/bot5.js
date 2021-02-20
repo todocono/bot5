@@ -62,7 +62,8 @@ const Cmd = {
         STOP_LISTEN_STATE: 3
     },
     LCD: {
-        GEN_QR_CODE: 0
+        DISPLAY_STRING: 0,
+        DISPLAY_COLOR: 1
     },
     IMU: {
         POLL_GYRO: 0,
@@ -542,7 +543,37 @@ class Bot5 {
         b: 0
     };
     lcd = {
-        display: (input) => {
+        displayString: (content, x, y, bgColor, fontColor, size ) => {
+            if (content.length > 5) {
+                console.log("String too long!");
+                return;
+            }
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.LCD);
+            v.setUint8(1, Cmd.LCD.DISPLAY_STRING);
+            v.setUint8(2, self._messageCount++);
+            var i ;
+            for ( i = 0; i < content.length; ++i) {
+                v.setUint8(3 + i, content.charCodeAt(i));
+            }
+            v.setUint8(3 + i, 0); // null character at end of string
+            v.setUint16(9, x, true);
+            v.setUint16(11, y, true);
+            v.setUint32(13, bgColor, true);
+            v.setUint16(17, fontColor, true);
+            v.setUint8(19, size);
+            // create string
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        displayColor: (bgColor) => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.LCD);
+            v.setUint8(1, Cmd.LCD.DISPLAY_STRING);
+            v.setUint8(2, self._messageCount++);
+            v.setUint32(3, bgColor, true);
+            this._p5ble.write(self._cmdCharacteristic, msg);
         }
     };
     imu = {

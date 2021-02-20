@@ -3,6 +3,7 @@
 The material in this documentation is derived from "[root-robot-ble-protocol](https://github.com/RootRobotics/root-robot-ble-protocol)" by RootRobotics. "[root-robot-ble-protocol](https://github.com/RootRobotics/root-robot-ble-protocol)" is licensed under CC BY 4.0.
 
 ## Table of Contents
+
 1. [Packet Components](#packet-components)
 2. [Packet Definitions](#packet-definitions)
     - [Peripheral 0 - General](#peripheral-0---general)
@@ -50,9 +51,9 @@ The last byte of each packet is a checksum calculated from the previous 19 bytes
 
 **Packet Format**
 
-|peripheral id|command id| packet id | payload | CRC |
-|:----:|:----:|:-----:|:----:|:-----:| 
-|uint8_t | uint8_t | uint8_t | uint8_t[16] | uint8_t |
+| peripheral id | command id | packet id |   payload   |   CRC   |
+| :-----------: | :--------: | :-------: | :---------: | :-----: |
+|    uint8_t    |  uint8_t   |  uint8_t  | uint8_t[16] | uint8_t |
 
 ## Packet Definitions
 
@@ -61,6 +62,7 @@ Each packet sent or received by the robot is defined below. **To Robot** describ
 ### Peripheral 0 - General
 
 #### To Robot
+
 -------------------------------------------------------------------------------
 
 #### Command 0 - Set Name
@@ -69,8 +71,8 @@ Set a new BLE Device Name.
 
 Payload format:
 
-| name |
-|:-------:|
+|  name  |
+| :----: |
 | string |
 
 - **name**
@@ -91,8 +93,8 @@ Reponse to Get Name packet.
 
 Payload format:
 
-| name |
-|:-------:|
+|  name  |
+| :----: |
 | string |
 
 - **name**
@@ -109,22 +111,43 @@ Set the movement and speed of motors.
 
 Payload format:
 
-| movement id | speed |
-|:-------:|:-----:|
-| uint8_t | int8_t |
+| movement id | speed  |   FL   |   FR   |   RL   |   RR   |
+| :---------: | :----: | :----: | :----: | :----: | :----: |
+|   uint8_t   | int8_t | int8_t | int8_t | int8_t | int8_t |
 
 - **movement id**
-    | Command | ID |
-    |:-------:|:--:|
-    |Forward|0| 
-    |Back|1|
-    |Left|2|
-    |Right|3|
-    |Stop|4|
-    |Turn left|5|
-    |Turn right|6|
+    |      Command       |  ID   |
+    | :----------------: | :---: |
+    |      Forward       |   0   |
+    |        Back        |   1   |
+    |        Left        |   2   |
+    |       Right        |   3   |
+    |        Stop        |   4   |
+    |     Turn left      |   5   |
+    |     Turn right     |   6   |
+    | Four Wheel Control |   7   |
 
 - **speed** 
+    - range -127~127
+
+- **FL** 
+    - set speed of front left wheel
+    - only used when in four wheel control movement
+    - range -127~127
+
+- **FR** 
+    - set speed of front right wheel
+    - only used when in four wheel control movement
+    - range -127~127
+
+- **RL** 
+    - set speed of rear left wheel
+    - only used when in four wheel control movement
+    - range -127~127
+
+- **RL** 
+    - set speed of rear left wheel
+    - only used when in four wheel control movement
     - range -127~127
 
 #### Command 1 - Get Movement and Speed of Motors
@@ -140,9 +163,9 @@ Response to Get Movement and Speed of Motors packet.
 
 Payload format:
 
-| movement id | speed |
-|:-------:|:-----:|
-| uint8_t | int8_t |
+| movement id | speed  |
+| :---------: | :----: |
+|   uint8_t   | int8_t |
 
 - **movement id**
     - id corresponding to movement
@@ -161,9 +184,9 @@ Set the angle of the servo.
 
 Payload format:
 
-| servo channel | angle |
-|:-------:|:-----:|
-| uint8_t | uint8_t |
+| servo channel |  angle  |
+| :-----------: | :-----: |
+|    uint8_t    | uint8_t |
 
 - **servo channel**
     - `1` = Servo 1, `2` = Servo 2
@@ -179,8 +202,8 @@ Request response packet containing the angle of the servo.
 Payload format:
 
 | servo channel |
-|:-------:|
-| uint8_t |
+| :-----------: |
+|    uint8_t    |
 
 - **servo channel**
     - `1` = Servo 1, `2` = Servo 2
@@ -191,9 +214,9 @@ Set the pulse width of the servo.
 
 Payload format:
 
-| servo channel | width |
-|:-------:|:-----:|
-| uint8_t | uint16_t |
+| servo channel |  width   |
+| :-----------: | :------: |
+|    uint8_t    | uint16_t |
 
 - **servo channel**
     - `1` = Servo 1, `2` = Servo 2
@@ -209,8 +232,8 @@ Request response packet containing the pulse width of the servo.
 Payload format:
 
 | servo channel |
-|:-------:|
-| uint8_t |
+| :-----------: |
+|    uint8_t    |
 
 - **servo channel**
     - `1` = Servo 1, `2` = Servo 2
@@ -224,9 +247,9 @@ Response to Get Angle of Servo packet.
 
 Payload format:
 
-| servo channel | angle |
-|:-------:|:-----:|
-| uint8_t | uint8_t |
+| servo channel |  angle  |
+| :-----------: | :-----: |
+|    uint8_t    | uint8_t |
 
 - **servo channel**
     - `1` = Servo 1, `2` = Servo 2
@@ -241,9 +264,9 @@ Response to Get Pulse Width of Servo packet.
 
 Payload format:
 
-| servo channel | width |
-|:-------:|:-----:|
-| uint8_t | uint16_t |
+| servo channel |  width   |
+| :-----------: | :------: |
+|    uint8_t    | uint16_t |
 
 - **servo channel**
     - `1` = Servo 1, `2` = Servo 2
@@ -263,8 +286,8 @@ Allow writing to the two ports on the chassis.
 
 Payload format:
 
-| address | data |
-|:-------:|:-----:|
+| address |  data   |
+| :-----: | :-----: |
 | uint8_t | uint8_t |
 
 - **address**
@@ -281,8 +304,8 @@ Request packet containing data read from I2C device.
 Payload format:
 
 | address | quantity |
-|:-------:|:--------:|
-| uint8_t | uint8_t |
+| :-----: | :------: |
+| uint8_t | uint8_t  |
 
 - **address**
     - address of the device to request bytes from
@@ -296,12 +319,12 @@ Payload format:
 
 #### Command 1 - Read Data from I2C Device Response 
 
-Reponse to Read Data from I2C Device packet.
+Response to Read Data from I2C Device packet.
 
 Payload format:
 
-| address | data |
-|:-------:|:-----:|
+| address |   data   |
+| :-----: | :------: |
 | uint8_t | uint32_t |
 
 - **address**
@@ -322,8 +345,8 @@ Set brightness of the red LED in M5 StickC Plus.
 Payload format:
 
 | brightness |
-|:-------:|
-| uint8_t |
+| :--------: |
+|  uint8_t   |
 
 - **brightness**
     - range 0~255
@@ -342,8 +365,8 @@ Response to Get Brightness of LED packet.
 Payload format:
 
 | brightness |
-|:-------:|
-| uint8_t |
+| :--------: |
+|  uint8_t   |
 
 - **brightness**
     - range 0~255
@@ -360,8 +383,8 @@ Request packet containing state of button A.
 Payload format:
 
 | state |
-|:-------:|
-| bool |
+| :---: |
+| bool  |
 
 - **state**
     - '0' = not pressed, '1' = pressed
@@ -373,8 +396,8 @@ Request packet containing state of button B.
 Payload format:
 
 | state |
-|:-------:|
-| bool |
+| :---: |
+| bool  |
 
 - **state**
     - '0' = not pressed, '1' = pressed
@@ -389,8 +412,8 @@ Response to Get State of Button A packet.
 Payload format:
 
 | state |
-|:-------:|
-| bool |
+| :---: |
+| bool  |
 
 - **state**
     - '0' = not pressed, '1' = pressed
@@ -402,8 +425,8 @@ Response to Get State of Button B packet.
 Payload format:
 
 | state |
-|:-------:|
-| bool |
+| :---: |
+| bool  |
 
 - **state**
     - '0' = not pressed, '1' = pressed
@@ -411,39 +434,48 @@ Payload format:
 ### Peripheral 6 - LCD
 
 #### To Robot
+
 -------------------------------------------------------------------------------
 
-#### Command 0 - QR Code
+#### Command 0 - Display String
 
-Generate QR Code for a URL to display on LCD.
+Display a string on the LCD
 
-| url | x | y | width | version |
-|:---:|:---:|:---:|:---:|:------:|
-| string | uint16_t | uint16_t | uint8_t | uint8_t |
+| content |    x     |    y     | bgColor  | fontColor |  size   |
+| :-----: | :------: | :------: | :------: | :-------: | :-----: |
+| string  | uint16_t | uint16_t | uint32_t | uint16_t  | uint8_t |
 
-- **url**
-    - a UTF-8 encoded string containing the URL
+- **content**
+  - a UTF-8 encoded string containing the content. Due to the payload size limit, only 5 characters are allowed.
 
 - **x**
-    - display QR Code at specified x coordinate
-    - default value is 50
+  - display the content at specified x coordinate
+  - default value is 50
 
 - **y**
-    - display QR Code at specified y coordinate
-    - default value is 10
+  - display the content at specified y coordinate
+  - default value is 10
 
-- **width**
-    - specify width of QR Code
-    - default value is 220
+- **bgColor**
+  - define the background color
 
-- **version**
-    - specify QR Code version
-    - default value is 6
+- **fontColor**
+  - define the font color
 
-#### From Robot
--------------------------------------------------------------------------------
+- **size**
+  - define the font size
+  - default value is 6
 
-To be implemented
+#### Command 1 - Display Color
+
+Display colors on the screen
+
+| bgColor  |
+| :------: |
+| uint32_t |
+
+- **bgColor**
+  - define the background color
 
 ### Peripheral 7 - IMU
 
@@ -478,7 +510,7 @@ Configure the IMU. To be implemented
 Response to Poll Gyroscope packet. 
 
 | gyroX | gyroY | gyroZ |
-|:-----:|:-----:|:-----:|
+| :---: | :---: | :---: |
 | float | float | float |
 
 - **gyroX**
@@ -494,8 +526,8 @@ Response to Poll Gyroscope packet.
 
 Response to Poll Accelerometer packet. 
 
-| accX | accY | accZ |
-|:-----:|:-----:|:-----:|
+| accX  | accY  | accZ  |
+| :---: | :---: | :---: |
 | float | float | float |
 
 - **accX**
@@ -511,8 +543,8 @@ Response to Poll Accelerometer packet.
 
 Response to Poll AHRS packet. 
 
-| pitch | roll | yaw |
-|:-----:|:-----:|:-----:|
+| pitch | roll  |  yaw  |
+| :---: | :---: | :---: |
 | float | float | float |
 
 - **pitch**
@@ -528,13 +560,12 @@ Response to Poll AHRS packet.
 
 Response to Poll Temperature packet. 
 
-| temp |
-|:-----:|
-| float | 
+| temp  |
+| :---: |
+| float |
 
 - **temp**
     - temperature in units of celsius
-
 
 ### Peripheral 8 - Buzzer
 
@@ -545,8 +576,8 @@ Response to Poll Temperature packet.
 
 Set volume of buzzer in M5StickC-Plus.
 
-| volume |
-|:-------:|
+| volume  |
+| :-----: |
 | uint8_t |
 
 - **volume**
@@ -560,8 +591,8 @@ Request packet containing volume of buzzer in M5StickC-Plus.
 
 Set frequency and duration of buzzer tone in M5StickC Plus.
 
-| freq | duration |
-|:-------:|:------:|
+|   freq   | duration |
+| :------: | :------: |
 | uint16_t | uint32_t |
 
 - **freq**
@@ -585,8 +616,8 @@ Mute the buzzer in M5StickC-Plus.
 
 Response to Get Volume packet.
 
-| volume |
-|:-------:|
+| volume  |
+| :-----: |
 | uint8_t |
 
 - **volume**
@@ -596,8 +627,8 @@ Response to Get Volume packet.
 
 Response to Get Frequency and Duration of Tone packet.
 
-| freq | duration |
-|:-------:|:------:|
+|   freq   | duration |
+| :------: | :------: |
 | uint16_t | uint32_t |
 
 - **freq**
@@ -615,9 +646,9 @@ Response to Get Frequency and Duration of Tone packet.
 
 Set the state of the infrared transmitter.
 
-| state | 
-|:-------:|
-| bool |
+| state |
+| :---: |
+| bool  |
 
 - **state**
     - '0' = off, '1' = on
@@ -633,9 +664,9 @@ Request a packet containing state of the infrared transmitter.
 
 Response to Get State of IR TX packet.
 
-| state | 
-|:-------:|
-| bool |
+| state |
+| :---: |
+| bool  |
 
 - **state**
     - '0' = off, '1' = on

@@ -51,9 +51,9 @@
 #define DEBUG_I2C false
 #define DEBUG_LED false
 #define DEBUG_BUTTON false
-#define DEBUG_LCD false
+#define DEBUG_LCD true 
 #define DEBUG_IMU false
-#define DEBUG_RTC true
+#define DEBUG_RTC false
 #define DEBUG_BUZZER false
 #define DEBUG_IR false
 #define DEBUG_MICROPHONE false
@@ -148,13 +148,18 @@ typedef struct
 
 typedef struct
 {
-    char content[10];
+    char content[9];
     uint16_t x;
     uint16_t y;
     uint32_t bgColor;
     uint16_t fontColor;
     uint8_t  size;
 } PAYLOAD_CMD_LCD_STRING;
+
+typedef struct
+{
+    uint32_t bgColor;
+} PAYLOAD_CMD_LCD_COLOR;
 
 typedef struct
 {
@@ -309,7 +314,8 @@ enum CMD_BUTTON {
 };
 
 enum CMD_LCD {
-    CMD_LCD_DISPLAY_STRING = 0
+    CMD_LCD_DISPLAY_STRING = 0,
+    CMD_LCD_DISPLAY_COLOR
 };
 
 enum CMD_IMU {
