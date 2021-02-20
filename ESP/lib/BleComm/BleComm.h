@@ -95,7 +95,6 @@ typedef struct
     int8_t RL;
     int8_t RR;
 } PAYLOAD_CMD_MOTOR_SET_MOVEMENT_SPEED, PAYLOAD_RESP_MOTOR_GET_MOVEMENT_SPEED;
-
 typedef struct
 {
     uint8_t channel;
@@ -148,7 +147,7 @@ typedef struct
 
 typedef struct
 {
-    char content[9];
+    char content[5];
     uint16_t x;
     uint16_t y;
     uint32_t bgColor;

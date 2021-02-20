@@ -288,14 +288,14 @@ class Bot5 {
                     }
                     case (Cmd.RTC.GET_DATE): {
                         this.rtc.weekday = view.getUint8(3);
-                        this.rtc.month =   view.getUint8(4);
-                        this.rtc.date =    view.getUint8(5);
-                        this.rtc.year =    view.getUint16(7, true);
+                        this.rtc.month = view.getUint8(4);
+                        this.rtc.date = view.getUint8(5);
+                        this.rtc.year = view.getUint16(7, true);
                         console.log("RTC");
                         console.log(view.getUint8(3),
-                                    view.getUint8(4),
-                                    view.getUint8(5),
-                                    view.getUint16(7, true));
+                            view.getUint8(4),
+                            view.getUint8(5),
+                            view.getUint16(7, true));
                         break;
                     }
                 }
@@ -543,7 +543,7 @@ class Bot5 {
         b: 0
     };
     lcd = {
-        displayString: (content, x, y, bgColor, fontColor, size ) => {
+        displayString: (content, x, y, bgColor, fontColor, size) => {
             if (content.length > 5) {
                 console.log("String too long!");
                 return;
@@ -553,8 +553,8 @@ class Bot5 {
             v.setUint8(0, Peri.LCD);
             v.setUint8(1, Cmd.LCD.DISPLAY_STRING);
             v.setUint8(2, self._messageCount++);
-            var i ;
-            for ( i = 0; i < content.length; ++i) {
+            var i;
+            for (i = 0; i < content.length; ++i) {
                 v.setUint8(3 + i, content.charCodeAt(i));
             }
             v.setUint8(3 + i, 0); // null character at end of string
@@ -574,7 +574,26 @@ class Bot5 {
             v.setUint8(2, self._messageCount++);
             v.setUint32(3, bgColor, true);
             this._p5ble.write(self._cmdCharacteristic, msg);
-        }
+        },
+        BLACK: 0x0000,      /*   0,   0,   0 */
+        NAVY: 0x000F,      /*   0,   0, 128 */
+        DARKGREEN: 0x03E0,      /*   0, 128,   0 */
+        DARKCYAN: 0x03EF,      /*   0, 128, 128 */
+        MAROON: 0x7800,      /* 128,   0,   0 */
+        PURPLE: 0x780F,      /* 128,   0, 128 */
+        OLIVE: 0x7BE0,      /* 128, 128,   0 */
+        LIGHTGREY: 0xC618,      /* 192, 192, 192 */
+        DARKGREY: 0x7BEF,      /* 128, 128, 128 */
+        BLUE: 0x001F,      /*   0,   0, 255 */
+        GREEN: 0x07E0,      /*   0, 255,   0 */
+        CYAN: 0x07FF,      /*   0, 255, 255 */
+        RED: 0xF800,      /* 255,   0,   0 */
+        MAGENTA: 0xF81F,      /* 255,   0, 255 */
+        YELLOW: 0xFFE0,      /* 255, 255,   0 */
+        WHITE: 0xFFFF,      /* 255, 255, 255 */
+        ORANGE: 0xFDA0,      /* 255, 180,   0 */
+        GREENYELLOW: 0xB7E0,      /* 180, 255,   0 */
+        PINK: 0xFC9F
     };
     imu = {
         getGyro: () => {
@@ -803,6 +822,6 @@ class Bot5 {
         year: 0
     };
     ultrasonic = {
-        distance : 0 
+        distance: 0
     };
 }
