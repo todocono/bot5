@@ -68,8 +68,20 @@ void Four_wheel_control(int8_t FL, int8_t FR, int8_t RL, int8_t RR) {
     Send_iic(0x03, RR);
 }
 
-void Servo_angle(uint8_t Servo_ch, uint8_t degree) {
+void Claw_angle(uint8_t Servo_ch, uint8_t degree) {
     degree = min(90, int(degree));
+    degree = max(0, int(degree));
+    Send_iic((Servo_ch - 1) | 0x10, int(degree));
+}
+
+void Claw_pulse(uint8_t Servo_ch, uint16_t width) {
+    width = min(2500, int(width));
+    width = max(500, int(width));
+    Send_iic((Servo_ch - 1) | 0x20, width);
+}
+
+void Servo_angle(uint8_t Servo_ch, uint8_t degree) {
+    degree = min(180, int(degree));
     degree = max(0, int(degree));
     Send_iic((Servo_ch - 1) | 0x10, int(degree));
 }

@@ -45,7 +45,11 @@ const Cmd = {
         SET_ANGLE: 0,
         GET_ANGLE: 1,
         SET_PULSE_WIDTH: 2,
-        GET_PULSE_WIDTH: 3
+        GET_PULSE_WIDTH: 3,
+        CLAW_SET_ANGLE: 4,
+        CLAW_GET_ANGLE: 5,
+        CLAW_SET_PULSE_WIDTH: 6,
+        CLAW_GET_PULSE_WIDTH: 7,
     },
     I2C: {
         SET_DATA: 0,
@@ -460,8 +464,49 @@ class Bot5 {
             this._p5ble.write(self._cmdCharacteristic, msg);
 
         },
+        clawSetAngle: (channel, angle) => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.SERVO);
+            v.setUint8(1, Cmd.SERVO.CLAW_SET_ANGLE);
+            v.setUint8(2, self._messageCount++);
+            v.setUint8(3, channel);
+            v.setUint8(4, angle);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        clawGetAngle: (channel) => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.SERVO);
+            v.setUint8(1, Cmd.SERVO.CLAW_GET_ANGLE);
+            v.setUint8(2, self._messageCount++);
+            v.setUint8(3, channel);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        clawSetPulseWidth: (channel, width) => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.SERVO);
+            v.setUint8(1, Cmd.SERVO.CLAW_SET_PULSE_WIDTH);
+            v.setUint8(2, self._messageCount++);
+            v.setUint8(3, channel);
+            v.setUint16(4, width, true);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        clawGetPulseWidth: (channel) => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.SERVO);
+            v.setUint8(1, Cmd.SERVO.CLAW_GET_PULSE_WIDTH);
+            v.setUint8(2, self._messageCount++);
+            v.setUint8(3, channel);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+
+        },
         angle: [0, 0],
-        pulseWidth: [0, 0]
+        pulseWidth: [0, 0],
+        clawAngle: [0, 0],
+        clawPulseWidth: [0, 0]
     };
     i2c = {
         setData: (address, data) => {

@@ -410,6 +410,70 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     pRespCharacteristic->notify();
                     break;
                 }
+                case CMD_SERVO_CLAW_SET_ANGLE: {
+                    PAYLOAD_CMD_SERVO_CLAW_SET_ANGLE *payload = (PAYLOAD_CMD_SERVO_CLAW_SET_ANGLE *)msg->payload;
+                    if (DEBUG_SERVO) {
+                        Serial.print("CHANNEL ");
+                        Serial.println(payload->channel);
+                        Serial.print("ANGLE ");
+                        Serial.println(payload->angle);
+                    }
+                    Claw_angle(payload->channel, payload->angle);
+                    servoAngle[payload->channel] = payload->angle;
+                    break;
+                }
+                case CMD_SERVO_CLAW_GET_ANGLE: {
+                    PAYLOAD_CMD_SERVO_CLAW_GET_ANGLE *cmdPayload =
+                        (PAYLOAD_CMD_SERVO_CLAW_GET_ANGLE *)msg->payload;
+                    MESSAGE msg = {};
+                    PAYLOAD_RESP_SERVO_GET_ANGLE respPayload;
+                    msg.peripheral = PERI_SERVO;
+                    msg.cmd = CMD_SERVO_CLAW_GET_ANGLE;
+                    msg.count = respCount++;
+                    respPayload.channel = cmdPayload->channel;
+                    respPayload.angle = servoAngle[cmdPayload->channel];
+                    memcpy(&msg.payload, &respPayload, sizeof(PAYLOAD_RESP_SERVO_GET_ANGLE));
+                    if (DEBUG_SERVO) {
+                        Serial.println("SERVO ANGLE");
+                        BleComm::printMessage(&msg);
+                    }
+
+                    pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
+                    pRespCharacteristic->notify();
+                    break;
+                }
+                case CMD_SERVO_CLAW_SET_PULSE_WIDTH: {
+                    PAYLOAD_CMD_SERVO_CLAW_SET_PULSE_WIDTH *payload = (PAYLOAD_CMD_SERVO_CLAW_SET_PULSE_WIDTH *)msg->payload;
+                    if (DEBUG_SERVO) {
+                        Serial.print("CHANNEL ");
+                        Serial.println(payload->channel);
+                        Serial.print("WIDTH ");
+                        Serial.println(payload->width);
+                    }
+                    Claw_pulse(payload->channel, payload->width);
+                    servoWidth[payload->channel] = payload->width;
+                    break;
+                }
+                case CMD_SERVO_CLAW_GET_PULSE_WIDTH: {
+                    PAYLOAD_CMD_SERVO_CLAW_GET_PULSE_WIDTH *cmdPayload =
+                        (PAYLOAD_CMD_SERVO_CLAW_GET_PULSE_WIDTH *)msg->payload;
+                    MESSAGE msg = {};
+                    PAYLOAD_RESP_SERVO_CLAW_GET_PULSE_WIDTH respPayload;
+                    msg.peripheral = PERI_SERVO;
+                    msg.cmd = CMD_SERVO_CLAW_GET_PULSE_WIDTH;
+                    msg.count = respCount++;
+                    respPayload.channel = cmdPayload->channel;
+                    respPayload.width = servoWidth[cmdPayload->channel];
+                    memcpy(&msg.payload, &respPayload, sizeof(PAYLOAD_RESP_SERVO_GET_PULSE_WIDTH));
+                    if (DEBUG_SERVO) {
+                        Serial.println("SERVO WIDTH");
+                        BleComm::printMessage(&msg);
+                    }
+
+                    pRespCharacteristic->setValue((uint8_t *)&msg, sizeof(MESSAGE));
+                    pRespCharacteristic->notify();
+                    break;
+                }
                 default:
                     Serial.println("How did you get here?");
                     break;

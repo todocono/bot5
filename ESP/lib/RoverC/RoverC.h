@@ -22,6 +22,10 @@ void Move_stop(int8_t Speed);
 
 void Send_iic(uint8_t Register, uint8_t Speed);
 
+void Claw_angle(uint8_t Servo_ch, uint8_t degree); 
+
+void Claw_pulse(uint8_t Servo_ch, uint16_t width);
+
 void Servo_angle(uint8_t Servo_ch, uint8_t degree);
 
 void Servo_pulse(uint8_t Servo_ch, uint16_t width);
