@@ -28,7 +28,8 @@ const Peri = {
     GROVE: 13,
     WIFI: 14,
     CAMERA: 15,
-    EXTERN: 16
+    EXTERN: 16,
+    ULTRASONIC: 17
 };
 
 // Command IDs
@@ -106,7 +107,11 @@ const Cmd = {
     GROVE: 13,
     WIFI: 14,
     CAMERA: 15,
-    EXTERN: 16
+    EXTERN: 16,
+    ULTRASONIC: {
+        START_LISTEN: 0,
+        STOP_LISTEN: 1
+    }
 };
 
 class Bot5 {
@@ -319,7 +324,7 @@ class Bot5 {
         this.imu.acceX = msg.getFloat32(0, true);
         this.imu.acceY = msg.getFloat32(4, true);
         this.imu.acceZ = msg.getFloat32(8, true);
-        // this.ultrasonic.distance = msg.getFloat32(12, true);
+        this.ultrasonic.distance = msg.getFloat32(12, true);
     }).bind(this);
     _parse3 = ((msg) => {
         this.imu.pitch = msg.getFloat32(0, true);
@@ -867,6 +872,24 @@ class Bot5 {
         year: 0
     };
     ultrasonic = {
+        startListenUltrasonic : () => {
+            console.log("Warning: Ultrasonic is a blocking function, which might\
+                         lead to inaccurate IMU readings. Use with caution");
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.ULTRASONIC);
+            v.setUint8(1, Cmd.ULTRASONIC.START_LISTEN);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
+        stopListenUltrasonic : () => {
+            let msg = new ArrayBuffer(20);
+            let v = new DataView(msg);
+            v.setUint8(0, Peri.ULTRASONIC);
+            v.setUint8(1, Cmd.ULTRASONIC.STOP_LISTEN);
+            v.setUint8(2, self._messageCount++);
+            this._p5ble.write(self._cmdCharacteristic, msg);
+        },
         distance: 0
     };
 }

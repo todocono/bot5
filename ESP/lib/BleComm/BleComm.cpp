@@ -23,7 +23,7 @@ bool listenAhrs = true;
 bool listenTemp = true;
 bool listenButton = true;
 bool listenMic = false;
-bool listenUltrasonic = false;
+bool listenUltrasonic = true;
 
 // Runtime global handles
 // Server
@@ -175,7 +175,7 @@ void BleComm::notify() {
         // TODO
     }
     if (listenUltrasonic) {
-        //     payload2.ultrasonic = readEUS();
+        payload2.ultrasonic = readEUS();
     }
     pPayload1Characteristic->setValue((uint8_t *)&payload1,
                                       sizeof(PAYLOAD_1));
@@ -711,38 +711,38 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     pRespCharacteristic->notify();
                     break;
                 }
-                // case CMD_IMU_START_LISTEN_GYRO: {
-                //     listenGyro = true;
-                //     break;
-                // }
-                // case CMD_IMU_START_LISTEN_ACCE: {
-                //     listenAcce = true;
-                //     break;
-                // }
-                // case CMD_IMU_START_LISTEN_AHRS: {
-                //     listenAhrs = true;
-                //     break;
-                // }
-                // case CMD_IMU_START_LISTEN_TEMP: {
-                //     listenTemp = true;
-                //     break;
-                // }
-                // case CMD_IMU_STOP_LISTEN_GYRO: {
-                //     listenGyro = false;
-                //     break;
-                // }
-                // case CMD_IMU_STOP_LISTEN_ACCE: {
-                //     listenAcce = false;
-                //     break;
-                // }
-                // case CMD_IMU_STOP_LISTEN_AHRS: {
-                //     listenAhrs = false;
-                //     break;
-                // }
-                // case CMD_IMU_STOP_LISTEN_TEMP: {
-                // listenTemp = true;
-                // break;
-                // }
+                case CMD_IMU_START_LISTEN_GYRO: {
+                    listenGyro = true;
+                    break;
+                }
+                case CMD_IMU_START_LISTEN_ACCE: {
+                    listenAcce = true;
+                    break;
+                }
+                case CMD_IMU_START_LISTEN_AHRS: {
+                    listenAhrs = true;
+                    break;
+                }
+                case CMD_IMU_START_LISTEN_TEMP: {
+                    listenTemp = true;
+                    break;
+                }
+                case CMD_IMU_STOP_LISTEN_GYRO: {
+                    listenGyro = false;
+                    break;
+                }
+                case CMD_IMU_STOP_LISTEN_ACCE: {
+                    listenAcce = false;
+                    break;
+                }
+                case CMD_IMU_STOP_LISTEN_AHRS: {
+                    listenAhrs = false;
+                    break;
+                }
+                case CMD_IMU_STOP_LISTEN_TEMP: {
+                listenTemp = true;
+                break;
+                }
                 default:
                     Serial.println("How did you get here?");
                     break;
@@ -938,6 +938,26 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
             break;
         }
         case PERI_EXTERN: {  // TODO
+            break;
+        }
+        case PERI_ULTRASONIC: {
+            switch (msg->cmd) {
+                case CMD_ULTRASONIC_STRAT_LISTEN : {
+                    if (DEBUG_ULTRASONIC) {
+                        Serial.println("Start listen Ultrasonic");
+                    }
+                    listenUltrasonic = true;
+                }
+                case CMD_ULTRASONIC_STOP_LISTEN : {
+                    if (DEBUG_ULTRASONIC) {
+                        Serial.println("Stop listen Ultrasonic");
+                    }
+                    listenUltrasonic = false;
+                }
+                default: {
+                    Serial.println("How did you get here?");
+                }
+            }
             break;
         }
         default: {

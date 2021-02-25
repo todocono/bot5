@@ -62,6 +62,7 @@
 #define DEBUG_WIFI false
 #define DEBUG_CAMERA false
 #define DEBUG_EXTERN false
+#define DEBUG_ULTRASONIC false
 
 /**
  * @brief Message struct 
@@ -265,7 +266,8 @@ enum PERI_ID {
     PERI_GROVE,
     PERI_WIFI,
     PERI_CAMERA,
-    PERI_EXTERN
+    PERI_EXTERN,
+    PERI_ULTRASONIC
 };
 
 /**
@@ -360,6 +362,11 @@ enum CMD_RTC {
     CMD_RTC_GET_TIME,
     CMD_RTC_SET_DATE,
     CMD_RTC_GET_DATE
+};
+
+enum CMD_ULTRASONIC {
+    CMD_ULTRASONIC_STRAT_LISTEN = 0,
+    CMD_ULTRASONIC_STOP_LISTEN
 };
 
 // TODO: Define packages for microphone, power,
