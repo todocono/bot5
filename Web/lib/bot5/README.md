@@ -152,6 +152,10 @@ bot5.lcd.display(bgColor)
 
 Predefined Colors
 ```js
+// all predefined colors follow the format of
+bot5.led.COLOR
+// COLOR should be replaced by one of the following
+
 BLACK: 0x0000,      /*   0,   0,   0 */
 NAVY: 0x000F,      /*   0,   0, 128 */
 DARKGREEN: 0x03E0,      /*   0, 128,   0 */
