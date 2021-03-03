@@ -17,13 +17,13 @@ uint16_t buzzerFreq;
 uint8_t irState;
 uint8_t respCount;
 
-bool listenGyro = true;
-bool listenAcce = true;
-bool listenAhrs = true;
-bool listenTemp = true;
-bool listenButton = true;
+bool listenGyro = false;
+bool listenAcce = false;
+bool listenAhrs = false;
+bool listenTemp = false;
+bool listenButton = false;
 bool listenMic = false;
-bool listenUltrasonic = true;
+bool listenUltrasonic = false;
 
 // Runtime global handles
 // Server
@@ -595,14 +595,14 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
                     pRespCharacteristic->notify();
                     break;
                 }
-                // case CMD_BUTTON_START_LISTEN_STATE: {
-                // listenButton = true;
-                // break;
-                // }
-                // case CMD_BUTTON_STOP_LISTEN_STATE: {
-                // listenButton = false;
-                // break;
-                // }
+                case CMD_BUTTON_START_LISTEN_STATE: {
+                listenButton = true;
+                break;
+                }
+                case CMD_BUTTON_STOP_LISTEN_STATE: {
+                listenButton = false;
+                break;
+                }
                 default: {
                     Serial.println("How did you get here?");
                     break;
@@ -942,17 +942,19 @@ void CMDCharacteristicCallbacks::onWrite(BLECharacteristic *pCharacteristic) {
         }
         case PERI_ULTRASONIC: {
             switch (msg->cmd) {
-                case CMD_ULTRASONIC_STRAT_LISTEN : {
+                case CMD_ULTRASONIC_START_LISTEN : {
                     if (DEBUG_ULTRASONIC) {
                         Serial.println("Start listen Ultrasonic");
                     }
                     listenUltrasonic = true;
+                    break;
                 }
                 case CMD_ULTRASONIC_STOP_LISTEN : {
                     if (DEBUG_ULTRASONIC) {
                         Serial.println("Stop listen Ultrasonic");
                     }
                     listenUltrasonic = false;
+                    break;
                 }
                 default: {
                     Serial.println("How did you get here?");
