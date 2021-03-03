@@ -176,7 +176,7 @@ bot5.lcd.display(bgColor)
 
 ```js
 // all predefined colors follow the format of
-bot5.led.COLOR
+bot5.lcd.COLOR
 // COLOR should be replaced by one of the following
 
 BLACK: 0x0000,      /*   0,   0,   0 */
