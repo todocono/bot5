@@ -1,10 +1,25 @@
 # Bot5
 
-[P5](https://p5js.org/) + [ML5](https://ml5js.org/) + [Robot](https://m5stack.com/)
+Bot5 builds the bridge between [P5](https://p5js.org/) + [ML5](https://ml5js.org/) + [Robot](https://m5stack.com/).
 
 ## Quick Start
 
 Open this [p5.js web editor sketch](https://editor.p5js.org/momoe-nomoto/sketches/8lOIc2r0O) with bot5.js added.
+
+| Power Button on M5StickC-Plus:</br>- Power on ：Press power button for 2 seconds</br>- Power off ：Press power button for 6 seconds | Power Switch on RoverC-Pro is on the back: <br/>- Slide the switch to turn on/off</br>- LED will be red when ON |
+|:---:|:---:|
+|![M5StickC-PLUS Power On](Assets/stickON.gif)|![M5StickC-PLUS Power On](Assets/roverON.gif)|
+
+NOTE: *Both should be ON for the bot to move*.
+
+### Connecting to device
+
+This video shows how to connect your device to p5.js through BLE.
+
+[![Connecting to Device](https://img.youtube.com/vi/9JEx0VS_DMs/0.jpg)](https://youtu.be/9JEx0VS_DMs "Connecting to device")
+
+NOTE: *If any errors show up in the console, please disconnect and connect again or stop and restart the sketch.* </br>
+*Please do not call bot5 functions too frequently or else BLE connection will terminate.*
 
 ## Examples
 
@@ -12,21 +27,31 @@ Open this [p5.js web editor sketch](https://editor.p5js.org/momoe-nomoto/sketche
 
 A 'bot' is shown on the on-screen canvas and by pressing keyboard keys, it will move and draw its trace. Bot5 moves with your onscreen 'bot'.
 
+[![Ex1 Turtle](https://img.youtube.com/vi/Arb1RTjS1LE/0.jpg)](https://youtu.be/Arb1RTjS1LE "Ex1 Turtle")
+
 2. [Music Show](https://editor.p5js.org/momoe-nomoto/sketches/IO_mZXL61)
 
 P5 will play an animation and a music file, and the bot will move in a pre-programmed sequence, dancing around, and clapping at the end.
+
+[![Ex2 Music Show](https://img.youtube.com/vi/KlmJ9NUjHBo/0.jpg)](https://youtu.be/KlmJ9NUjHBo "Ex2 Music Show")
 
 3. [Space Invaders](https://editor.p5js.org/momoe-nomoto/sketches/bbOMA3S8R)
 
 Using the IMU, we will control a video game that can be played by turning the controller and pressing a button.
 
+[![Ex3 Space Invaders](https://img.youtube.com/vi/5CFLbpbm93A/0.jpg)](https://youtu.be/5CFLbpbm93A "Ex3 Space Invaders")
+
 4. [Burglar Alarm](https://editor.p5js.org/momoe-nomoto/sketches/qQlh8yy8r)
 
 Using the IMU, we will play something on the screen once the accelerometer value changes.
 
+[![Ex4 Burglar Alarm](https://img.youtube.com/vi/gCc1oXLIei0/0.jpg)](https://youtu.be/gCc1oXLIei0 "Ex4 Burglar Alarm")
+
 5. [Clock Alarm](https://editor.p5js.org/momoe-nomoto/sketches/ojOgO9Vrs)
 
 Using the buzzer and movements, bot5 will wake you up once a certain time is reached, in a similar way to Clocky. 
+
+[![Ex5 Clock Alarm](https://img.youtube.com/vi/bOkXwEA43-4/0.jpg)](https://youtu.be/bOkXwEA43-4 "Ex5 Clock Alarm")
 
 ~~6. [No More TV](https://editor.p5js.org/momoe-nomoto/sketches/okq3yo4IE)~~
 
@@ -36,6 +61,8 @@ Using the buzzer and movements, bot5 will wake you up once a certain time is rea
 
 Using an ultrasonic sensor, we will draw the surroundings on the screen as radar, and we will navigate using a control similar to Turtle.
 
+[![Ex6 Space Exploration](https://img.youtube.com/vi/n5XSGAfBg0w/0.jpg)](https://youtu.be/n5XSGAfBg0w "Ex6 Space Exploration")
+
 ~~8. IoT Toilette Paper Dispenser~~
 
 ~~Using a QR code on the screen, we can make a useless invention that can be accessed through the on-board web server.~~
@@ -44,9 +71,13 @@ Using an ultrasonic sensor, we will draw the surroundings on the screen as radar
 
 Using ML5 to recognize spoken commands, we will teach “stupid pet tricks” to the bot that will be performed.
 
+[![Ex7 Pet Training](https://img.youtube.com/vi/YdwkTbNjojs/0.jpg)](https://youtu.be/YdwkTbNjojs "Ex7 Pet Training")
+
 8. [Dance With Me](https://editor.p5js.org/momoe-nomoto/sketches/PCEsJ2NKG)
 
 Using ML5 to recognize pose, we will let the bot move the wheels following the hand movements.
+
+[![Ex8 Dance With Me](https://img.youtube.com/vi/YFvQOWG-LI8/0.jpg)](https://youtu.be/YFvQOWG-LI8 "Ex8 Dance With Me")
 
 ## Bot5 API
 
