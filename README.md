@@ -1,6 +1,6 @@
 # Bot5
 
-Bot5 builds the bridge between [P5](https://p5js.org/) + [ML5](https://ml5js.org/) + [Robot](https://m5stack.com/).
+Bot5 is [P5](https://p5js.org/) + [ML5](https://ml5js.org/) + [Robot](https://m5stack.com/).
 
 ## Quick Start
 
