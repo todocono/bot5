@@ -107,8 +107,8 @@ bot5.motor.forward(speed)
 bot5.motor.back(speed)
 bot5.motor.left(speed)
 bot5.motor.right(speed)
-bot5.motor.turnleft(speed)
-bot5.motor.turnright(speed)
+bot5.motor.turnLeft(speed)
+bot5.motor.turnRight(speed)
 bot5.motor.stop()
 
 // returns movement speed
